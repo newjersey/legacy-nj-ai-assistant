@@ -74,7 +74,7 @@ export const QuestionInput = ({ onSend, disabled, placeholder, clearOnSend, conv
     }
 
     if (selectedFile) {
-      if (selectedFile.type === 'application/pdf') {
+      if (selectedFile.type === ACCEPTED_FILE_TYPES.PDF) {
         pdfToText(selectedFile)
           .then(extractedText => {
             if (extractedText.length === 0) {
@@ -92,7 +92,7 @@ export const QuestionInput = ({ onSend, disabled, placeholder, clearOnSend, conv
           .catch(_error => {
             setInputError('Failed to upload PDF. Please try uploading a different file.')
           })
-      } else if (selectedFile.type === 'text/csv') {
+      } else if (selectedFile.type === ACCEPTED_FILE_TYPES.CSV) {
         const reader = new FileReader()
         reader.onloadend = () => {
           send({
@@ -137,9 +137,9 @@ export const QuestionInput = ({ onSend, disabled, placeholder, clearOnSend, conv
   const onFileChange = (event: React.ChangeEvent<HTMLInputElement>) => {
     const file = event.target.files?.[0]
     if (file) {
-      if (!ACCEPTED_FILE_TYPES.includes(file.type)) {
+      if ((Object.values(ACCEPTED_FILE_TYPES) as string[]).includes(file.type)) {
         setInputError(
-          'Only the following file types are supported: .csv, .pdf, .jpeg, .png, .gif, .bmp, .tiff. Please try a different file.'
+          'Only the following file types are supported: .csv, .doc, .docx, .pdf, .jpeg, .png, .gif, .bmp, .tiff. Please try a different file.'
         )
         setSelectedFile(null)
         if (fileInputRef?.current?.value) {
@@ -159,6 +159,55 @@ export const QuestionInput = ({ onSend, disabled, placeholder, clearOnSend, conv
         setSelectedFile(file)
       }
     }
+  }
+
+  function extractAndSendFileContents(selectedFile: File) {
+    if (selectedFile.type === ACCEPTED_FILE_TYPES.PDF) {
+      pdfToText(selectedFile)
+        .then(extractedText => {
+          if (extractedText.length === 0) {
+            setInputError('Could not read text from PDF. Please try uploading a different file.')
+          } else {
+            return {
+              name: selectedFile.name,
+              type: FileType.Pdf,
+              contents: extractedText,
+              extension: selectedFile.type,
+              size: selectedFile.size
+            }
+          }
+        })
+        .catch(_error => {
+          setInputError('Failed to upload PDF. Please try uploading a different file.')
+        })
+    }
+
+    if (selectedFile.type === ACCEPTED_FILE_TYPES.CSV) {
+      const reader = new FileReader()
+      reader.onloadend = () => {
+        return {
+          name: selectedFile.name,
+          type: FileType.Csv,
+          contents: reader.result as string,
+          extension: selectedFile.type,
+          size: selectedFile.size
+        }
+      }
+
+      reader.readAsText(selectedFile)
+    }
+
+    const reader = new FileReader()
+    reader.onloadend = () => {
+      return {
+        name: selectedFile.name,
+        type: FileType.Image,
+        contents: reader.result as string,
+        extension: selectedFile.type,
+        size: selectedFile.size
+      }
+    }
+    reader.readAsDataURL(selectedFile)
   }
 
   const sendQuestionDisabled = disabled || !question.trim()
