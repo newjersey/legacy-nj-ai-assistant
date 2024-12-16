@@ -1,15 +1,3 @@
-// export const ACCEPTED_FILE_TYPES = [
-//   'image/jpeg',
-//   'image/png',
-//   'image/gif',
-//   'image/bmp',
-//   'image/tiff',
-//   'application/pdf',
-//   'text/csv',
-//   'application/msword',
-//   'application/vnd.openxmlformats-officedocument.wordprocessingml.document'
-// ]
-
 export enum ACCEPTED_FILE_TYPES {
   JPEG = 'image/jpeg',
   PNG = 'image/png',
@@ -24,7 +12,6 @@ export enum ACCEPTED_FILE_TYPES {
 
 export interface UploadedFile {
   name: string
-  type: FileType
   contents: string
   size: number
   extension: string
@@ -35,4 +22,8 @@ export enum FileType {
   Pdf,
   Csv,
   Doc
+}
+
+export const isImageFile = (file: UploadedFile): boolean => {
+  return file.extension.includes('image')
 }
