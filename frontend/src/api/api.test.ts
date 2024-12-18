@@ -41,7 +41,7 @@ describe('Test the conversationApi function', () => {
     jest.resetAllMocks()
   })
 
-  it('formats content correctly when there is no uploadedFile', async () => {
+  it('formats content correctly when there is no uploaded file', async () => {
     const conversationRequest = createConversationRequestWithUploadedFile()
 
     await conversationApi(conversationRequest, defaultAbortSignal, null)
