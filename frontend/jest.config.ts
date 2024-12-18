@@ -5,7 +5,11 @@ const config: Config.InitialOptions = {
   transform: {
     '^.+\\.tsx?$': 'ts-jest'
   },
-  setupFilesAfterEnv: ['<rootDir>/polyfills.js']
+  setupFilesAfterEnv: ['<rootDir>/polyfills.js'],
+  moduleNameMapper: {
+    '\\.(css|less|sass|scss)$': 'identity-obj-proxy',
+    '^.+\\.svg$': '<rootDir>/__mocks__/fileMock.ts'
+  }
 }
 
 export default config
