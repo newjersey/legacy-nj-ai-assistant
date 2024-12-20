@@ -37,7 +37,7 @@ describe('Test uploading files', () => {
     jest.clearAllMocks()
   })
 
-  it('uplods PDFs without errors', async () => {
+  it('uploads PDFs without errors', async () => {
     const uploadedFile = createMockFile('pdf', ACCEPTED_FILE_TYPES.PDF)
 
     const { container } = render(
@@ -59,7 +59,7 @@ describe('Test uploading files', () => {
     expect(await axe(container)).toHaveNoViolations();
   })
 
-  it('uplods CSVs without errors', async () => {
+  it('uploads CSVs without errors', async () => {
     const uploadedFile = createMockFile('csv', ACCEPTED_FILE_TYPES.CSV)
 
     const { container } = render(
