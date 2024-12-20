@@ -37,80 +37,17 @@ describe('Test uploading files', () => {
     jest.clearAllMocks()
   })
 
-  it('uploads PDFs without errors', async () => {
-    const uploadedFile = createMockFile('pdf', ACCEPTED_FILE_TYPES.PDF)
-
-    const { container } = render(
-      <QuestionInput
-        onSend={jest.fn()}
-        disabled={false}
-        placeholder={'placeholder'}
-        conversationId={undefined}
-        clearOnSend={false}
-      />
-    )
-
-    await act(async () => {
-      uploadFile(uploadedFile)
-      inputChatMessage()
-      submitChatMessage()
-    })
-
-    expect(await axe(container)).toHaveNoViolations();
-  })
-
-  it('uploads CSVs without errors', async () => {
-    const uploadedFile = createMockFile('csv', ACCEPTED_FILE_TYPES.CSV)
-
-    const { container } = render(
-      <QuestionInput
-        onSend={() => {}}
-        disabled={false}
-        placeholder={'placeholder'}
-        conversationId={undefined}
-        clearOnSend={false}
-      />
-    )
-
-    await act(async () => {
-      uploadFile(uploadedFile)
-      inputChatMessage()
-      submitChatMessage()
-    })
-
-    expect(await axe(container)).toHaveNoViolations();
-  })
-
-  it('uploads .docx files without errors', async () => {
-    const uploadedFile = createMockFile('.docx', ACCEPTED_FILE_TYPES.DOCX)
-
-    const { container } = render(
-      <QuestionInput
-        onSend={() => {}}
-        disabled={false}
-        placeholder={'placeholder'}
-        conversationId={undefined}
-        clearOnSend={false}
-      />
-    )
-
-    await act(async () => {
-      uploadFile(uploadedFile)
-      inputChatMessage()
-      submitChatMessage()
-    })
-
-    expect(await axe(container)).toHaveNoViolations();
-  })
-
   it.each([
     ['jpg', ACCEPTED_FILE_TYPES.JPEG],
     ['png', ACCEPTED_FILE_TYPES.PNG],
     ['gif', ACCEPTED_FILE_TYPES.GIF],
     ['bmp', ACCEPTED_FILE_TYPES.BMP],
-    ['tiff', ACCEPTED_FILE_TYPES.TIFF]
+    ['tiff', ACCEPTED_FILE_TYPES.TIFF],
+    ['.docx', ACCEPTED_FILE_TYPES.DOCX],
+    ['csv', ACCEPTED_FILE_TYPES.CSV],
+    ['pdf', ACCEPTED_FILE_TYPES.PDF]
   ])(
-    'uploads image files with extension .%s without errors',
+    'uploads files with extension .%s without errors',
     async (extension: string, fileType: ACCEPTED_FILE_TYPES) => {
       const uploadedFile = createMockFile(extension, fileType)
 
