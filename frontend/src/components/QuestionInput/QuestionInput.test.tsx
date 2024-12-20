@@ -1,13 +1,14 @@
-import React from 'react'
 import { render, screen, fireEvent, act } from '@testing-library/react'
 import { ACCEPTED_FILE_TYPES } from '../../custom/fileUploadUtils'
-import userEvent from '@testing-library/user-event'
 import { QuestionInput } from './QuestionInput'
+
+import { axe, toHaveNoViolations } from 'jest-axe'
+expect.extend(toHaveNoViolations)
 
 async function uploadFile(file: File) {
   const fileInput = screen.getByLabelText('Upload file')
 
-  await userEvent.upload(fileInput, file)
+  await fireEvent.change(fileInput, { target: { files: [file] } })
 }
 
 function inputChatMessage(message?: string) {
@@ -24,9 +25,42 @@ function submitChatMessage() {
   fireEvent.click(submitButton)
 }
 
-describe('Test sending files', () => {
-  it('extracts and sends data from PDFs', async () => {
-    const file = new File(['hello'], 'default.pdf', { type: ACCEPTED_FILE_TYPES.PDF })
+const createMockFile = (extension: string, fileType: string): File => {
+  const blob = new Blob(['hello'], { type: fileType })
+  const file = new File([blob], `default.${extension}`, { type: fileType })
+
+  return file
+}
+
+describe('Test uploading files', () => {
+  afterEach(() => {
+    jest.clearAllMocks()
+  })
+
+  it('uplods PDFs without errors', async () => {
+    const uploadedFile = createMockFile('pdf', ACCEPTED_FILE_TYPES.PDF)
+
+    const { container } = render(
+      <QuestionInput
+        onSend={jest.fn()}
+        disabled={false}
+        placeholder={'placeholder'}
+        conversationId={undefined}
+        clearOnSend={false}
+      />
+    )
+
+    await act(async () => {
+      uploadFile(uploadedFile)
+      inputChatMessage()
+      submitChatMessage()
+    })
+
+    expect(await axe(container)).toHaveNoViolations();
+  })
+
+  it('uplods CSVs without errors', async () => {
+    const uploadedFile = createMockFile('csv', ACCEPTED_FILE_TYPES.CSV)
 
     const { container } = render(
       <QuestionInput
@@ -39,17 +73,93 @@ describe('Test sending files', () => {
     )
 
     await act(async () => {
-      // uploadFile(file);
+      uploadFile(uploadedFile)
       inputChatMessage()
       submitChatMessage()
     })
+
+    expect(await axe(container)).toHaveNoViolations();
   })
 
-  // it('extracts and sends data from CSVs', async () => {})
+  it.each([
+    ['doc', ACCEPTED_FILE_TYPES.DOC],
+    ['docx', ACCEPTED_FILE_TYPES.DOCX]
+  ])('uplods documents with extension .%s without errors', async (extension: string, fileType: ACCEPTED_FILE_TYPES) => {
+    const uploadedFile = createMockFile(extension, fileType)
 
-  // it('extracts and sends data from .doc files', async () => {})
+    const { container } = render(
+      <QuestionInput
+        onSend={() => {}}
+        disabled={false}
+        placeholder={'placeholder'}
+        conversationId={undefined}
+        clearOnSend={false}
+      />
+    )
 
-  // it('extracts and sends data from .docx files', async () => {})
+    await act(async () => {
+      uploadFile(uploadedFile)
+      inputChatMessage()
+      submitChatMessage()
+    })
 
-  // it('extracts and sends data from image files', async () => {})
+    expect(await axe(container)).toHaveNoViolations();
+  })
+
+  it.each([
+    ['jpg', ACCEPTED_FILE_TYPES.JPEG],
+    ['png', ACCEPTED_FILE_TYPES.PNG],
+    ['gif', ACCEPTED_FILE_TYPES.GIF],
+    ['bmp', ACCEPTED_FILE_TYPES.BMP],
+    ['tiff', ACCEPTED_FILE_TYPES.TIFF]
+  ])(
+    'uploads image files with extension .%s without errors',
+    async (extension: string, fileType: ACCEPTED_FILE_TYPES) => {
+      const uploadedFile = createMockFile(extension, fileType)
+
+      const { container } = render(
+        <QuestionInput
+          onSend={() => {}}
+          disabled={false}
+          placeholder={'placeholder'}
+          conversationId={undefined}
+          clearOnSend={false}
+        />
+      )
+
+      await act(async () => {
+        uploadFile(uploadedFile)
+        inputChatMessage()
+        submitChatMessage()
+      })
+
+      expect(await axe(container)).toHaveNoViolations();
+    }
+  )
+
+  it('displays an error if the uploaded file is not of a valid filetype', async () => {
+    const uploadedFile = createMockFile('fakeExtension', 'invalid/filetype')
+
+    const { container } = render(
+      <QuestionInput
+        onSend={() => {}}
+        disabled={false}
+        placeholder={'placeholder'}
+        conversationId={undefined}
+        clearOnSend={false}
+      />
+    )
+
+    await act(async () => {
+      uploadFile(uploadedFile)
+      inputChatMessage()
+      submitChatMessage()
+    })
+
+    const inputError = screen.queryByText(/Only the following file types are supported/i)
+
+    expect(inputError).toBeInTheDocument()
+
+    expect(await axe(container)).toHaveNoViolations();
+  })
 })

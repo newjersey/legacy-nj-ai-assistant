@@ -75,8 +75,10 @@ export const QuestionInput = ({ onSend, disabled, placeholder, clearOnSend, conv
 
     if (selectedFile) {
       if (selectedFile.type === ACCEPTED_FILE_TYPES.PDF) {
+        console.log("reached")
         pdfToText(selectedFile)
           .then(extractedText => {
+            console.log("ok2")
             if (extractedText.length === 0) {
               setInputError('Could not read text from PDF. Please try uploading a different file.')
             } else {
@@ -103,11 +105,8 @@ export const QuestionInput = ({ onSend, disabled, placeholder, clearOnSend, conv
         }
 
         reader.readAsText(selectedFile)
-      } else if (selectedFile.type === ACCEPTED_FILE_TYPES.DOC) {
-
-      } else if (selectedFile.type === ACCEPTED_FILE_TYPES.DOCX) {
-        
-      } else {
+      } 
+      else {
         const reader = new FileReader()
         reader.onloadend = () => {
           send({
@@ -137,8 +136,9 @@ export const QuestionInput = ({ onSend, disabled, placeholder, clearOnSend, conv
 
   const onFileChange = (event: React.ChangeEvent<HTMLInputElement>) => {
     const file = event.target.files?.[0]
+
     if (file) {
-      if ((Object.values(ACCEPTED_FILE_TYPES) as string[]).includes(file.type)) {
+      if (!(Object.values(ACCEPTED_FILE_TYPES) as string[]).includes(file.type)) {
         setInputError(
           'Only the following file types are supported: .csv, .doc, .docx, .pdf, .jpeg, .png, .gif, .bmp, .tiff. Please try a different file.'
         )
