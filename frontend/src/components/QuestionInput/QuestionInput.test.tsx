@@ -81,11 +81,8 @@ describe('Test uploading files', () => {
     expect(await axe(container)).toHaveNoViolations();
   })
 
-  it.each([
-    ['doc', ACCEPTED_FILE_TYPES.DOC],
-    ['docx', ACCEPTED_FILE_TYPES.DOCX]
-  ])('uplods documents with extension .%s without errors', async (extension: string, fileType: ACCEPTED_FILE_TYPES) => {
-    const uploadedFile = createMockFile(extension, fileType)
+  it('uploads .docx files without errors', async () => {
+    const uploadedFile = createMockFile('.docx', ACCEPTED_FILE_TYPES.DOCX)
 
     const { container } = render(
       <QuestionInput

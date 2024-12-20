@@ -6,7 +6,6 @@ export enum ACCEPTED_FILE_TYPES {
   TIFF = 'image/tiff',
   PDF = 'application/pdf',
   CSV = 'text/csv',
-  DOC = 'application/msword',
   DOCX = 'application/vnd.openxmlformats-officedocument.wordprocessingml.document'
 }
 

@@ -20,11 +20,7 @@ export async function conversationApi(
           { type: 'image_url', image_url: { url: uploadedFile.contents } },
           { type: 'text', text: apiMessage.content }
         ]
-      } else if (
-        uploadedFile.extension === ACCEPTED_FILE_TYPES.PDF ||
-        uploadedFile.extension === ACCEPTED_FILE_TYPES.DOC ||
-        uploadedFile.extension === ACCEPTED_FILE_TYPES.DOCX
-      ) {
+      } else if (uploadedFile.extension === ACCEPTED_FILE_TYPES.PDF || uploadedFile.extension === ACCEPTED_FILE_TYPES.DOCX) {
         apiMessage.content = [
           {
             type: 'text',

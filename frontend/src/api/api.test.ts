@@ -76,18 +76,6 @@ describe('Test the conversationApi function', () => {
     })
   })
 
-  it('formats content correctly when a .doc file is uploaded', async () => {
-    const docFile: UploadedFile = { ...defaultUploadedFile, extension: ACCEPTED_FILE_TYPES.DOC }
-    const conversationRequest = createConversationRequestWithUploadedFile(docFile)
-
-    await conversationApi(conversationRequest, defaultAbortSignal, null)
-
-    expect(fetch).toHaveBeenCalledWith('/conversation', {
-      ...defaultFetchRequest,
-      body: expect.stringContaining('Use the following document in your responses')
-    })
-  })
-
   it('formats content correctly when a .docx file is uploaded', async () => {
     const docxFile: UploadedFile = { ...defaultUploadedFile, extension: ACCEPTED_FILE_TYPES.DOCX }
     const conversationRequest = createConversationRequestWithUploadedFile(docxFile)
