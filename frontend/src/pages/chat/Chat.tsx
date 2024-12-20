@@ -816,7 +816,7 @@ const Chat = () => {
                       <div className={styles.chatMessageUser} tabIndex={0}>
                         <div className={styles.chatMessageUserMessage}>
                           {answer.uploaded_file != null &&
-                          isImageFile(answer.uploaded_file) &&
+                            isImageFile(answer.uploaded_file) &&
                             answer.uploaded_file.contents && (
                               <div className={styles.chatMessageUserAttachment}>
                                 <img
