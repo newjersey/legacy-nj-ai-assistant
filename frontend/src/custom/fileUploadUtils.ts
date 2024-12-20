@@ -16,13 +16,6 @@ export interface UploadedFile {
   extension: string
 }
 
-export enum FileType {
-  Image,
-  Pdf,
-  Csv,
-  Doc
-}
-
 export const isImageFile = (file: UploadedFile): boolean => {
   return file.extension.includes('image')
 }
