@@ -2,7 +2,7 @@ import { useRef, useState } from 'react'
 import { Stack, TextField } from '@fluentui/react'
 import { SendRegular } from '@fluentui/react-icons'
 import pdfToText from 'react-pdftotext'
-import mammoth from 'mammoth'
+import { extractRawText } from 'mammoth'
 
 import Send from '../../assets/Send.svg'
 
@@ -107,7 +107,7 @@ export const QuestionInput = ({ onSend, disabled, placeholder, clearOnSend, conv
       } else if (selectedFile.type === ACCEPTED_FILE_TYPES.DOCX) {
         try {
           const arrayBuffer = await selectedFile.arrayBuffer()
-          const extractedText = (await mammoth.extractRawText({ arrayBuffer })).value
+          const extractedText = (await extractRawText({ arrayBuffer })).value
 
           if (extractedText.length === 0) {
             setInputError('Could not read text from document. Please try uploading a different file.')
@@ -156,7 +156,7 @@ export const QuestionInput = ({ onSend, disabled, placeholder, clearOnSend, conv
     if (file) {
       if (!(Object.values(ACCEPTED_FILE_TYPES) as string[]).includes(file.type)) {
         setInputError(
-          'Only the following file types are supported: .csv, .doc, .docx, .pdf, .jpeg, .png, .gif, .bmp, .tiff. Please try a different file.'
+          'Only the following file types are supported: .csv, .docx, .pdf, .jpeg, .png, .gif, .bmp, .tiff. Please try a different file.'
         )
         setSelectedFile(null)
         if (fileInputRef?.current?.value) {
