@@ -19,7 +19,7 @@ The `nj-stable` branch is deployed to our actual chat application, and we should
 3. From the root directory of the repo, run the ./start.sh command
 
 ## How to run unit tests locally
-Navigate into the `frontend directory`.
+Navigate into the `frontend` directory. `cd frontend`
 
 **To run tests for the backend** run the command `npm run test:api`
 **To run tests for the frontend** run the command `npm run test:react`
