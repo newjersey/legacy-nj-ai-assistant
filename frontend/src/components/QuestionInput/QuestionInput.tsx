@@ -169,14 +169,15 @@ export const QuestionInput = ({ onSend, disabled, placeholder, clearOnSend, conv
         setSelectedFile(null)
         if (fileInputRef?.current?.value) {
           fileInputRef.current.value = ''
-        } else if (file.size > 50 * 1024 * 1024) {
-          // 50MB limit for other filetypes
-          setInputError('File size of non-image attachments cannot exceed 50 MB. Please try a smaller file.')
-          setSelectedFile(null)
-          if (fileInputRef?.current?.value) {
-            fileInputRef.current.value = ''
-          }
-          logEvent('submit_prompt_client_error_file_size', { object_size: file.size, object_type: file.type })
+        }
+
+        logEvent('submit_prompt_client_error_file_size', { object_size: file.size, object_type: file.type })
+      } else if (file.size > 50 * 1024 * 1024) {
+        // 50MB limit for other filetypes
+        setInputError('File size of non-image attachments cannot exceed 50 MB. Please try a smaller file.')
+        setSelectedFile(null)
+        if (fileInputRef?.current?.value) {
+          fileInputRef.current.value = ''
         }
         logEvent('submit_prompt_client_error_file_size', { object_size: file.size, object_type: file.type })
       } else {
