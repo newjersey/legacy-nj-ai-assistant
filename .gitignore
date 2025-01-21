@@ -6,3 +6,8 @@ frontend/node_modules
 __pycache__/
 .ipynb_checkpoints/
 .DS_Store
+/static/assets/*
+
+# allow files matching index-*.js and index-*.js.map that are needed for build
+!/static/assets/index-*.js
+!/static/assets/index-*.js.map

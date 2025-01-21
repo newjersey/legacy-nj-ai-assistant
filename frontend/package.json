@@ -20,6 +20,7 @@
     "@fluentui/react-hooks": "^8.6.29",
     "@fluentui/react-icons": "^2.0.195",
     "@newjersey/feedback-widget": "^0.6.0",
+    "@newjersey/njwds": "2.1.0",
     "@testing-library/user-event": "^14.5.2",
     "dompurify": "^3.0.8",
     "identity-obj-proxy": "^3.0.0",

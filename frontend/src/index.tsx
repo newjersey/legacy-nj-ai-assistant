@@ -10,6 +10,9 @@ import { AppStateProvider } from './state/AppProvider'
 
 import './index.css'
 import '@newjersey/feedback-widget/feedback-widget.min.js'
+import '@newjersey/njwds/dist/css/styles.css'
+import '@newjersey/njwds/dist/js/uswds-init.min.js'
+import '@newjersey/njwds/dist/js/uswds.min.js'
 
 declare global {
   namespace JSX {
