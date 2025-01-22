@@ -1,5 +1,5 @@
 .questionInputContainer {
-  height: 145px;
+  height: fit-content;
   position: absolute;
   left: 6.5%;
   right: 0%;
@@ -22,6 +22,7 @@
 
 .questionInputSendButtonContainer {
   z-index: 2;
+  height: 2.5rem !important;
 }
 
 .questionInputSendButton {

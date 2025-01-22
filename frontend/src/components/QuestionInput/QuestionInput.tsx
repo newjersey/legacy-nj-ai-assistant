@@ -202,7 +202,7 @@ export const QuestionInput = ({ onSend, disabled, placeholder, clearOnSend, conv
         onChange={e => setQuestion(e.target.value)}
         onKeyDown={onEnterPress}
         aria-label="Type a question"></textarea>
-      <div className={`display-flex width-full padding-x-2 ${styles.questionInputChatButtons}`}>
+      <div className={`display-flex margin-bottom-3 width-full padding-x-2 ${styles.questionInputChatButtons}`}>
         <div>
           <label
             htmlFor="file-upload"
@@ -230,7 +230,7 @@ export const QuestionInput = ({ onSend, disabled, placeholder, clearOnSend, conv
           aria-label="Ask question button"
           onClick={sendQuestion}
           onKeyDown={e => (e.key === 'Enter' || e.key === ' ' ? sendQuestion() : null)}>
-          <svg className="usa-icon margin-right-05" aria-hidden="true" focusable="false" role="img">
+          <svg className="usa-icon" aria-hidden="true" focusable="false" role="img">
             <use xlinkHref={icons + '#send'}></use>
           </svg>
         </div>
