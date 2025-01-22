@@ -14,6 +14,7 @@ import { nord } from 'react-syntax-highlighter/dist/esm/styles/prism'
 import styles from './Chat.module.css'
 import Contoso from '../../assets/Contoso.svg'
 import { XSSAllowTags } from '../../constants/sanatizeAllowables'
+import icons from '@newjersey/njwds/dist/img/sprite.svg'
 
 import {
   ChatMessage,
@@ -928,32 +929,28 @@ const Chat = () => {
                     icon: {
                       color: '#FFFFFF'
                     },
-                    iconDisabled: {
-                      color: '#BDBDBD !important'
-                    },
                     root: {
                       color: '#FFFFFF',
                       background:
                         'radial-gradient(109.81% 107.82% at 100.1% 90.19%, #0F6CBD 33.63%, #2D87C3 70.31%, #8DDDD8 100%)'
-                    },
-                    rootDisabled: {
-                      background: '#F0F0F0'
                     }
                   }}
-                  className={
+                  className={`width-7 ${
                     appStateContext?.state.isCosmosDBAvailable?.status !== CosmosDBStatus.NotConfigured
                       ? styles.clearChatBroom
-                      : styles.clearChatBroomNoCosmos
+                      : styles.clearChatBroomNoCosmos}`
                   }
-                  iconProps={{ iconName: 'Broom' }}
                   onClick={
                     appStateContext?.state.isCosmosDBAvailable?.status !== CosmosDBStatus.NotConfigured
                       ? clearChat
                       : newChat
                   }
                   disabled={disabledButton()}
-                  aria-label="clear chat button"
-                />
+                  aria-label="clear chat button">
+                  <svg className="usa-icon margin-right-05" aria-hidden="true" focusable="false" role="img">
+                    <use xlinkHref={icons + '#history'}></use>
+                  </svg>
+                </CommandBarButton>
                 <Dialog
                   hidden={hideErrorDialog}
                   onDismiss={handleErrorDialogClose}

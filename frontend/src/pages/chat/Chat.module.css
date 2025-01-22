@@ -148,7 +148,7 @@
   padding-right: 24px;
   width: calc(100% - 140px);
   max-width: 1028px;
-  margin-bottom: 50px;
+  margin-bottom: 20px;
   margin-top: 8px;
 }
 
@@ -159,9 +159,9 @@
   justify-content: center;
   align-items: center;
   position: absolute;
-  width: 40px;
+
   height: 40px;
-  left: 7px;
+  left: -15px;
   top: 13px;
   color: #ffffff;
   border-radius: 4px;
