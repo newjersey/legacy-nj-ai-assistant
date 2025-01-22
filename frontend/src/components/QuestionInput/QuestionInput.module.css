@@ -13,12 +13,11 @@
 }
 
 .questionInputTextArea {
-  width: 100%;
   line-height: 40px;
   padding-top: 10px;
   padding-bottom: 10px;
-  padding-left: 12px;
-  padding-right: 12px;
+  resize: none !important;
+  outline: none !important;
 }
 
 .questionInputSendButtonContainer {
@@ -88,16 +87,8 @@ input.fileInput::file-selector-button {
 }
 
 .errorText {
-  position: absolute;
   top: -50px;
   z-index: 1;
-  background-color: #f4e3db;
-  border-left: 8px solid #d54309;
-  padding: 8px 14px;
-  font-size: 16px;
-  line-height: 24px;
-  width: 100%;
-  display: flex;
   gap: 12px;
 }
 

@@ -1,5 +1,4 @@
 import { useRef, useState } from 'react'
-import { Stack, TextField } from '@fluentui/react'
 import { SendRegular } from '@fluentui/react-icons'
 import pdfToText from 'react-pdftotext'
 import { extractRawText } from 'mammoth'
@@ -9,7 +8,6 @@ import Send from '../../assets/Send.svg'
 import styles from './QuestionInput.module.css'
 import { ACCEPTED_FILE_TYPES, UploadedFile, isImageFile } from '../../custom/fileUploadUtils'
 import { logEvent } from '../../custom/logEvent'
-import InfoIcon from '../../assets/info.svg'
 
 interface Props {
   onSend: (question: string, id?: string, uploadedFile?: UploadedFile) => void
@@ -190,25 +188,22 @@ export const QuestionInput = ({ onSend, disabled, placeholder, clearOnSend, conv
   const sendQuestionDisabled = disabled || !question.trim()
 
   return (
-    <Stack horizontal={false} className={styles.questionInputContainer} wrap={true}>
+    <div className={`flex-wrap flex-column ${styles.questionInputContainer}`}>
       {inputError && (
-        <div className={styles.errorText}>
-          <img src={InfoIcon} alt="" />
-          {inputError}
+        <div
+          className={`usa-alert usa-alert--error usa-alert--slim line-height-sans-5 width-full padding-y-0 position-absolute display-flex ${styles.errorText}`}>
+          <div className="usa-alert__body">
+            <p className="usa-alert__text maxw-none">{inputError}</p>
+          </div>
         </div>
       )}
-      <TextField
-        className={styles.questionInputTextArea}
+      <textarea
+        className={`usa-textarea maxw-none border-0 padding-x-205 height-auto minh-8 ${styles.questionInputTextArea}`}
         placeholder={placeholder}
-        multiline
-        resizable={false}
-        borderless
         value={question}
-        onChange={onQuestionChange}
+        onChange={(e) => setQuestion(e.target.value)}
         onKeyDown={onEnterPress}
-        ariaLabel="Type a question"
-        inputClassName={styles.textAreaOverrides}
-      />
+        aria-label="Type a question"></textarea>
       <div className={styles.questionInputChatButtons}>
         <div>
           <input
@@ -235,7 +230,7 @@ export const QuestionInput = ({ onSend, disabled, placeholder, clearOnSend, conv
           )}
         </div>
       </div>
-      <div className={styles.questionInputBottomBorder} />
-    </Stack>
+      <hr className={`margin-bottom-0 ${styles.questionInputBottomBorder}`} />
+    </div>
   )
 }
