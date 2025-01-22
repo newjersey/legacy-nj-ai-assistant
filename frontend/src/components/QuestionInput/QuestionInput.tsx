@@ -202,6 +202,21 @@ export const QuestionInput = ({ onSend, disabled, placeholder, clearOnSend, conv
         onChange={e => setQuestion(e.target.value)}
         onKeyDown={onEnterPress}
         aria-label="Type a question"></textarea>
+      <div className={`display-flex ${styles.fileUploadPreviewsContainer}`}>
+        {selectedFile && (
+          <div className={`usa-button ${styles.fileUploadPreview}`}>
+            <svg className="usa-icon margin-right-05" aria-hidden="true" focusable="false" role="img">
+              <use xlinkHref={icons + '#image'}></use>
+            </svg>
+            <p>{selectedFile.name}</p>
+            <button onClick={e => setSelectedFile(null)}>
+              <svg className="usa-icon margin-right-05" aria-hidden="true" focusable="false" role="img">
+                <use xlinkHref={icons + '#close'}></use>
+              </svg>
+            </button>
+          </div>
+        )}
+      </div>
       <div className={`display-flex margin-bottom-3 width-full padding-x-2 ${styles.questionInputChatButtons}`}>
         <div>
           <label
