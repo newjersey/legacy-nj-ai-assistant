@@ -1,13 +1,11 @@
 import { useRef, useState } from 'react'
-import { SendRegular } from '@fluentui/react-icons'
 import pdfToText from 'react-pdftotext'
 import { extractRawText } from 'mammoth'
-
-import Send from '../../assets/Send.svg'
 
 import styles from './QuestionInput.module.css'
 import { ACCEPTED_FILE_TYPES, UploadedFile, isImageFile } from '../../custom/fileUploadUtils'
 import { logEvent } from '../../custom/logEvent'
+import icons from '@newjersey/njwds/dist/img/sprite.svg'
 
 interface Props {
   onSend: (question: string, id?: string, uploadedFile?: UploadedFile) => void
@@ -198,39 +196,48 @@ export const QuestionInput = ({ onSend, disabled, placeholder, clearOnSend, conv
         </div>
       )}
       <textarea
-        className={`usa-textarea maxw-none border-0 padding-x-205 height-auto minh-8 ${styles.questionInputTextArea}`}
+        className={`usa-textarea maxw-none border-0 padding-x-205 height-auto minh-9 ${styles.questionInputTextArea}`}
         placeholder={placeholder}
         value={question}
-        onChange={(e) => setQuestion(e.target.value)}
+        onChange={e => setQuestion(e.target.value)}
         onKeyDown={onEnterPress}
         aria-label="Type a question"></textarea>
-      <div className={styles.questionInputChatButtons}>
+      <div className={`display-flex width-full padding-x-2 ${styles.questionInputChatButtons}`}>
         <div>
+          <label
+            htmlFor="file-upload"
+            className={`usa-button usa-button--unstyled text-no-underline ${styles.fileInputLabel}`}>
+            <svg className="usa-icon margin-right-05" aria-hidden="true" focusable="false" role="img">
+              <use xlinkHref={icons + '#attach_file'}></use>
+            </svg>
+            Upload files
+          </label>
           <input
             ref={fileInputRef}
             type="file"
+            id="file-upload"
             accept={(Object.values(ACCEPTED_FILE_TYPES) as string[]).join(',')}
             onChange={onFileChange}
             disabled={disabled}
-            className={styles.fileInput}
+            className={`${styles.fileInput}`}
             aria-label="Upload file"
           />
         </div>
         <div
-          className={styles.questionInputSendButtonContainer}
+          className={`usa-button ${styles.questionInputSendButtonContainer}`}
           role="button"
           tabIndex={0}
           aria-label="Ask question button"
           onClick={sendQuestion}
           onKeyDown={e => (e.key === 'Enter' || e.key === ' ' ? sendQuestion() : null)}>
-          {sendQuestionDisabled ? (
-            <SendRegular className={styles.questionInputSendButtonDisabled} />
-          ) : (
-            <img src={Send} className={styles.questionInputSendButton} alt="Send Button" />
-          )}
+          <svg className="usa-icon margin-right-05" aria-hidden="true" focusable="false" role="img">
+            <use xlinkHref={icons + '#send'}></use>
+          </svg>
         </div>
       </div>
-      <hr className={`margin-bottom-0 ${styles.questionInputBottomBorder}`} />
+      <hr
+        className={`margin-bottom-0 position-absolute width-full bottom-0 left-0 border-0 ${styles.questionInputBottomBorder}`}
+      />
     </div>
   )
 }
