@@ -1,3 +1,9 @@
+/* CUSTOM CSS PROPERTIES */
+:root {
+  --base-ink: #1c1d1f;
+  --primary-lightest: #e8f5ff;
+}
+
 .questionInputContainer {
   height: fit-content;
   position: absolute;
@@ -59,12 +65,6 @@
   }
 }
 
-.errorText {
-  top: -50px;
-  z-index: 1;
-  gap: 12px;
-}
-
 .textAreaOverrides {
   font-size: 16px !important;
 }
@@ -72,6 +72,18 @@
 .questionInputChatButtons {
   justify-content: space-between;
   align-items: center;
+}
+
+/* alert styling */
+
+.errorAlert {
+  top: -50px;
+  z-index: 1;
+  gap: 12px;
+}
+
+.alertCloseButton {
+  color: var(--base-ink) !important;
 }
 
 /* file input styling */
@@ -86,12 +98,15 @@
 }
 
 .fileUploadPreviewsContainer {
-  background: pink;
-  width: 100%;
-  height: fit-content
+  height: fit-content;
 }
 
 .fileUploadPreview {
-  background: #E8F5FF;
+  height: 3rem;
+  border-radius: 0.25rem;
+  text-align: center;
+  justify-content:center;
+  display:inline-flex;
+  background: var(--primary-lightest) !important;
   text-overflow: ellipsis;
 }

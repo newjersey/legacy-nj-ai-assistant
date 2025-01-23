@@ -183,16 +183,27 @@ export const QuestionInput = ({ onSend, disabled, placeholder, clearOnSend, conv
     }
   }
 
-  const sendQuestionDisabled = disabled || !question.trim()
+  const formatFileName = (fileName: string) => {
+    if (fileName.length < 20) {
+      return fileName;
+    }
+
+    return `${fileName.substring(0,9)}...${fileName.substring(fileName.length - 9)}`
+  }
 
   return (
     <div className={`flex-wrap flex-column ${styles.questionInputContainer}`}>
       {inputError && (
         <div
-          className={`usa-alert usa-alert--error usa-alert--slim line-height-sans-5 width-full padding-y-0 position-absolute display-flex ${styles.errorText}`}>
+          className={`usa-alert usa-alert--error usa-alert--slim line-height-sans-5 width-full padding-y-0 position-absolute display-flex flex-justify ${styles.errorAlert}`}>
           <div className="usa-alert__body">
             <p className="usa-alert__text maxw-none">{inputError}</p>
           </div>
+          <button className={`usa-button usa-button--unstyled margin-right-1 ${styles.alertCloseButton}`} onClick={e => setInputError('')}>
+            <svg className="usa-icon" aria-hidden="true" focusable="false" role="img">
+              <use xlinkHref={icons + '#close'}></use>
+            </svg>
+          </button>
         </div>
       )}
       <textarea
@@ -202,15 +213,15 @@ export const QuestionInput = ({ onSend, disabled, placeholder, clearOnSend, conv
         onChange={e => setQuestion(e.target.value)}
         onKeyDown={onEnterPress}
         aria-label="Type a question"></textarea>
-      <div className={`display-flex ${styles.fileUploadPreviewsContainer}`}>
+      <div className={`display-flex margin-x-2 margin-bottom-05 ${styles.fileUploadPreviewsContainer}`}>
         {selectedFile && (
-          <div className={`usa-button ${styles.fileUploadPreview}`}>
+          <div className={`text-black flex-align-center padding-x-05 ${styles.fileUploadPreview}`}>
             <svg className="usa-icon margin-right-05" aria-hidden="true" focusable="false" role="img">
               <use xlinkHref={icons + '#image'}></use>
             </svg>
-            <p>{selectedFile.name}</p>
-            <button onClick={e => setSelectedFile(null)}>
-              <svg className="usa-icon margin-right-05" aria-hidden="true" focusable="false" role="img">
+            <p className={`margin-top-0`}>{formatFileName(selectedFile.name)}</p>
+            <button className={`usa-button usa-button--unstyled`} onClick={e => setSelectedFile(null)}>
+              <svg className="usa-icon" aria-hidden="true" focusable="false" role="img">
                 <use xlinkHref={icons + '#close'}></use>
               </svg>
             </button>
@@ -239,7 +250,7 @@ export const QuestionInput = ({ onSend, disabled, placeholder, clearOnSend, conv
           />
         </div>
         <div
-          className={`usa-button ${styles.questionInputSendButtonContainer}`}
+          className={`usa-button margin-right-0 ${styles.questionInputSendButtonContainer}`}
           role="button"
           tabIndex={0}
           aria-label="Ask question button"
