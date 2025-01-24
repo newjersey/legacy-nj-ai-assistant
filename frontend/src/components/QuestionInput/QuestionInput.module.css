@@ -82,7 +82,7 @@
   gap: 12px;
 }
 
-.alertCloseButton {
+.closeButton {
   color: var(--base-ink) !important;
 }
 
@@ -103,10 +103,10 @@
 
 .fileUploadPreview {
   height: 3rem;
+  min-width: 176px;
   border-radius: 0.25rem;
   text-align: center;
-  justify-content:center;
+  justify-content:space-between;
   display:inline-flex;
   background: var(--primary-lightest) !important;
-  text-overflow: ellipsis;
 }
