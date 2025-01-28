@@ -85,10 +85,14 @@ const Chat = () => {
   const [ASSISTANT, TOOL, ERROR] = ['assistant', 'tool', 'error']
   const NO_CONTENT_ERROR = 'No content in messages object.'
 
+  const isCosmosDbConfigured = () => {
+    return appStateContext?.state.isCosmosDBAvailable?.status !== CosmosDBStatus.NotConfigured
+  }
+
   useEffect(() => {
     if (
       appStateContext?.state.isCosmosDBAvailable?.status !== CosmosDBStatus.Working &&
-      isCosmoDbConfigured() &&
+      isCosmosDbConfigured() &&
       appStateContext?.state.chatHistoryLoadingState === ChatHistoryLoadingState.Fail &&
       hideErrorDialog
     ) {
@@ -764,10 +768,6 @@ const Chat = () => {
     )
   }
 
-  const isCosmoDbConfigured = () => {
-    return appStateContext?.state.isCosmosDBAvailable?.status !== CosmosDBStatus.NotConfigured
-  }
-
   return (
     <div className={styles.container} role="main">
       {showAuthMessage ? (
@@ -901,7 +901,7 @@ const Chat = () => {
                 </Stack>
               )}
               <Stack>
-                {isCosmoDbConfigured() && (
+                {isCosmosDbConfigured() && (
                   <CommandBarButton
                     role="button"
                     styles={{
@@ -929,12 +929,12 @@ const Chat = () => {
                 )}
                 <button
                   className={`usa-button width-7 display-flex flex-row flex-justify-center flex-align-center position-absolute ${
-                    isCosmoDbConfigured() ? styles.clearChatBroom : ''
+                    isCosmosDbConfigured() ? styles.clearChatCosmosConfigured : ''
                   } ${styles.chatHistoryButton}`}
-                  onClick={isCosmoDbConfigured() ? clearChat : newChat}
+                  onClick={isCosmosDbConfigured() ? clearChat : newChat}
                   aria-label="clear chat button">
                   <svg className="usa-icon margin-right-05" aria-hidden="true" focusable="false" role="img">
-                    <use xlinkHref={icons + '#history'}></use>
+                    <use href={`${icons}#history`} />
                   </svg>
                 </button>
                 <Dialog
@@ -1059,7 +1059,7 @@ const Chat = () => {
               </Stack>
             </Stack.Item>
           )}
-          {appStateContext?.state.isChatHistoryOpen && isCosmoDbConfigured() && <ChatHistoryPanel />}
+          {appStateContext?.state.isChatHistoryOpen && isCosmosDbConfigured() && <ChatHistoryPanel />}
         </Stack>
       )}
     </div>

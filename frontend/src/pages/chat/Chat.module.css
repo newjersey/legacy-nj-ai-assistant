@@ -167,10 +167,9 @@
   z-index: 1;
 }
 
-.clearChatBroom {
+.clearChatCosmosConfigured {
   top: 13px !important;
   left: none !important;
-
 }
 
 .newChatIcon {
@@ -362,11 +361,7 @@ a {
     left: 0px;
   }
 
-  .clearChatBroom {
-    left: 0px;
-  }
-
-  .clearChatBroomNoCosmos {
+  .clearChatCosmosConfigured {
     left: 0px;
   }
 

@@ -142,10 +142,6 @@ export const QuestionInput = ({ onSend, disabled, placeholder, clearOnSend, conv
     }
   }
 
-  const onQuestionChange = (_ev: React.FormEvent<HTMLInputElement | HTMLTextAreaElement>, newValue?: string) => {
-    setQuestion(newValue || '')
-  }
-
   const onFileChange = (event: React.ChangeEvent<HTMLInputElement>) => {
     const file = event.target.files?.[0]
 
@@ -205,7 +201,7 @@ export const QuestionInput = ({ onSend, disabled, placeholder, clearOnSend, conv
             aria-label="Close error alert"
             onClick={e => setInputError('')}>
             <svg className="usa-icon" aria-hidden="true" focusable="false" role="img">
-              <use xlinkHref={icons + '#close'}></use>
+              <use href={`${icons}#close`}/>
             </svg>
           </button>
         </div>
@@ -224,7 +220,7 @@ export const QuestionInput = ({ onSend, disabled, placeholder, clearOnSend, conv
             className={`text-black flex-align-center padding-x-1 ${styles.fileUploadPreview}`}
             data-testid={`filePreview-${selectedFile.name}`}>
             <svg className="usa-icon margin-right-05" aria-hidden="true" focusable="false" role="img">
-              <use xlinkHref={icons + '#image'}></use>
+              <use href={`${icons}#image`}/>
             </svg>
             <p className={`margin-top-0 font-sans-3xs`}>{formatFileName(selectedFile.name)}</p>
             <button
@@ -232,7 +228,7 @@ export const QuestionInput = ({ onSend, disabled, placeholder, clearOnSend, conv
               aria-label="Remove file upload"
               onClick={e => setSelectedFile(null)}>
               <svg className="usa-icon" aria-hidden="true" focusable="false" role="img">
-                <use xlinkHref={icons + '#close'}></use>
+                <use href={`${icons}#close`}/>
               </svg>
             </button>
           </div>
@@ -244,7 +240,7 @@ export const QuestionInput = ({ onSend, disabled, placeholder, clearOnSend, conv
             htmlFor="file-upload"
             className={`usa-button usa-button--unstyled text-no-underline ${styles.fileInputLabel}`}>
             <svg className="usa-icon margin-right-05" aria-hidden="true" focusable="false" role="img">
-              <use xlinkHref={icons + '#attach_file'}></use>
+              <use href={`${icons}#attach_file`}/>
             </svg>
             Upload files
           </label>
@@ -255,7 +251,7 @@ export const QuestionInput = ({ onSend, disabled, placeholder, clearOnSend, conv
             accept={(Object.values(ACCEPTED_FILE_TYPES) as string[]).join(',')}
             onChange={onFileChange}
             disabled={disabled}
-            className={`${styles.fileInput}`}
+            className={styles.fileInput}
             aria-label="Upload file"
           />
         </div>
@@ -267,7 +263,7 @@ export const QuestionInput = ({ onSend, disabled, placeholder, clearOnSend, conv
           onClick={sendQuestion}
           onKeyDown={e => (e.key === 'Enter' || e.key === ' ' ? sendQuestion() : null)}>
           <svg className="usa-icon" aria-hidden="true" focusable="false" role="img">
-            <use xlinkHref={icons + '#send'}></use>
+            <use href={`${icons}#send`}/>
           </svg>
         </div>
       </div>

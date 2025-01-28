@@ -168,6 +168,29 @@ describe('Test file upload previews', () => {
     jest.clearAllMocks()
   })
 
+  it('displays the file upload preview when a file is uploaded', async () => {
+    const uploadedFile = createMockFile('jpg', ACCEPTED_FILE_TYPES.JPEG)
+
+    const { container } = render(
+      <QuestionInput
+        onSend={() => {}}
+        disabled={false}
+        placeholder={'placeholder'}
+        conversationId={undefined}
+        clearOnSend={false}
+      />
+    )
+
+    await act(async () => {
+      uploadFile(uploadedFile)
+    })
+
+    const fileUploadPreview = screen.getByTestId(`filePreview-${uploadedFile.name}`)
+    expect(fileUploadPreview).toBeInTheDocument()
+
+    expect(await axe(container)).toHaveNoViolations()
+  })
+
   it('removes the file upload preview when the close button is clicked', async () => {
     const uploadedFile = createMockFile('jpg', ACCEPTED_FILE_TYPES.JPEG)
 
@@ -199,8 +222,7 @@ describe('Test file upload previews', () => {
   })
 
   it('shows a file upload preview with a correctly abbreviated name when a file with a very long name is uploaded', async () => {
-    const expectedFilename = 'veryveryveryveryverylongname.jpg'
-    const expectedFilenamePreview = `${expectedFilename.substring(0, 9)}...${expectedFilename.substring(expectedFilename.length - 9)}`
+    const expectedFilename = 'veryveryv...gname.jpg'
 
     const uploadedFile = createMockFile('jpg', ACCEPTED_FILE_TYPES.JPEG)
     Object.defineProperty(uploadedFile, 'name', { value: expectedFilename })
@@ -219,7 +241,7 @@ describe('Test file upload previews', () => {
       uploadFile(uploadedFile)
     })
 
-    const fileUploadPreview = screen.queryByText(`${expectedFilenamePreview}`)
+    const fileUploadPreview = screen.queryByText(`${expectedFilename}`)
     expect(fileUploadPreview).toBeInTheDocument()
 
     expect(await axe(container)).toHaveNoViolations()
@@ -227,6 +249,31 @@ describe('Test file upload previews', () => {
 })
 
 describe('Test error alerts', () => {
+  it('displays an error alert when there is an error uploading a file', async () => {
+    const uploadedFile = createMockFile('fakeExtension', 'invalid/filetype')
+
+    const { container } = render(
+      <QuestionInput
+        onSend={() => {}}
+        disabled={false}
+        placeholder={'placeholder'}
+        conversationId={undefined}
+        clearOnSend={false}
+      />
+    )
+
+    await act(async () => {
+      uploadFile(uploadedFile)
+      inputChatMessage()
+      submitChatMessage()
+    })
+
+    const inputError = screen.getByTestId('errorAlert')
+    expect(inputError).toBeInTheDocument()
+
+    expect(await axe(container)).toHaveNoViolations()
+  })
+
   it('removes the error alert when the close button is clicked', async () => {
     const uploadedFile = createMockFile('fakeExtension', 'invalid/filetype')
 
@@ -246,7 +293,7 @@ describe('Test error alerts', () => {
       submitChatMessage()
     })
 
-    const inputError = screen.getByTestId(`errorAlert`)
+    const inputError = screen.getByTestId('errorAlert')
     expect(inputError).toBeInTheDocument()
 
     const inputErrorCloseButton = within(inputError!).getByRole('button')
