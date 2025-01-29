@@ -1,15 +1,11 @@
 import { useRef, useState } from 'react'
-import { Stack, TextField } from '@fluentui/react'
-import { SendRegular } from '@fluentui/react-icons'
 import pdfToText from 'react-pdftotext'
 import { extractRawText } from 'mammoth'
-
-import Send from '../../assets/Send.svg'
 
 import styles from './QuestionInput.module.css'
 import { ACCEPTED_FILE_TYPES, UploadedFile, isImageFile } from '../../custom/fileUploadUtils'
 import { logEvent } from '../../custom/logEvent'
-import InfoIcon from '../../assets/info.svg'
+import icons from '@newjersey/njwds/dist/img/sprite.svg'
 
 interface Props {
   onSend: (question: string, id?: string, uploadedFile?: UploadedFile) => void
@@ -146,10 +142,6 @@ export const QuestionInput = ({ onSend, disabled, placeholder, clearOnSend, conv
     }
   }
 
-  const onQuestionChange = (_ev: React.FormEvent<HTMLInputElement | HTMLTextAreaElement>, newValue?: string) => {
-    setQuestion(newValue || '')
-  }
-
   const onFileChange = (event: React.ChangeEvent<HTMLInputElement>) => {
     const file = event.target.files?.[0]
 
@@ -187,33 +179,75 @@ export const QuestionInput = ({ onSend, disabled, placeholder, clearOnSend, conv
     }
   }
 
-  const sendQuestionDisabled = disabled || !question.trim()
+  const formatFileName = (fileName: string) => {
+    if (fileName.length < 20) {
+      return fileName
+    }
+
+    return `${fileName.substring(0, 9)}...${fileName.substring(fileName.length - 9)}`
+  }
 
   return (
-    <Stack horizontal={false} className={styles.questionInputContainer} wrap={true}>
+    <div className={`flex-wrap flex-column ${styles.questionInputContainer}`}>
       {inputError && (
-        <div className={styles.errorText}>
-          <img src={InfoIcon} alt="" />
-          {inputError}
+        <div
+          className={`usa-alert usa-alert--error usa-alert--slim line-height-sans-5 width-full padding-y-0 position-absolute display-flex flex-justify ${styles.errorAlert}`}
+          data-testId="errorAlert">
+          <div className="usa-alert__body">
+            <p className="usa-alert__text maxw-none">{inputError}</p>
+          </div>
+          <button
+            className={`usa-button usa-button--unstyled margin-right-1 ${styles.closeButton}`}
+            aria-label="Close error alert"
+            onClick={e => setInputError('')}>
+            <svg className="usa-icon" aria-hidden="true" focusable="false" role="img">
+              <use href={`${icons}#close`}/>
+            </svg>
+          </button>
         </div>
       )}
-      <TextField
-        className={styles.questionInputTextArea}
+      <textarea
+        className={`usa-textarea maxw-none border-0 padding-x-205 height-auto minh-9 ${styles.questionInputTextArea}`}
         placeholder={placeholder}
-        multiline
-        resizable={false}
-        borderless
         value={question}
-        onChange={onQuestionChange}
+        onChange={e => setQuestion(e.target.value)}
         onKeyDown={onEnterPress}
-        ariaLabel="Type a question"
-        inputClassName={styles.textAreaOverrides}
-      />
-      <div className={styles.questionInputChatButtons}>
+        aria-label="Type a question"></textarea>
+
+      <div className={`display-flex margin-x-2 margin-bottom-05 ${styles.fileUploadPreviewsContainer}`}>
+        {selectedFile && (
+          <div
+            className={`text-black flex-align-center padding-x-1 ${styles.fileUploadPreview}`}
+            data-testid={`filePreview-${selectedFile.name}`}>
+            <svg className="usa-icon margin-right-05" aria-hidden="true" focusable="false" role="img">
+              <use href={`${icons}#image`}/>
+            </svg>
+            <p className={`margin-top-0 font-sans-3xs`}>{formatFileName(selectedFile.name)}</p>
+            <button
+              className={`usa-button usa-button--unstyled ${styles.closeButton}`}
+              aria-label="Remove file upload"
+              onClick={e => setSelectedFile(null)}>
+              <svg className="usa-icon" aria-hidden="true" focusable="false" role="img">
+                <use href={`${icons}#close`}/>
+              </svg>
+            </button>
+          </div>
+        )}
+      </div>
+      <div className={`display-flex margin-bottom-3 width-full padding-x-2 ${styles.questionInputChatButtons}`}>
         <div>
+          <label
+            htmlFor="file-upload"
+            className={`usa-button usa-button--unstyled text-no-underline ${styles.fileInputLabel}`}>
+            <svg className="usa-icon margin-right-05" aria-hidden="true" focusable="false" role="img">
+              <use href={`${icons}#attach_file`}/>
+            </svg>
+            Upload files
+          </label>
           <input
             ref={fileInputRef}
             type="file"
+            id="file-upload"
             accept={(Object.values(ACCEPTED_FILE_TYPES) as string[]).join(',')}
             onChange={onFileChange}
             disabled={disabled}
@@ -222,20 +256,21 @@ export const QuestionInput = ({ onSend, disabled, placeholder, clearOnSend, conv
           />
         </div>
         <div
-          className={styles.questionInputSendButtonContainer}
+          className="usa-button margin-right-0"
+          id={styles.questionInputSendButtonContainer}
           role="button"
           tabIndex={0}
           aria-label="Ask question button"
           onClick={sendQuestion}
           onKeyDown={e => (e.key === 'Enter' || e.key === ' ' ? sendQuestion() : null)}>
-          {sendQuestionDisabled ? (
-            <SendRegular className={styles.questionInputSendButtonDisabled} />
-          ) : (
-            <img src={Send} className={styles.questionInputSendButton} alt="Send Button" />
-          )}
+          <svg className="usa-icon" aria-hidden="true" focusable="false" role="img">
+            <use href={`${icons}#send`}/>
+          </svg>
         </div>
       </div>
-      <div className={styles.questionInputBottomBorder} />
-    </Stack>
+      <hr
+        className={`margin-bottom-0 position-absolute width-full bottom-0 left-0 border-0 ${styles.questionInputBottomBorder}`}
+      />
+    </div>
   )
 }

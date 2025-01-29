@@ -14,6 +14,7 @@ import { nord } from 'react-syntax-highlighter/dist/esm/styles/prism'
 import styles from './Chat.module.css'
 import Contoso from '../../assets/Contoso.svg'
 import { XSSAllowTags } from '../../constants/sanatizeAllowables'
+import icons from '@newjersey/njwds/dist/img/sprite.svg'
 
 import {
   ChatMessage,
@@ -84,10 +85,14 @@ const Chat = () => {
   const [ASSISTANT, TOOL, ERROR] = ['assistant', 'tool', 'error']
   const NO_CONTENT_ERROR = 'No content in messages object.'
 
+  const isCosmosDbConfigured = () => {
+    return appStateContext?.state.isCosmosDBAvailable?.status !== CosmosDBStatus.NotConfigured
+  }
+
   useEffect(() => {
     if (
       appStateContext?.state.isCosmosDBAvailable?.status !== CosmosDBStatus.Working &&
-      appStateContext?.state.isCosmosDBAvailable?.status !== CosmosDBStatus.NotConfigured &&
+      isCosmosDbConfigured() &&
       appStateContext?.state.chatHistoryLoadingState === ChatHistoryLoadingState.Fail &&
       hideErrorDialog
     ) {
@@ -763,6 +768,13 @@ const Chat = () => {
     )
   }
 
+  const additionalClearChatStyles = (): string => {
+    if (isCosmosDbConfigured()) {
+      return styles.clearChatCosmosConfigured
+    }
+    return ''
+  }
+
   return (
     <div className={styles.container} role="main">
       {showAuthMessage ? (
@@ -896,7 +908,7 @@ const Chat = () => {
                 </Stack>
               )}
               <Stack>
-                {appStateContext?.state.isCosmosDBAvailable?.status !== CosmosDBStatus.NotConfigured && (
+                {isCosmosDbConfigured() && (
                   <CommandBarButton
                     role="button"
                     styles={{
@@ -922,38 +934,15 @@ const Chat = () => {
                     aria-label="start a new chat button"
                   />
                 )}
-                <CommandBarButton
-                  role="button"
-                  styles={{
-                    icon: {
-                      color: '#FFFFFF'
-                    },
-                    iconDisabled: {
-                      color: '#BDBDBD !important'
-                    },
-                    root: {
-                      color: '#FFFFFF',
-                      background:
-                        'radial-gradient(109.81% 107.82% at 100.1% 90.19%, #0F6CBD 33.63%, #2D87C3 70.31%, #8DDDD8 100%)'
-                    },
-                    rootDisabled: {
-                      background: '#F0F0F0'
-                    }
-                  }}
-                  className={
-                    appStateContext?.state.isCosmosDBAvailable?.status !== CosmosDBStatus.NotConfigured
-                      ? styles.clearChatBroom
-                      : styles.clearChatBroomNoCosmos
-                  }
-                  iconProps={{ iconName: 'Broom' }}
-                  onClick={
-                    appStateContext?.state.isCosmosDBAvailable?.status !== CosmosDBStatus.NotConfigured
-                      ? clearChat
-                      : newChat
-                  }
-                  disabled={disabledButton()}
-                  aria-label="clear chat button"
-                />
+                <button
+                  className={`usa-button width-7 display-flex flex-row flex-justify-center flex-align-center position-absolute ${additionalClearChatStyles}`}
+                  id={styles.chatHistoryButton}
+                  onClick={isCosmosDbConfigured() ? clearChat : newChat}
+                  aria-label="clear chat button">
+                  <svg className="usa-icon margin-right-05" aria-hidden="true" focusable="false" role="img">
+                    <use href={`${icons}#history`} />
+                  </svg>
+                </button>
                 <Dialog
                   hidden={hideErrorDialog}
                   onDismiss={handleErrorDialogClose}
@@ -1076,8 +1065,7 @@ const Chat = () => {
               </Stack>
             </Stack.Item>
           )}
-          {appStateContext?.state.isChatHistoryOpen &&
-            appStateContext?.state.isCosmosDBAvailable?.status !== CosmosDBStatus.NotConfigured && <ChatHistoryPanel />}
+          {appStateContext?.state.isChatHistoryOpen && isCosmosDbConfigured() && <ChatHistoryPanel />}
         </Stack>
       )}
     </div>

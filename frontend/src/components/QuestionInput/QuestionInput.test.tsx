@@ -1,4 +1,4 @@
-import { render, screen, fireEvent, act } from '@testing-library/react'
+import { render, screen, fireEvent, act, within } from '@testing-library/react'
 import '@testing-library/jest-dom'
 import { ACCEPTED_FILE_TYPES } from '../../custom/fileUploadUtils'
 import { QuestionInput } from './QuestionInput'
@@ -137,29 +137,172 @@ describe('Test uploading files', () => {
     ['pdf', ACCEPTED_FILE_TYPES.PDF]
   ])(
     'displays an error if a non-image file with extension .%s that exceeds the maximum upload size is added',
-      async (extension: string, fileType: ACCEPTED_FILE_TYPES) => {
-        const uploadedFile = createMockFile(extension, fileType, 51)
+    async (extension: string, fileType: ACCEPTED_FILE_TYPES) => {
+      const uploadedFile = createMockFile(extension, fileType, 51)
 
-        const { container } = render(
-          <QuestionInput
-            onSend={() => {}}
-            disabled={false}
-            placeholder={'placeholder'}
-            conversationId={undefined}
-            clearOnSend={false}
-          />
-        )
+      const { container } = render(
+        <QuestionInput
+          onSend={() => {}}
+          disabled={false}
+          placeholder={'placeholder'}
+          conversationId={undefined}
+          clearOnSend={false}
+        />
+      )
 
-        await act(async () => {
-          uploadFile(uploadedFile)
-        })
+      await act(async () => {
+        uploadFile(uploadedFile)
+      })
 
-        const inputError = screen.queryByText(/File size of non-image attachments cannot exceed 50 MB/i)
+      const inputError = screen.queryByText(/File size of non-image attachments cannot exceed 50 MB/i)
 
-        expect(inputError).toBeInTheDocument()
+      expect(inputError).toBeInTheDocument()
 
-        expect(await axe(container)).toHaveNoViolations()
-      }
-    
+      expect(await axe(container)).toHaveNoViolations()
+    }
   )
+})
+
+describe('Test file upload previews', () => {
+  afterEach(() => {
+    jest.clearAllMocks()
+  })
+
+  it('displays the file upload preview when a file is uploaded', async () => {
+    const uploadedFile = createMockFile('jpg', ACCEPTED_FILE_TYPES.JPEG)
+
+    const { container } = render(
+      <QuestionInput
+        onSend={() => {}}
+        disabled={false}
+        placeholder={'placeholder'}
+        conversationId={undefined}
+        clearOnSend={false}
+      />
+    )
+
+    await act(async () => {
+      uploadFile(uploadedFile)
+    })
+
+    const fileUploadPreview = screen.getByTestId(`filePreview-${uploadedFile.name}`)
+    expect(fileUploadPreview).toBeInTheDocument()
+
+    expect(await axe(container)).toHaveNoViolations()
+  })
+
+  it('removes the file upload preview when the close button is clicked', async () => {
+    const uploadedFile = createMockFile('jpg', ACCEPTED_FILE_TYPES.JPEG)
+
+    const { container } = render(
+      <QuestionInput
+        onSend={() => {}}
+        disabled={false}
+        placeholder={'placeholder'}
+        conversationId={undefined}
+        clearOnSend={false}
+      />
+    )
+
+    await act(async () => {
+      uploadFile(uploadedFile)
+    })
+
+    const fileUploadPreview = screen.getByTestId(`filePreview-${uploadedFile.name}`)
+    expect(fileUploadPreview).toBeInTheDocument()
+
+    const fileUploadPreviewCloseButton = within(fileUploadPreview!).getByRole('button')
+    expect(fileUploadPreviewCloseButton).toBeInTheDocument()
+
+    fireEvent.click(fileUploadPreviewCloseButton)
+
+    expect(fileUploadPreview).not.toBeInTheDocument()
+
+    expect(await axe(container)).toHaveNoViolations()
+  })
+
+  it('shows a file upload preview with a correctly abbreviated name when a file with a very long name is uploaded', async () => {
+    const expectedFilename = 'veryveryv...gname.jpg'
+
+    const uploadedFile = createMockFile('jpg', ACCEPTED_FILE_TYPES.JPEG)
+    Object.defineProperty(uploadedFile, 'name', { value: expectedFilename })
+
+    const { container } = render(
+      <QuestionInput
+        onSend={() => {}}
+        disabled={false}
+        placeholder={'placeholder'}
+        conversationId={undefined}
+        clearOnSend={false}
+      />
+    )
+
+    await act(async () => {
+      uploadFile(uploadedFile)
+    })
+
+    const fileUploadPreview = screen.queryByText(expectedFilename)
+    expect(fileUploadPreview).toBeInTheDocument()
+
+    expect(await axe(container)).toHaveNoViolations()
+  })
+})
+
+describe('Test error alerts', () => {
+  it('displays an error alert when there is an error uploading a file', async () => {
+    const uploadedFile = createMockFile('fakeExtension', 'invalid/filetype')
+
+    const { container } = render(
+      <QuestionInput
+        onSend={() => {}}
+        disabled={false}
+        placeholder={'placeholder'}
+        conversationId={undefined}
+        clearOnSend={false}
+      />
+    )
+
+    await act(async () => {
+      uploadFile(uploadedFile)
+      inputChatMessage()
+      submitChatMessage()
+    })
+
+    const inputError = screen.getByTestId('errorAlert')
+    expect(inputError).toBeInTheDocument()
+
+    expect(await axe(container)).toHaveNoViolations()
+  })
+
+  it('removes the error alert when the close button is clicked', async () => {
+    const uploadedFile = createMockFile('fakeExtension', 'invalid/filetype')
+
+    const { container } = render(
+      <QuestionInput
+        onSend={() => {}}
+        disabled={false}
+        placeholder={'placeholder'}
+        conversationId={undefined}
+        clearOnSend={false}
+      />
+    )
+
+    await act(async () => {
+      uploadFile(uploadedFile)
+      inputChatMessage()
+      submitChatMessage()
+    })
+
+    const inputError = screen.getByTestId('errorAlert')
+    expect(inputError).toBeInTheDocument()
+
+    const inputErrorCloseButton = within(inputError!).getByRole('button')
+    expect(inputErrorCloseButton).toBeInTheDocument()
+
+    fireEvent.click(inputErrorCloseButton)
+
+    expect(inputError).not.toBeInTheDocument()
+
+    expect(await axe(container)).toHaveNoViolations()
+  })
 })

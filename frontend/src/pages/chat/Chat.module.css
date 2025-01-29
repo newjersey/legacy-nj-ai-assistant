@@ -2,6 +2,7 @@
   flex: 1;
   display: flex;
   flex-direction: column;
+  background: #f2f2f2;
 }
 
 .chatRoot {
@@ -148,40 +149,27 @@
   padding-right: 24px;
   width: calc(100% - 140px);
   max-width: 1028px;
-  margin-bottom: 50px;
+  margin-bottom: 20px;
   margin-top: 8px;
 }
 
-.clearChatBroom {
+#chatHistoryButton {
+  background: radial-gradient(
+    109.81% 107.82% at 100.1% 90.19%,
+    #0f6cbd 33.63%,
+    #2d87c3 70.31%,
+    #8dddd8 100%
+  );
   box-sizing: border-box;
-  display: flex;
-  flex-direction: row;
-  justify-content: center;
-  align-items: center;
-  position: absolute;
-  width: 40px;
+  left: -15px;
+  top: 66px;
   height: 40px;
-  left: 7px;
-  top: 13px;
-  color: #ffffff;
-  border-radius: 4px;
   z-index: 1;
 }
 
-.clearChatBroomNoCosmos {
-  box-sizing: border-box;
-  display: flex;
-  flex-direction: row;
-  justify-content: center;
-  align-items: center;
-  position: absolute;
-  width: 40px;
-  height: 40px;
-  left: 7px;
-  top: 66px;
-  color: #ffffff;
-  border-radius: 4px;
-  z-index: 1;
+.clearChatCosmosConfigured {
+  top: 13px !important;
+  left: none !important;
 }
 
 .newChatIcon {
@@ -373,11 +361,7 @@ a {
     left: 0px;
   }
 
-  .clearChatBroom {
-    left: 0px;
-  }
-
-  .clearChatBroomNoCosmos {
+  .clearChatCosmosConfigured {
     left: 0px;
   }
 
