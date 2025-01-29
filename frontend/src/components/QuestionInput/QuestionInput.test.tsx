@@ -211,14 +211,14 @@ describe('Test file upload previews', () => {
     const fileUploadPreview = screen.getByTestId(`filePreview-${uploadedFile.name}`)
     expect(fileUploadPreview).toBeInTheDocument()
 
-    expect(await axe(container)).toHaveNoViolations()
-
     const fileUploadPreviewCloseButton = within(fileUploadPreview!).getByRole('button')
     expect(fileUploadPreviewCloseButton).toBeInTheDocument()
 
     fireEvent.click(fileUploadPreviewCloseButton)
 
     expect(fileUploadPreview).not.toBeInTheDocument()
+
+    expect(await axe(container)).toHaveNoViolations()
   })
 
   it('shows a file upload preview with a correctly abbreviated name when a file with a very long name is uploaded', async () => {
@@ -241,7 +241,7 @@ describe('Test file upload previews', () => {
       uploadFile(uploadedFile)
     })
 
-    const fileUploadPreview = screen.queryByText(`${expectedFilename}`)
+    const fileUploadPreview = screen.queryByText(expectedFilename)
     expect(fileUploadPreview).toBeInTheDocument()
 
     expect(await axe(container)).toHaveNoViolations()
