@@ -18,30 +18,23 @@
   border-radius: 8px;
 }
 
-.questionInputTextArea {
+textarea.questionInputTextArea {
   line-height: 40px;
   padding-top: 10px;
   padding-bottom: 10px;
-  resize: none !important;
-  outline: none !important;
+  resize: none;
+  outline: none;
 }
 
-.questionInputSendButtonContainer {
+#questionInputSendButtonContainer {
   z-index: 2;
-  height: 2.5rem !important;
+  height: 2.5rem;
 }
 
 .questionInputSendButton {
   width: 24px;
   height: 23px;
   cursor: pointer;
-}
-
-.questionInputSendButtonDisabled {
-  width: 24px;
-  height: 23px;
-  background: none;
-  color: #424242;
 }
 
 .questionInputBottomBorder {
@@ -65,10 +58,6 @@
   }
 }
 
-.textAreaOverrides {
-  font-size: 16px !important;
-}
-
 .questionInputChatButtons {
   justify-content: space-between;
   align-items: center;
@@ -82,15 +71,15 @@
   gap: 12px;
 }
 
-.closeButton {
-  color: var(--base-ink) !important;
+button.closeButton {
+  color: var(--base-ink);
 }
 
 /* file input styling */
 
-.fileInputLabel {
+label.fileInputLabel {
   z-index: 1;
-  outline: none !important;
+  outline: none;
 }
 
 .fileInput {
@@ -101,12 +90,12 @@
   height: fit-content;
 }
 
-.fileUploadPreview {
+div.fileUploadPreview {
   height: 3rem;
   min-width: 176px;
   border-radius: 0.25rem;
   text-align: center;
   justify-content:space-between;
   display:inline-flex;
-  background: var(--primary-lightest) !important;
+  background: var(--primary-lightest);
 }

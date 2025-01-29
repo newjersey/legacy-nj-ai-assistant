@@ -256,7 +256,8 @@ export const QuestionInput = ({ onSend, disabled, placeholder, clearOnSend, conv
           />
         </div>
         <div
-          className={`usa-button margin-right-0 ${styles.questionInputSendButtonContainer}`}
+          className="usa-button margin-right-0"
+          id={styles.questionInputSendButtonContainer}
           role="button"
           tabIndex={0}
           aria-label="Ask question button"

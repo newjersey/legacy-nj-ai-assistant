@@ -768,6 +768,13 @@ const Chat = () => {
     )
   }
 
+  const additionalClearChatStyles = (): string => {
+    if (isCosmosDbConfigured()) {
+      return styles.clearChatCosmosConfigured
+    }
+    return ''
+  }
+
   return (
     <div className={styles.container} role="main">
       {showAuthMessage ? (
@@ -928,9 +935,8 @@ const Chat = () => {
                   />
                 )}
                 <button
-                  className={`usa-button width-7 display-flex flex-row flex-justify-center flex-align-center position-absolute ${
-                    isCosmosDbConfigured() ? styles.clearChatCosmosConfigured : ''
-                  } ${styles.chatHistoryButton}`}
+                  className={`usa-button width-7 display-flex flex-row flex-justify-center flex-align-center position-absolute ${additionalClearChatStyles}`}
+                  id={styles.chatHistoryButton}
                   onClick={isCosmosDbConfigured() ? clearChat : newChat}
                   aria-label="clear chat button">
                   <svg className="usa-icon margin-right-05" aria-hidden="true" focusable="false" role="img">
