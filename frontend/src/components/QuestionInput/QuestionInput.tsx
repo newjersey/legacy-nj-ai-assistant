@@ -7,6 +7,8 @@ import { ACCEPTED_FILE_TYPES, UploadedFile, isImageFile } from '../../custom/fil
 import { logEvent } from '../../custom/logEvent'
 import icons from '@newjersey/njwds/dist/img/sprite.svg'
 
+import { AlertContainer } from './AlertContainer'
+
 interface Props {
   onSend: (question: string, id?: string, uploadedFile?: UploadedFile) => void
   disabled: boolean
@@ -25,6 +27,59 @@ export const QuestionInput = ({ onSend, disabled, placeholder, clearOnSend, conv
   const [selectedFile, setSelectedFile] = useState<File | null>(null)
   const fileInputRef = useRef<HTMLInputElement | null>(null)
   const [inputError, setInputError] = useState<string>('')
+
+  const [selectedFiles, setSelectedFiles] = useState<File[]>([])
+  const [inputErrors, setInputErrors] = useState<string[]>([])
+
+  const filterUploadedFilesByFiletype = (files: FileList): File[] => {
+    const acceptedFileTypesArray = Object.values(ACCEPTED_FILE_TYPES) as string[]
+
+    const validFiles = [...files].filter(file => {
+      if (!acceptedFileTypesArray.includes(file.type)) {
+        logEvent('submit_prompt_client_error_file_type', { object_type: file.type })
+      } else {
+        return file
+      }
+    })
+
+    if (files.length !== validFiles.length) {
+      setInputErrors([
+        ...inputErrors,
+        'Only the following file types are supported: .csv, .docx, .pdf, .jpeg, .png, .gif, .bmp, .tiff. Please try a different file.'
+      ])
+    }
+
+    return validFiles
+  }
+
+  const filterUploadedFilesBySize = (files: File[]): File[] => {
+    const inputSizeErrors: string[] = []
+    const validFiles = files.filter(file => {
+      if (file.type.includes('image') && file.size > 10 * 1024 * 1024) {
+        // 10MB limit for image files
+        inputSizeErrors.push(`${file.name} exceeds 10MB and cannot be uploaded`)
+
+        console.log(inputErrors)
+        if (fileInputRef?.current?.value) {
+          fileInputRef.current.value = ''
+        }
+
+        logEvent('submit_prompt_client_error_file_size', { object_size: file.size, object_type: file.type })
+      } else if (file.size > 50 * 1024 * 1024) {
+        // 50MB limit for other filetypes
+        inputSizeErrors.push(`${file.name} exceeds 50MB and cannot be uploaded`)
+
+        if (fileInputRef?.current?.value) {
+          fileInputRef.current.value = ''
+        }
+        logEvent('submit_prompt_client_error_file_size', { object_size: file.size, object_type: file.type })
+      }
+    })
+
+    setInputErrors([...inputErrors, ...inputSizeErrors])
+
+    return validFiles
+  }
 
   const sendQuestion = async () => {
     if (disabled || !question.trim()) {
@@ -143,40 +198,52 @@ export const QuestionInput = ({ onSend, disabled, placeholder, clearOnSend, conv
   }
 
   const onFileChange = (event: React.ChangeEvent<HTMLInputElement>) => {
-    const file = event.target.files?.[0]
+    const files = event.target.files
 
-    if (file) {
-      if (!(Object.values(ACCEPTED_FILE_TYPES) as string[]).includes(file.type)) {
-        setInputError(
-          'Only the following file types are supported: .csv, .docx, .pdf, .jpeg, .png, .gif, .bmp, .tiff. Please try a different file.'
-        )
-        setSelectedFile(null)
-        if (fileInputRef?.current?.value) {
-          fileInputRef.current.value = ''
-        }
-        logEvent('submit_prompt_client_error_file_type', { object_type: file.type })
-      } else if (file.type.includes('image') && file.size > 10 * 1024 * 1024) {
-        // 10MB limit for image files
-        setInputError('File size of image attachments cannot exceed 10 MB. Please try a smaller file.')
-        setSelectedFile(null)
-        if (fileInputRef?.current?.value) {
-          fileInputRef.current.value = ''
-        }
+    if (files != null) {
+      const validFilesByFiletype = filterUploadedFilesByFiletype(files)
 
-        logEvent('submit_prompt_client_error_file_size', { object_size: file.size, object_type: file.type })
-      } else if (file.size > 50 * 1024 * 1024) {
-        // 50MB limit for other filetypes
-        setInputError('File size of non-image attachments cannot exceed 50 MB. Please try a smaller file.')
-        setSelectedFile(null)
-        if (fileInputRef?.current?.value) {
-          fileInputRef.current.value = ''
-        }
-        logEvent('submit_prompt_client_error_file_size', { object_size: file.size, object_type: file.type })
-      } else {
-        setInputError('')
-        setSelectedFile(file)
+      if (validFilesByFiletype.length === 0) {
+        return
       }
+
+      const validFilesBySize = filterUploadedFilesBySize(validFilesByFiletype)
+
+      setSelectedFiles([...selectedFiles, ...validFilesBySize])
     }
+
+    // if (file) {
+    //   if (!(Object.values(ACCEPTED_FILE_TYPES) as string[]).includes(file.type)) {
+    //     setInputError(
+    //       'Only the following file types are supported: .csv, .docx, .pdf, .jpeg, .png, .gif, .bmp, .tiff. Please try a different file.'
+    //     )
+    //     setSelectedFile(null)
+    //     if (fileInputRef?.current?.value) {
+    //       fileInputRef.current.value = ''
+    //     }
+    //     logEvent('submit_prompt_client_error_file_type', { object_type: file.type })
+    //   } else if (file.type.includes('image') && file.size > 10 * 1024 * 1024) {
+    //     // 10MB limit for image files
+    //     setInputError('File size of image attachments cannot exceed 10 MB. Please try a smaller file.')
+    //     setSelectedFile(null)
+    //     if (fileInputRef?.current?.value) {
+    //       fileInputRef.current.value = ''
+    //     }
+
+    //     logEvent('submit_prompt_client_error_file_size', { object_size: file.size, object_type: file.type })
+    //   } else if (file.size > 50 * 1024 * 1024) {
+    //     // 50MB limit for other filetypes
+    //     setInputError('File size of non-image attachments cannot exceed 50 MB. Please try a smaller file.')
+    //     setSelectedFile(null)
+    //     if (fileInputRef?.current?.value) {
+    //       fileInputRef.current.value = ''
+    //     }
+    //     logEvent('submit_prompt_client_error_file_size', { object_size: file.size, object_type: file.type })
+    //   } else {
+    //     setInputError('')
+    //     setSelectedFile(file)
+    //   }
+    // }
   }
 
   const formatFileName = (fileName: string) => {
@@ -189,7 +256,8 @@ export const QuestionInput = ({ onSend, disabled, placeholder, clearOnSend, conv
 
   return (
     <div className={`flex-wrap flex-column ${styles.questionInputContainer}`}>
-      {inputError && (
+      {inputErrors.length > 0 && <AlertContainer alerts={inputErrors} />}
+      {/* {inputError && (
         <div
           className={`usa-alert usa-alert--error usa-alert--slim line-height-sans-5 width-full padding-y-0 position-absolute display-flex flex-justify ${styles.errorAlert}`}
           data-testId="errorAlert">
@@ -201,11 +269,12 @@ export const QuestionInput = ({ onSend, disabled, placeholder, clearOnSend, conv
             aria-label="Close error alert"
             onClick={e => setInputError('')}>
             <svg className="usa-icon" aria-hidden="true" focusable="false" role="img">
-              <use href={`${icons}#close`}/>
+              <use href={`${icons}#close`} />
             </svg>
           </button>
         </div>
-      )}
+      )} */}
+
       <textarea
         className={`usa-textarea maxw-none border-0 padding-x-205 height-auto minh-9 ${styles.questionInputTextArea}`}
         placeholder={placeholder}
@@ -220,7 +289,7 @@ export const QuestionInput = ({ onSend, disabled, placeholder, clearOnSend, conv
             className={`text-black flex-align-center padding-x-1 ${styles.fileUploadPreview}`}
             data-testid={`filePreview-${selectedFile.name}`}>
             <svg className="usa-icon margin-right-05" aria-hidden="true" focusable="false" role="img">
-              <use href={`${icons}#image`}/>
+              <use href={`${icons}#image`} />
             </svg>
             <p className={`margin-top-0 font-sans-3xs`}>{formatFileName(selectedFile.name)}</p>
             <button
@@ -228,7 +297,7 @@ export const QuestionInput = ({ onSend, disabled, placeholder, clearOnSend, conv
               aria-label="Remove file upload"
               onClick={e => setSelectedFile(null)}>
               <svg className="usa-icon" aria-hidden="true" focusable="false" role="img">
-                <use href={`${icons}#close`}/>
+                <use href={`${icons}#close`} />
               </svg>
             </button>
           </div>
@@ -240,7 +309,7 @@ export const QuestionInput = ({ onSend, disabled, placeholder, clearOnSend, conv
             htmlFor="file-upload"
             className={`usa-button usa-button--unstyled text-no-underline ${styles.fileInputLabel}`}>
             <svg className="usa-icon margin-right-05" aria-hidden="true" focusable="false" role="img">
-              <use href={`${icons}#attach_file`}/>
+              <use href={`${icons}#attach_file`} />
             </svg>
             Upload files
           </label>
@@ -253,6 +322,7 @@ export const QuestionInput = ({ onSend, disabled, placeholder, clearOnSend, conv
             disabled={disabled}
             className={styles.fileInput}
             aria-label="Upload file"
+            multiple
           />
         </div>
         <div
@@ -264,7 +334,7 @@ export const QuestionInput = ({ onSend, disabled, placeholder, clearOnSend, conv
           onClick={sendQuestion}
           onKeyDown={e => (e.key === 'Enter' || e.key === ' ' ? sendQuestion() : null)}>
           <svg className="usa-icon" aria-hidden="true" focusable="false" role="img">
-            <use href={`${icons}#send`}/>
+            <use href={`${icons}#send`} />
           </svg>
         </div>
       </div>

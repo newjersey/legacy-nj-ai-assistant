@@ -37,6 +37,10 @@
   align-items: center;
 }
 
+.chatHeader {
+  background-color: pink;
+}
+
 .chatEmptyStateTitle {
   font-style: normal;
   font-weight: 700;

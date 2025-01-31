@@ -65,10 +65,18 @@ textarea.questionInputTextArea {
 
 /* alert styling */
 
-.errorAlert {
-  top: -50px;
+.errorAlertContainer {
+  bottom: 190px;
   z-index: 1;
   gap: 12px;
+  background-color:#ffffff;
+}
+
+.errorAlert {
+  /* top: -50px;
+  z-index: 1;
+  gap: 12px; */
+  outline: none;
 }
 
 button.closeButton {

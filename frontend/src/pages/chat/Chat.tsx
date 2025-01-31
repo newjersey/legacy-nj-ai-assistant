@@ -809,16 +809,18 @@ const Chat = () => {
           <div className={styles.chatContainer}>
             {!messages || messages.length < 1 ? (
               <Stack className={styles.chatEmptyState}>
-                <img
-                  src={logo}
-                  className={styles.chatIcon}
-                  aria-hidden="true"
-                  alt="Official logo for the State of New Jersey"
-                />
-                <h1 className={styles.chatEmptyStateTitle}>{ui?.chat_title}</h1>
-                <h2
-                  className={styles.chatEmptyStateSubtitle}
-                  dangerouslySetInnerHTML={{ __html: ui?.chat_description ?? '' }}></h2>
+                <div className={styles.chatHeader}>
+                  <img
+                    src={logo}
+                    className={styles.chatIcon}
+                    aria-hidden="true"
+                    alt="Official logo for the State of New Jersey"
+                  />
+                  <h1 className={styles.chatEmptyStateTitle}>{ui?.chat_title}</h1>
+                  <h2
+                    className={styles.chatEmptyStateSubtitle}
+                    dangerouslySetInnerHTML={{ __html: ui?.chat_description ?? '' }}></h2>
+                </div>
               </Stack>
             ) : (
               <div className={styles.chatMessageStream} style={{ marginBottom: isLoading ? '40px' : '0px' }} role="log">
