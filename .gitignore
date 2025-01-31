@@ -8,7 +8,9 @@ __pycache__/
 .DS_Store
 /static/assets/*
 
-# allow files matching index-*.js, index-*.js.map, and index-*.css that are needed for build
+# allow files matching sprite-*.svg, index-*.js, index-*.js.map, and index-*.css that are needed for build
 !/static/assets/index-*.js
 !/static/assets/index-*.js.map
 !/static/assets/index-*.css
+!/static/assets/sprite-*.svg
+
