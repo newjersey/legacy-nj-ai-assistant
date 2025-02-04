@@ -2,16 +2,12 @@
   flex: 1;
   display: flex;
   flex-direction: column;
-  background: #f2f2f2;
 }
 
 .chatRoot {
   flex: 1;
   display: flex;
-  margin-top: 0px;
-  margin-bottom: 5px;
-  margin-left: 20px;
-  margin-right: 20px;
+  padding: 0 20px;
   gap: 5px;
 }
 
@@ -20,13 +16,9 @@
   display: flex;
   flex-direction: column;
   align-items: center;
-  background: radial-gradient(108.78% 108.78% at 50.02% 19.78%, #ffffff 57.29%, #eef6fe 100%);
-  box-shadow:
-    0px 2px 4px rgba(0, 0, 0, 0.14),
-    0px 0px 2px rgba(0, 0, 0, 0.12);
   border-radius: 8px;
   overflow-y: auto;
-  max-height: calc(100vh - 135px);
+  max-height: calc(100vh - 312px - 20px);
 }
 
 .chatEmptyState {
@@ -73,7 +65,6 @@
   flex-grow: 1;
   max-width: 1028px;
   width: 100%;
-  overflow-y: auto;
   padding-left: 24px;
   padding-right: 24px;
   display: flex;
@@ -84,6 +75,10 @@
 .chatMessageUser {
   display: flex;
   justify-content: flex-end;
+  margin-bottom: 4px;
+}
+
+.chatMessageUser:not(:nth-last-child(2)) {
   margin-bottom: 12px;
 }
 
@@ -141,15 +136,12 @@
 }
 
 .chatInput {
-  position: sticky;
-  flex: 0 0 100px;
-  padding-top: 12px;
-  padding-bottom: 24px;
-  padding-left: 24px;
-  padding-right: 24px;
+  position: fixed;
+  bottom: calc(46px + 20px);
+  height: 176px;
   width: calc(100% - 140px);
   max-width: 1028px;
-  margin-bottom: 20px;
+  margin-bottom: 24px;
   margin-top: 8px;
 }
 
@@ -371,6 +363,16 @@ a {
 
   .citationPanel {
     max-width: 100%;
+  }
+}
+
+@media (max-width: 634px) {
+  .chatInput {
+    bottom: calc(173px + 20px)
+  }
+
+  .chatContainer {
+    max-height: calc(100vh - 425px - 20px);
   }
 }
 
