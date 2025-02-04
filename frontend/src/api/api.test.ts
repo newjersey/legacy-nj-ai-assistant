@@ -19,7 +19,7 @@ describe('Test the conversationApi function', () => {
     signal: defaultAbortSignal
   }
 
-  const createConversationRequestWithUploadedFile = (file?: UploadedFile): ConversationRequest => {
+  const createConversationRequestWithUploadedFile = (files?: UploadedFile[]): ConversationRequest => {
     return {
       messages: [
         {
@@ -27,7 +27,7 @@ describe('Test the conversationApi function', () => {
           role: 'default role',
           content: 'default content',
           date: 'default date',
-          uploaded_file: file ?? undefined
+          uploaded_files: files ?? undefined
         }
       ]
     }
@@ -54,7 +54,7 @@ describe('Test the conversationApi function', () => {
 
   it('formats content correctly when an image file is uploaded', async () => {
     const imageFile: UploadedFile = { ...defaultUploadedFile, extension: ACCEPTED_FILE_TYPES.JPEG }
-    const conversationRequest = createConversationRequestWithUploadedFile(imageFile)
+    const conversationRequest = createConversationRequestWithUploadedFile([imageFile])
 
     await conversationApi(conversationRequest, defaultAbortSignal, null)
 
@@ -66,7 +66,7 @@ describe('Test the conversationApi function', () => {
 
   it('formats content correctly when a .pdf is uploaded', async () => {
     const pdfFile: UploadedFile = { ...defaultUploadedFile, extension: ACCEPTED_FILE_TYPES.PDF }
-    const conversationRequest = createConversationRequestWithUploadedFile(pdfFile)
+    const conversationRequest = createConversationRequestWithUploadedFile([pdfFile])
 
     await conversationApi(conversationRequest, defaultAbortSignal, null)
 
@@ -78,7 +78,7 @@ describe('Test the conversationApi function', () => {
 
   it('formats content correctly when a .docx file is uploaded', async () => {
     const docxFile: UploadedFile = { ...defaultUploadedFile, extension: ACCEPTED_FILE_TYPES.DOCX }
-    const conversationRequest = createConversationRequestWithUploadedFile(docxFile)
+    const conversationRequest = createConversationRequestWithUploadedFile([docxFile])
 
     await conversationApi(conversationRequest, defaultAbortSignal, null)
 
@@ -90,7 +90,7 @@ describe('Test the conversationApi function', () => {
 
   it('formats content correctly when a .csv file is uploaded', async () => {
     const csvFile: UploadedFile = { ...defaultUploadedFile, extension: ACCEPTED_FILE_TYPES.CSV }
-    const conversationRequest = createConversationRequestWithUploadedFile(csvFile)
+    const conversationRequest = createConversationRequestWithUploadedFile([csvFile])
 
     await conversationApi(conversationRequest, defaultAbortSignal, null)
 

@@ -3,12 +3,12 @@ import { Alert } from '../../custom/alertUtils'
 
 import styles from './QuestionInput.module.css'
 
-interface Props {
+interface AlertContainerProps {
   onClose: (id: string) => void,
   alerts: Alert[]
 }
 
-export const AlertContainer = ({ onClose, alerts }: Props) => {
+export const AlertContainer = ({ onClose, alerts }: AlertContainerProps) => {
 
   return (
     <div

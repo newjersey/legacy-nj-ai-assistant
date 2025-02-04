@@ -9,9 +9,10 @@ import { logEvent } from '../../custom/logEvent'
 import icons from '@newjersey/njwds/dist/img/sprite.svg'
 
 import { AlertContainer } from './AlertContainer'
+import { FileUploadPreviewContainer } from './FileUploadPreviewContainer'
 
 interface Props {
-  onSend: (question: string, id?: string, uploadedFile?: UploadedFile) => void
+  onSend: (question: string, id?: string, uploadedFiles?: UploadedFile[]) => void
   disabled: boolean
   placeholder?: string
   clearOnSend?: boolean
@@ -25,9 +26,7 @@ function isValidLength(content: string) {
 
 export const QuestionInput = ({ onSend, disabled, placeholder, clearOnSend, conversationId }: Props) => {
   const [question, setQuestion] = useState<string>('')
-  const [selectedFile, setSelectedFile] = useState<File | null>(null)
   const fileInputRef = useRef<HTMLInputElement | null>(null)
-  // const [inputError, setInputError] = useState<string>('')
 
   const [selectedFiles, setSelectedFiles] = useState<File[]>([])
   const [inputErrors, setInputErrors] = useState<Alert[]>([])
@@ -95,9 +94,9 @@ export const QuestionInput = ({ onSend, disabled, placeholder, clearOnSend, conv
       return
     }
 
-    const send = (uploadedFile?: UploadedFile) => {
+    const send = (uploadedFiles?: UploadedFile[]) => {
       const sendInputErrors: Alert[] = []
-      if (uploadedFile != null && !isImageFile(uploadedFile) && !isValidLength(uploadedFile.contents)) {
+      if (uploadedFiles != null && !isImageFile(uploadedFiles) && !isValidLength(uploadedFile.contents)) {
         sendInputErrors.push({
           message: `File contents cannot exceed ${MAX_INPUT_LENGTH} characters. Please try a smaller file.`,
           id: `exceededFileContentCharacterLimitError-${Date.now()}`
@@ -144,133 +143,93 @@ export const QuestionInput = ({ onSend, disabled, placeholder, clearOnSend, conv
       setInputErrors([...inputErrors, ...sendInputErrors])
     }
 
-        if (selectedFile) {
-      if (selectedFile.type === ACCEPTED_FILE_TYPES.PDF) {
-        pdfToText(selectedFile)
-          .then(extractedText => {
+    if (selectedFiles.length > 0) {
+      const fileUploadInputErrors: Alert[] = []
+      const uploadedFiles: UploadedFile[] = []
+
+      selectedFiles.forEach(async selectedFile => {
+        if (selectedFile.type === ACCEPTED_FILE_TYPES.PDF) {
+          pdfToText(selectedFile)
+            .then(extractedText => {
+              if (extractedText.length === 0) {
+                fileUploadInputErrors.push({
+                  message: `Could not read text from PDF: ${selectedFile.name}. Please try uploading a different file.`,
+                  id: `${selectedFile.name}-couldNotReadText-${Date.now()}`
+                })
+              } else {
+                uploadedFiles.push({
+                  name: selectedFile.name,
+                  contents: extractedText,
+                  extension: selectedFile.type,
+                  size: selectedFile.size
+                })
+              }
+            })
+            .catch(_error => {
+              fileUploadInputErrors.push({
+                message: `Failed to upload PDF: ${selectedFile.name}. Please try uploading a different file.`,
+                id: `${selectedFile.name}-failedToUpload-${Date.now()}`
+              })
+            })
+
+          return
+        }
+
+        if (selectedFile.type === ACCEPTED_FILE_TYPES.CSV) {
+          const reader = new FileReader()
+
+          reader.onloadend = () => {
+            uploadedFiles.push({
+              name: selectedFile.name,
+              contents: reader.result as string,
+              extension: selectedFile.type,
+              size: selectedFile.size
+            })
+          }
+
+          reader.readAsText(selectedFile)
+
+          return
+        }
+
+        if (selectedFile.type === ACCEPTED_FILE_TYPES.DOCX) {
+          try {
+            const arrayBuffer = await selectedFile.arrayBuffer()
+            const extractedText = (await extractRawText({ arrayBuffer })).value
+
             if (extractedText.length === 0) {
-              setInputError('Could not read text from PDF. Please try uploading a different file.')
+              fileUploadInputErrors.push({
+                message: `Could not read text from .docx file: ${selectedFile.name}. Please try uploading a different file.`,
+                id: `${selectedFile.name}-couldNotReadText-${Date.now()}`
+              })
             } else {
-              send({
+              uploadedFiles.push({
                 name: selectedFile.name,
                 contents: extractedText,
                 extension: selectedFile.type,
                 size: selectedFile.size
               })
             }
-          })
-          .catch(_error => {
-            setInputError('Failed to upload PDF. Please try uploading a different file.')
-          })
-      } else if (selectedFile.type === ACCEPTED_FILE_TYPES.CSV) {
-        const reader = new FileReader()
-        reader.onloadend = () => {
-          send({
-            name: selectedFile.name,
-            contents: reader.result as string,
-            extension: selectedFile.type,
-            size: selectedFile.size
-          })
-        }
-
-        reader.readAsText(selectedFile)
-      } else if (selectedFile.type === ACCEPTED_FILE_TYPES.DOCX) {
-        try {
-          const arrayBuffer = await selectedFile.arrayBuffer()
-          const extractedText = (await extractRawText({ arrayBuffer })).value
-
-          if (extractedText.length === 0) {
-            setInputError('Could not read text from document. Please try uploading a different file.')
-          } else {
-            send({
-              name: selectedFile.name,
-              contents: extractedText,
-              extension: selectedFile.type,
-              size: selectedFile.size
+          } catch (err) {
+            fileUploadInputErrors.push({
+              message: `Failed to upload .docx file: ${selectedFile.name}. Please try uploading a different file.`,
+              id: `${selectedFile.name}-failedToUpload-${Date.now()}`
             })
+
+            return
           }
-        } catch (err) {
-          setInputError('Failed to upload .docx file. Please try uploading a different file.')
-        }
-      } else {
-        const reader = new FileReader()
-        reader.onloadend = () => {
-          send({
+        } else {
+          const reader = new FileReader()
+          uploadedFiles.push({
             name: selectedFile.name,
             contents: reader.result as string,
             extension: selectedFile.type,
             size: selectedFile.size
           })
+          reader.readAsDataURL(selectedFile)
         }
-        reader.readAsDataURL(selectedFile)
-      }
-    } else {
-      send()
+      })
     }
-
-    // if (selectedFile) {
-    //   if (selectedFile.type === ACCEPTED_FILE_TYPES.PDF) {
-    //     pdfToText(selectedFile)
-    //       .then(extractedText => {
-    //         if (extractedText.length === 0) {
-    //           setInputError('Could not read text from PDF. Please try uploading a different file.')
-    //         } else {
-    //           send({
-    //             name: selectedFile.name,
-    //             contents: extractedText,
-    //             extension: selectedFile.type,
-    //             size: selectedFile.size
-    //           })
-    //         }
-    //       })
-    //       .catch(_error => {
-    //         setInputError('Failed to upload PDF. Please try uploading a different file.')
-    //       })
-    //   } else if (selectedFile.type === ACCEPTED_FILE_TYPES.CSV) {
-    //     const reader = new FileReader()
-    //     reader.onloadend = () => {
-    //       send({
-    //         name: selectedFile.name,
-    //         contents: reader.result as string,
-    //         extension: selectedFile.type,
-    //         size: selectedFile.size
-    //       })
-    //     }
-
-    //     reader.readAsText(selectedFile)
-    //   } else if (selectedFile.type === ACCEPTED_FILE_TYPES.DOCX) {
-    //     try {
-    //       const arrayBuffer = await selectedFile.arrayBuffer()
-    //       const extractedText = (await extractRawText({ arrayBuffer })).value
-
-    //       if (extractedText.length === 0) {
-    //         setInputError('Could not read text from document. Please try uploading a different file.')
-    //       } else {
-    //         send({
-    //           name: selectedFile.name,
-    //           contents: extractedText,
-    //           extension: selectedFile.type,
-    //           size: selectedFile.size
-    //         })
-    //       }
-    //     } catch (err) {
-    //       setInputError('Failed to upload .docx file. Please try uploading a different file.')
-    //     }
-    //   } else {
-    //     const reader = new FileReader()
-    //     reader.onloadend = () => {
-    //       send({
-    //         name: selectedFile.name,
-    //         contents: reader.result as string,
-    //         extension: selectedFile.type,
-    //         size: selectedFile.size
-    //       })
-    //     }
-    //     reader.readAsDataURL(selectedFile)
-    //   }
-    // } else {
-    //   send()
-    // }
   }
 
   const onEnterPress = (ev: React.KeyboardEvent<Element>) => {
@@ -294,73 +253,19 @@ export const QuestionInput = ({ onSend, disabled, placeholder, clearOnSend, conv
 
       setSelectedFiles([...selectedFiles, ...validFilesBySize])
     }
-
-    // if (file) {
-    //   if (!(Object.values(ACCEPTED_FILE_TYPES) as string[]).includes(file.type)) {
-    //     setInputError(
-    //       'Only the following file types are supported: .csv, .docx, .pdf, .jpeg, .png, .gif, .bmp, .tiff. Please try a different file.'
-    //     )
-    //     setSelectedFile(null)
-    //     if (fileInputRef?.current?.value) {
-    //       fileInputRef.current.value = ''
-    //     }
-    //     logEvent('submit_prompt_client_error_file_type', { object_type: file.type })
-    //   } else if (file.type.includes('image') && file.size > 10 * 1024 * 1024) {
-    //     // 10MB limit for image files
-    //     setInputError('File size of image attachments cannot exceed 10 MB. Please try a smaller file.')
-    //     setSelectedFile(null)
-    //     if (fileInputRef?.current?.value) {
-    //       fileInputRef.current.value = ''
-    //     }
-
-    //     logEvent('submit_prompt_client_error_file_size', { object_size: file.size, object_type: file.type })
-    //   } else if (file.size > 50 * 1024 * 1024) {
-    //     // 50MB limit for other filetypes
-    //     setInputError('File size of non-image attachments cannot exceed 50 MB. Please try a smaller file.')
-    //     setSelectedFile(null)
-    //     if (fileInputRef?.current?.value) {
-    //       fileInputRef.current.value = ''
-    //     }
-    //     logEvent('submit_prompt_client_error_file_size', { object_size: file.size, object_type: file.type })
-    //   } else {
-    //     setInputError('')
-    //     setSelectedFile(file)
-    //   }
-    // }
   }
 
-  const formatFileName = (fileName: string) => {
-    if (fileName.length < 20) {
-      return fileName
-    }
-
-    return `${fileName.substring(0, 9)}...${fileName.substring(fileName.length - 9)}`
+  const closePreview = (idToClose: string): void => {
+    // setSelectedFiles(selectedFiles => selectedFiles.filter(file => file.id !== idToClose))
   }
 
-  const closeError = (idToClose: string) => {
+  const closeError = (idToClose: string): void => {
     setInputErrors(inputErrors => inputErrors.filter(error => error.id !== idToClose))
   }
 
   return (
     <div className={`flex-wrap flex-column ${styles.questionInputContainer}`}>
       {inputErrors.length > 0 && <AlertContainer onClose={closeError} alerts={inputErrors} />}
-      {/* {inputError && (
-        <div
-          className={`usa-alert usa-alert--error usa-alert--slim line-height-sans-5 width-full padding-y-0 position-absolute display-flex flex-justify ${styles.errorAlert}`}
-          data-testId="errorAlert">
-          <div className="usa-alert__body">
-            <p className="usa-alert__text maxw-none">{inputError}</p>
-          </div>
-          <button
-            className={`usa-button usa-button--unstyled margin-right-1 ${styles.closeButton}`}
-            aria-label="Close error alert"
-            onClick={e => setInputError('')}>
-            <svg className="usa-icon" aria-hidden="true" focusable="false" role="img">
-              <use href={`${icons}#close`} />
-            </svg>
-          </button>
-        </div>
-      )} */}
 
       <textarea
         className={`usa-textarea maxw-none border-0 padding-x-205 height-auto minh-9 ${styles.questionInputTextArea}`}
@@ -370,26 +275,8 @@ export const QuestionInput = ({ onSend, disabled, placeholder, clearOnSend, conv
         onKeyDown={onEnterPress}
         aria-label="Type a question"></textarea>
 
-      <div className={`display-flex margin-x-2 margin-bottom-05 ${styles.fileUploadPreviewsContainer}`}>
-        {selectedFile && (
-          <div
-            className={`text-black flex-align-center padding-x-1 ${styles.fileUploadPreview}`}
-            data-testid={`filePreview-${selectedFile.name}`}>
-            <svg className="usa-icon margin-right-05" aria-hidden="true" focusable="false" role="img">
-              <use href={`${icons}#image`} />
-            </svg>
-            <p className={`margin-top-0 font-sans-3xs`}>{formatFileName(selectedFile.name)}</p>
-            <button
-              className={`usa-button usa-button--unstyled ${styles.closeButton}`}
-              aria-label="Remove file upload"
-              onClick={e => setSelectedFile(null)}>
-              <svg className="usa-icon" aria-hidden="true" focusable="false" role="img">
-                <use href={`${icons}#close`} />
-              </svg>
-            </button>
-          </div>
-        )}
-      </div>
+      {selectedFiles.length > 0 && <FileUploadPreviewContainer onClose={closePreview} files={selectedFiles} />}
+
       <div className={`display-flex margin-bottom-3 width-full padding-x-2 ${styles.questionInputChatButtons}`}>
         <div>
           <label

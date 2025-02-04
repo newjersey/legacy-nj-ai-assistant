@@ -53,7 +53,7 @@ export type ChatMessage = {
   date: string
   feedback?: Feedback
   context?: string
-  uploaded_file?: UploadedFile
+  uploaded_files?: UploadedFile[]
 }
 
 export type ExecResults = {

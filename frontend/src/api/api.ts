@@ -9,35 +9,40 @@ export async function conversationApi(
   conversationIdHeader: string | null | undefined
 ): Promise<Response> {
   const formatContent = (message: any) => {
-    const uploadedFile = message.uploaded_file as UploadedFile | undefined | null
+    const uploadedFiles = message.uploaded_files as UploadedFile[] | undefined | null
 
     const apiMessage = structuredClone(message)
-    delete apiMessage.uploaded_file
+    delete apiMessage.uploaded_files
 
-    if (uploadedFile != null && uploadedFile.contents) {
-      if (isImageFile(uploadedFile)) {
-        apiMessage.content = [
-          { type: 'image_url', image_url: { url: uploadedFile.contents } },
-          { type: 'text', text: apiMessage.content }
-        ]
-      } else if (uploadedFile.extension === ACCEPTED_FILE_TYPES.PDF || uploadedFile.extension === ACCEPTED_FILE_TYPES.DOCX) {
-        apiMessage.content = [
-          {
+    if (uploadedFiles) {
+      const fileContents: any[] = []
+
+      uploadedFiles.forEach(uploadedFile => {
+        if (!uploadedFile.contents) {
+          return
+        }
+
+        if (isImageFile(uploadedFile)) {
+          fileContents.push({ type: 'image_url', image_url: { url: uploadedFile.contents } })
+        } else if (
+          uploadedFile.extension === ACCEPTED_FILE_TYPES.PDF ||
+          uploadedFile.extension === ACCEPTED_FILE_TYPES.DOCX
+        ) {
+          fileContents.push({
             type: 'text',
             text: `Use the following document in your responses:\n ---BEGIN DOCUMENT---${uploadedFile.contents}---END DOCUMENT---`
-          },
-          { type: 'text', text: apiMessage.content }
-        ]
-      } else if (uploadedFile.extension === ACCEPTED_FILE_TYPES.CSV) {
-        apiMessage.content = [
-          {
+          })
+        } else if (uploadedFile.extension === ACCEPTED_FILE_TYPES.CSV) {
+          fileContents.push({
             type: 'text',
             text: `The following document is in CSV format. Use the following document in your responses:\n ---BEGIN DOCUMENT---${uploadedFile.contents}---END DOCUMENT---`
-          },
-          { type: 'text', text: apiMessage.content }
-        ]
-      }
+          })
+        }
+      })
+
+      if (fileContents) apiMessage.content = [...fileContents, { type: 'text', text: apiMessage.content }]
     }
+
     return apiMessage
   }
 

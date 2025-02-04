@@ -176,7 +176,7 @@ const Chat = () => {
   const makeApiRequestWithoutCosmosDB = async (
     question: string,
     conversationId?: string,
-    uploadedFile?: UploadedFile
+    uploadedFiles?: UploadedFile[]
   ) => {
     setIsLoading(true)
     setShowLoadingMessage(true)
@@ -188,7 +188,7 @@ const Chat = () => {
       role: 'user',
       content: question,
       date: new Date().toISOString(),
-      uploaded_file: uploadedFile
+      uploaded_files: uploadedFiles
     }
 
     let conversation: Conversation | null | undefined
@@ -319,7 +319,7 @@ const Chat = () => {
     return abortController.abort()
   }
 
-  const makeApiRequestWithCosmosDB = async (question: string, conversationId?: string, uploadedFile?: UploadedFile) => {
+  const makeApiRequestWithCosmosDB = async (question: string, conversationId?: string, uploadedFiles?: UploadedFile[]) => {
     setIsLoading(true)
     setShowLoadingMessage(true)
     const abortController = new AbortController()
@@ -829,7 +829,7 @@ const Chat = () => {
                     {answer.role === 'user' ? (
                       <div className={styles.chatMessageUser} tabIndex={0}>
                         <div className={styles.chatMessageUserMessage}>
-                          {answer.uploaded_file != null &&
+                          {/* {answer.uploaded_files != null && answer.uploaded_files.length > 0 && answer.uploaded_files.some(isImageFile) &&
                             isImageFile(answer.uploaded_file) &&
                             answer.uploaded_file.contents && (
                               <div className={styles.chatMessageUserAttachment}>
@@ -845,7 +845,7 @@ const Chat = () => {
                             <div className={styles.userAttachmentDisclaimer}>
                               {answer.uploaded_file.name} is being referenced
                             </div>
-                          )}
+                          )} */}
                         </div>
                       </div>
                     ) : answer.role === 'assistant' ? (
@@ -955,10 +955,10 @@ const Chat = () => {
                 clearOnSend
                 placeholder="Type a new question..."
                 disabled={isLoading}
-                onSend={(question, id, uploadedFile) => {
+                onSend={(question, id, uploadedFiles) => {
                   appStateContext?.state.isCosmosDBAvailable?.cosmosDB
-                    ? makeApiRequestWithCosmosDB(question, id, uploadedFile)
-                    : makeApiRequestWithoutCosmosDB(question, id, uploadedFile)
+                    ? makeApiRequestWithCosmosDB(question, id, uploadedFiles)
+                    : makeApiRequestWithoutCosmosDB(question, id, uploadedFiles)
                 }}
                 conversationId={
                   appStateContext?.state.currentChat?.id ? appStateContext?.state.currentChat?.id : undefined
