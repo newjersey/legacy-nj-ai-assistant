@@ -1,21 +1,20 @@
-import { Alert } from './Alert'
+import { AlertBanner } from './AlertBanner'
+import { Alert } from '../../custom/alertUtils'
 
 import styles from './QuestionInput.module.css'
 
-interface Alert {
-  id: number
-  message: string
-}
-
 interface Props {
-  alerts: string[]
+  onClose: (id: string) => void,
+  alerts: Alert[]
 }
 
-export const AlertContainer = ({ alerts }: Props) => {
+export const AlertContainer = ({ onClose, alerts }: Props) => {
+
   return (
-    <div className={`alertContainer display-flex flex-column position-absolute width-full  ${styles.errorAlertContainer}`}>
+    <div
+      className={`alertContainer display-flex flex-column position-absolute width-full  ${styles.errorAlertContainer}`}>
       {alerts.map(alert => (
-        <Alert alertText={alert} />
+        <AlertBanner onClose={onClose} alert={alert} />
       ))}
     </div>
   )

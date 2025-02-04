@@ -4,6 +4,7 @@ import { extractRawText } from 'mammoth'
 
 import styles from './QuestionInput.module.css'
 import { ACCEPTED_FILE_TYPES, UploadedFile, isImageFile } from '../../custom/fileUploadUtils'
+import { Alert } from '../../custom/alertUtils'
 import { logEvent } from '../../custom/logEvent'
 import icons from '@newjersey/njwds/dist/img/sprite.svg'
 
@@ -26,10 +27,10 @@ export const QuestionInput = ({ onSend, disabled, placeholder, clearOnSend, conv
   const [question, setQuestion] = useState<string>('')
   const [selectedFile, setSelectedFile] = useState<File | null>(null)
   const fileInputRef = useRef<HTMLInputElement | null>(null)
-  const [inputError, setInputError] = useState<string>('')
+  // const [inputError, setInputError] = useState<string>('')
 
   const [selectedFiles, setSelectedFiles] = useState<File[]>([])
-  const [inputErrors, setInputErrors] = useState<string[]>([])
+  const [inputErrors, setInputErrors] = useState<Alert[]>([])
 
   const filterUploadedFilesByFiletype = (files: FileList): File[] => {
     const acceptedFileTypesArray = Object.values(ACCEPTED_FILE_TYPES) as string[]
@@ -43,21 +44,26 @@ export const QuestionInput = ({ onSend, disabled, placeholder, clearOnSend, conv
     })
 
     if (files.length !== validFiles.length) {
-      setInputErrors([
-        ...inputErrors,
-        'Only the following file types are supported: .csv, .docx, .pdf, .jpeg, .png, .gif, .bmp, .tiff. Please try a different file.'
-      ])
+      const invalidFiletypeAlert: Alert = {
+        message:
+          'Only the following file types are supported: .csv, .docx, .pdf, .jpeg, .png, .gif, .bmp, .tiff. Please try a different file.',
+        id: `invalidFiletype-${Date.now()}`
+      }
+      setInputErrors([...inputErrors, invalidFiletypeAlert])
     }
 
     return validFiles
   }
 
   const filterUploadedFilesBySize = (files: File[]): File[] => {
-    const inputSizeErrors: string[] = []
+    const inputSizeErrors: Alert[] = []
     const validFiles = files.filter(file => {
       if (file.type.includes('image') && file.size > 10 * 1024 * 1024) {
         // 10MB limit for image files
-        inputSizeErrors.push(`${file.name} exceeds 10MB and cannot be uploaded`)
+        inputSizeErrors.push({
+          message: `${file.name} exceeds 10MB and cannot be uploaded`,
+          id: `${file.name}-${Date.now()}`
+        })
 
         console.log(inputErrors)
         if (fileInputRef?.current?.value) {
@@ -67,7 +73,10 @@ export const QuestionInput = ({ onSend, disabled, placeholder, clearOnSend, conv
         logEvent('submit_prompt_client_error_file_size', { object_size: file.size, object_type: file.type })
       } else if (file.size > 50 * 1024 * 1024) {
         // 50MB limit for other filetypes
-        inputSizeErrors.push(`${file.name} exceeds 50MB and cannot be uploaded`)
+        inputSizeErrors.push({
+          message: `${file.name} exceeds 50MB and cannot be uploaded`,
+          id: `${file.name}-${Date.now()}`
+        })
 
         if (fileInputRef?.current?.value) {
           fileInputRef.current.value = ''
@@ -87,9 +96,13 @@ export const QuestionInput = ({ onSend, disabled, placeholder, clearOnSend, conv
     }
 
     const send = (uploadedFile?: UploadedFile) => {
+      const sendInputErrors: Alert[] = []
       if (uploadedFile != null && !isImageFile(uploadedFile) && !isValidLength(uploadedFile.contents)) {
-        setInputError(`File contents cannot exceed ${MAX_INPUT_LENGTH} characters. Please try a smaller file.`)
-        setSelectedFile(null)
+        sendInputErrors.push({
+          message: `File contents cannot exceed ${MAX_INPUT_LENGTH} characters. Please try a smaller file.`,
+          id: `exceededFileContentCharacterLimitError-${Date.now()}`
+        })
+        setSelectedFiles([])
         if (fileInputRef?.current?.value) {
           fileInputRef.current.value = ''
         }
@@ -102,7 +115,11 @@ export const QuestionInput = ({ onSend, disabled, placeholder, clearOnSend, conv
       }
 
       if (!isValidLength(question)) {
-        setInputError(`Prompt cannot exceed ${MAX_INPUT_LENGTH} characters. Please try a smaller prompt.`)
+        sendInputErrors.push({
+          message: `Prompt cannot exceed ${MAX_INPUT_LENGTH} characters. Please try a smaller prompt.`,
+          id: `exceededPromptCharacterLimitError-${Date.now()}`
+        })
+
         logEvent('submit_prompt_client_error_prompt_length', {
           input_length: question.length
         })
@@ -117,15 +134,17 @@ export const QuestionInput = ({ onSend, disabled, placeholder, clearOnSend, conv
 
       if (clearOnSend) {
         setQuestion('')
-        setSelectedFile(null)
-        setInputError('')
+        setSelectedFiles([])
+        setInputErrors([])
         if (fileInputRef?.current?.value) {
           fileInputRef.current.value = ''
         }
       }
+
+      setInputErrors([...inputErrors, ...sendInputErrors])
     }
 
-    if (selectedFile) {
+        if (selectedFile) {
       if (selectedFile.type === ACCEPTED_FILE_TYPES.PDF) {
         pdfToText(selectedFile)
           .then(extractedText => {
@@ -188,6 +207,70 @@ export const QuestionInput = ({ onSend, disabled, placeholder, clearOnSend, conv
     } else {
       send()
     }
+
+    // if (selectedFile) {
+    //   if (selectedFile.type === ACCEPTED_FILE_TYPES.PDF) {
+    //     pdfToText(selectedFile)
+    //       .then(extractedText => {
+    //         if (extractedText.length === 0) {
+    //           setInputError('Could not read text from PDF. Please try uploading a different file.')
+    //         } else {
+    //           send({
+    //             name: selectedFile.name,
+    //             contents: extractedText,
+    //             extension: selectedFile.type,
+    //             size: selectedFile.size
+    //           })
+    //         }
+    //       })
+    //       .catch(_error => {
+    //         setInputError('Failed to upload PDF. Please try uploading a different file.')
+    //       })
+    //   } else if (selectedFile.type === ACCEPTED_FILE_TYPES.CSV) {
+    //     const reader = new FileReader()
+    //     reader.onloadend = () => {
+    //       send({
+    //         name: selectedFile.name,
+    //         contents: reader.result as string,
+    //         extension: selectedFile.type,
+    //         size: selectedFile.size
+    //       })
+    //     }
+
+    //     reader.readAsText(selectedFile)
+    //   } else if (selectedFile.type === ACCEPTED_FILE_TYPES.DOCX) {
+    //     try {
+    //       const arrayBuffer = await selectedFile.arrayBuffer()
+    //       const extractedText = (await extractRawText({ arrayBuffer })).value
+
+    //       if (extractedText.length === 0) {
+    //         setInputError('Could not read text from document. Please try uploading a different file.')
+    //       } else {
+    //         send({
+    //           name: selectedFile.name,
+    //           contents: extractedText,
+    //           extension: selectedFile.type,
+    //           size: selectedFile.size
+    //         })
+    //       }
+    //     } catch (err) {
+    //       setInputError('Failed to upload .docx file. Please try uploading a different file.')
+    //     }
+    //   } else {
+    //     const reader = new FileReader()
+    //     reader.onloadend = () => {
+    //       send({
+    //         name: selectedFile.name,
+    //         contents: reader.result as string,
+    //         extension: selectedFile.type,
+    //         size: selectedFile.size
+    //       })
+    //     }
+    //     reader.readAsDataURL(selectedFile)
+    //   }
+    // } else {
+    //   send()
+    // }
   }
 
   const onEnterPress = (ev: React.KeyboardEvent<Element>) => {
@@ -254,9 +337,13 @@ export const QuestionInput = ({ onSend, disabled, placeholder, clearOnSend, conv
     return `${fileName.substring(0, 9)}...${fileName.substring(fileName.length - 9)}`
   }
 
+  const closeError = (idToClose: string) => {
+    setInputErrors(inputErrors => inputErrors.filter(error => error.id !== idToClose))
+  }
+
   return (
     <div className={`flex-wrap flex-column ${styles.questionInputContainer}`}>
-      {inputErrors.length > 0 && <AlertContainer alerts={inputErrors} />}
+      {inputErrors.length > 0 && <AlertContainer onClose={closeError} alerts={inputErrors} />}
       {/* {inputError && (
         <div
           className={`usa-alert usa-alert--error usa-alert--slim line-height-sans-5 width-full padding-y-0 position-absolute display-flex flex-justify ${styles.errorAlert}`}
