@@ -935,7 +935,7 @@ const Chat = () => {
                   />
                 )}
                 <button
-                  className={`usa-button width-7 display-flex flex-row flex-justify-center flex-align-center position-absolute ${additionalClearChatStyles}`}
+                  className={`usa-button width-7 display-flex flex-row flex-justify-center flex-align-center ${additionalClearChatStyles}`}
                   id={styles.chatHistoryButton}
                   onClick={isCosmosDbConfigured() ? clearChat : newChat}
                   aria-label="clear chat button">

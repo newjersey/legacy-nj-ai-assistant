@@ -1,28 +1,23 @@
 .container {
   flex: 1;
-  display: flex;
-  flex-direction: column;
+  min-height: 0;
 }
 
 .chatRoot {
-  flex: 1;
-  display: flex;
+  display: block;
+  height: 100%;
   padding: 0 20px;
-  gap: 5px;
 }
 
 .chatContainer {
-  flex: 1;
   display: flex;
   flex-direction: column;
   align-items: center;
-  border-radius: 8px;
-  overflow-y: auto;
-  max-height: calc(100vh - 312px - 20px);
+  height: 100%;
 }
 
 .chatEmptyState {
-  flex-grow: 1;
+  flex: 1;
   display: flex;
   flex-direction: column;
   justify-content: center;
@@ -62,8 +57,10 @@
 }
 
 .chatMessageStream {
-  flex-grow: 1;
+  flex: 1;
   max-width: 1028px;
+  height: 100%;
+  overflow-y: auto;
   width: 100%;
   padding-left: 24px;
   padding-right: 24px;
@@ -136,9 +133,6 @@
 }
 
 .chatInput {
-  position: fixed;
-  bottom: calc(46px + 20px);
-  height: 176px;
   width: calc(100% - 140px);
   max-width: 1028px;
   margin-bottom: 24px;
@@ -153,10 +147,6 @@
     #8dddd8 100%
   );
   box-sizing: border-box;
-  left: -15px;
-  top: 66px;
-  height: 40px;
-  z-index: 1;
 }
 
 .clearChatCosmosConfigured {
@@ -363,16 +353,6 @@ a {
 
   .citationPanel {
     max-width: 100%;
-  }
-}
-
-@media (max-width: 634px) {
-  .chatInput {
-    bottom: calc(173px + 20px)
-  }
-
-  .chatContainer {
-    max-height: calc(100vh - 425px - 20px);
   }
 }
 

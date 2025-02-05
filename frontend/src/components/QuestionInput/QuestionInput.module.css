@@ -6,7 +6,7 @@
 
 .questionInputContainer {
   height: fit-content;
-  position: absolute;
+  width: 100%;
   left: 6.5%;
   right: 0%;
   top: 0%;

@@ -201,7 +201,7 @@ export const QuestionInput = ({ onSend, disabled, placeholder, clearOnSend, conv
             aria-label="Close error alert"
             onClick={e => setInputError('')}>
             <svg className="usa-icon" aria-hidden="true" focusable="false" role="img">
-              <use href={`${icons}#close`}/>
+              <use href={`${icons}#close`} />
             </svg>
           </button>
         </div>
@@ -220,7 +220,7 @@ export const QuestionInput = ({ onSend, disabled, placeholder, clearOnSend, conv
             className={`text-black flex-align-center padding-x-1 ${styles.fileUploadPreview}`}
             data-testid={`filePreview-${selectedFile.name}`}>
             <svg className="usa-icon margin-right-05" aria-hidden="true" focusable="false" role="img">
-              <use href={`${icons}#image`}/>
+              <use href={`${icons}#image`} />
             </svg>
             <p className={`margin-top-0 font-sans-3xs`}>{formatFileName(selectedFile.name)}</p>
             <button
@@ -228,7 +228,7 @@ export const QuestionInput = ({ onSend, disabled, placeholder, clearOnSend, conv
               aria-label="Remove file upload"
               onClick={e => setSelectedFile(null)}>
               <svg className="usa-icon" aria-hidden="true" focusable="false" role="img">
-                <use href={`${icons}#close`}/>
+                <use href={`${icons}#close`} />
               </svg>
             </button>
           </div>
@@ -240,7 +240,7 @@ export const QuestionInput = ({ onSend, disabled, placeholder, clearOnSend, conv
             htmlFor="file-upload"
             className={`usa-button usa-button--unstyled text-no-underline ${styles.fileInputLabel}`}>
             <svg className="usa-icon margin-right-05" aria-hidden="true" focusable="false" role="img">
-              <use href={`${icons}#attach_file`}/>
+              <use href={`${icons}#attach_file`} />
             </svg>
             Upload files
           </label>
@@ -264,7 +264,7 @@ export const QuestionInput = ({ onSend, disabled, placeholder, clearOnSend, conv
           onClick={sendQuestion}
           onKeyDown={e => (e.key === 'Enter' || e.key === ' ' ? sendQuestion() : null)}>
           <svg className="usa-icon" aria-hidden="true" focusable="false" role="img">
-            <use href={`${icons}#send`}/>
+            <use href={`${icons}#send`} />
           </svg>
         </div>
       </div>
