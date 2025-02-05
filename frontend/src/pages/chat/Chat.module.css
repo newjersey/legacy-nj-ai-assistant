@@ -6,7 +6,7 @@
 .chatRoot {
   display: block;
   height: 100%;
-  padding: 0 20px;
+  /* padding: 0 20px; */
 }
 
 .chatContainer {
@@ -58,11 +58,11 @@
 
 .chatMessageStream {
   flex: 1;
-  max-width: 1028px;
+  /* max-width: 1028px; */
   overflow-y: auto;
-  width: 100%;
-  padding-left: 24px;
-  padding-right: 24px;
+  /* width: 100%; */
+  padding: 0 max(24px, calc((100% - 1028px) / 2));
+  /* padding-right: 24px; */
   display: flex;
   flex-direction: column;
   margin-top: 24px;
