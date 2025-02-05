@@ -20,6 +20,8 @@ interface Props {
 }
 
 const MAX_INPUT_LENGTH = 1048576
+const MAX_UPLOADED_FILE_COUNT = 10
+
 function isValidLength(content: string) {
   return content.length <= MAX_INPUT_LENGTH
 }
@@ -64,12 +66,13 @@ export const QuestionInput = ({ onSend, disabled, placeholder, clearOnSend, conv
           id: `${file.name}-${Date.now()}`
         })
 
-        console.log(inputErrors)
         if (fileInputRef?.current?.value) {
           fileInputRef.current.value = ''
         }
 
         logEvent('submit_prompt_client_error_file_size', { object_size: file.size, object_type: file.type })
+
+        return
       } else if (file.size > 50 * 1024 * 1024) {
         // 50MB limit for other filetypes
         inputSizeErrors.push({
@@ -81,7 +84,11 @@ export const QuestionInput = ({ onSend, disabled, placeholder, clearOnSend, conv
           fileInputRef.current.value = ''
         }
         logEvent('submit_prompt_client_error_file_size', { object_size: file.size, object_type: file.type })
+
+        return
       }
+
+      return file
     })
 
     setInputErrors([...inputErrors, ...inputSizeErrors])
@@ -96,20 +103,37 @@ export const QuestionInput = ({ onSend, disabled, placeholder, clearOnSend, conv
 
     const send = (uploadedFiles?: UploadedFile[]) => {
       const sendInputErrors: Alert[] = []
-      if (uploadedFiles != null && !isImageFile(uploadedFiles) && !isValidLength(uploadedFile.contents)) {
+
+      const getTotalFileContentLength = (uploadedFiles: UploadedFile[]) => {
+        let totalFileContentLength = 0
+
+        uploadedFiles.forEach(file => {
+          if (!isImageFile(file)) {
+            totalFileContentLength += file.contents.length
+          }
+        })
+
+        return totalFileContentLength
+      }
+
+      if (uploadedFiles != null && getTotalFileContentLength(uploadedFiles) > MAX_INPUT_LENGTH) {
         sendInputErrors.push({
-          message: `File contents cannot exceed ${MAX_INPUT_LENGTH} characters. Please try a smaller file.`,
+          message: `Total file contents cannot exceed ${MAX_INPUT_LENGTH} characters. Please try a smaller file.`,
           id: `exceededFileContentCharacterLimitError-${Date.now()}`
         })
+
         setSelectedFiles([])
+
         if (fileInputRef?.current?.value) {
           fileInputRef.current.value = ''
         }
+
         logEvent('submit_prompt_client_error_file_length', {
-          object_type: uploadedFile.extension,
-          object_length: uploadedFile.contents.length,
-          object_size: uploadedFile.size
+          object_types: uploadedFiles.map(file => file.extension),
+          object_lengths: uploadedFiles.map(file => file.contents.length),
+          object_sizes: uploadedFiles.map(file => file.size)
         })
+
         return
       }
 
@@ -126,9 +150,9 @@ export const QuestionInput = ({ onSend, disabled, placeholder, clearOnSend, conv
       }
 
       if (conversationId) {
-        onSend(question, conversationId, uploadedFile)
+        onSend(question, conversationId, uploadedFiles)
       } else {
-        onSend(question, undefined, uploadedFile)
+        onSend(question, undefined, uploadedFiles)
       }
 
       if (clearOnSend) {
@@ -251,7 +275,21 @@ export const QuestionInput = ({ onSend, disabled, placeholder, clearOnSend, conv
 
       const validFilesBySize = filterUploadedFilesBySize(validFilesByFiletype)
 
-      setSelectedFiles([...selectedFiles, ...validFilesBySize])
+      const selectedFilesToSet = [...selectedFiles, ...validFilesBySize]
+
+      if (selectedFilesToSet.length > MAX_UPLOADED_FILE_COUNT) {
+        setSelectedFiles(selectedFilesToSet.slice(0, MAX_UPLOADED_FILE_COUNT))
+
+        setInputErrors([
+          ...inputErrors,
+          {
+            message: `A maximum of ${MAX_UPLOADED_FILE_COUNT} files can be uploaded.`,
+            id: `exceededMaxFileCount-${Date.now()}`
+          }
+        ])
+      } else {
+        setSelectedFiles([...selectedFiles, ...validFilesBySize])
+      }
     }
   }
 

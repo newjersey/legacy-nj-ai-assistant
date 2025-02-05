@@ -273,9 +273,9 @@ const Chat = () => {
         setMessages([...messages, toolMessage, assistantMessage])
         logEvent('submit_prompt_success', {
           input_length: question.length,
-          object_length: uploadedFile?.contents?.length ?? '',
-          object_type: uploadedFile?.extension ?? '',
-          object_size: uploadedFile?.size ?? ''
+          object_length: uploadedFiles == null ? '' : uploadedFiles.map((file) => file.contents.length),
+          object_type: uploadedFiles == null ? '' : uploadedFiles.map((file) => file.extension),
+          object_size: uploadedFiles == null ? '' : uploadedFiles.map((file) => file.size),
         })
       }
     } catch (e) {
@@ -301,9 +301,9 @@ const Chat = () => {
         setMessages([...messages, errorChatMsg])
         logEvent('submit_prompt_server_error', {
           input_length: question.length,
-          object_length: uploadedFile?.contents?.length ?? '',
-          object_type: uploadedFile?.extension ?? '',
-          object_size: uploadedFile?.size ?? '',
+          object_length: uploadedFiles == null ? '' : uploadedFiles.map((file) => file.contents.length),
+          object_type: uploadedFiles == null ? '' : uploadedFiles.map((file) => file.extension),
+          object_size: uploadedFiles == null ? '' : uploadedFiles.map((file) => file.size),
           object_description: errorMessage
         })
       } else {
