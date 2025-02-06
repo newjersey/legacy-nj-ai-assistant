@@ -4,14 +4,6 @@
   --primary-lightest: #e8f5ff;
 }
 
-.questionInputContainer {
-  width: 100%;
-  left: 6.5%;
-  right: 0%;
-  top: 0%;
-  bottom: 0%;
-}
-
 .questionInput {
   background: #ffffff;
   box-shadow:

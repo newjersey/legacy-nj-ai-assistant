@@ -188,7 +188,7 @@ export const QuestionInput = ({ onSend, disabled, placeholder, clearOnSend, conv
   }
 
   return (
-    <div className={`flex-wrap flex-column ${styles.questionInputContainer}`}>
+    <div className="width-full">
       {inputError && (
         <div
           className={`usa-alert usa-alert--error usa-alert--slim line-height-sans-5 width-full padding-y-0 display-flex flex-justify ${styles.errorAlert}`}
