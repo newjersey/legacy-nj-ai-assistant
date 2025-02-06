@@ -11,6 +11,9 @@
   right: 0%;
   top: 0%;
   bottom: 0%;
+}
+
+.questionInput {
   background: #ffffff;
   box-shadow:
     0px 8px 16px rgba(0, 0, 0, 0.14),
