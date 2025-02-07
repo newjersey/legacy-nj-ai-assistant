@@ -19,7 +19,6 @@
 }
 
 textarea.questionInputTextArea {
-  line-height: 40px;
   padding-top: 10px;
   padding-bottom: 10px;
   resize: none;
@@ -99,8 +98,7 @@ label.fileInputLabel {
 }
 
 div.fileUploadPreview {
-  height: 3rem;
-  min-width: 176px;
+  width: 238px;
   border-radius: 0.25rem;
   text-align: center;
   justify-content:space-between;

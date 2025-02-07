@@ -14,11 +14,11 @@ export async function conversationApi(
     const apiMessage = structuredClone(message)
     delete apiMessage.uploaded_files
 
-    if (uploadedFiles) {
+    if (uploadedFiles != null && uploadedFiles.length > 0) {
       const fileContents: any[] = []
 
       uploadedFiles.forEach(uploadedFile => {
-        if (!uploadedFile.contents) {
+        if (uploadedFile.contents == null) {
           return
         }
 

@@ -168,92 +168,117 @@ export const QuestionInput = ({ onSend, disabled, placeholder, clearOnSend, conv
     }
 
     if (selectedFiles.length > 0) {
-      const fileUploadInputErrors: Alert[] = []
-      const uploadedFiles: UploadedFile[] = []
+      const uploadedFiles: UploadedFile[] = await Promise.all(
+        selectedFiles.map(async (selectedFile): Promise<UploadedFile> => {
+          const uploadedFile = await extractDataFromFile(selectedFile)
 
-      selectedFiles.forEach(async selectedFile => {
-        if (selectedFile.type === ACCEPTED_FILE_TYPES.PDF) {
-          pdfToText(selectedFile)
-            .then(extractedText => {
-              if (extractedText.length === 0) {
-                fileUploadInputErrors.push({
-                  message: `Could not read text from PDF: ${selectedFile.name}. Please try uploading a different file.`,
-                  id: `${selectedFile.name}-couldNotReadText-${Date.now()}`
-                })
-              } else {
-                uploadedFiles.push({
-                  name: selectedFile.name,
-                  contents: extractedText,
-                  extension: selectedFile.type,
-                  size: selectedFile.size
-                })
-              }
-            })
-            .catch(_error => {
-              fileUploadInputErrors.push({
-                message: `Failed to upload PDF: ${selectedFile.name}. Please try uploading a different file.`,
-                id: `${selectedFile.name}-failedToUpload-${Date.now()}`
-              })
-            })
+          return uploadedFile
+        })
+      )
 
-          return
-        }
+      send(uploadedFiles)
+    } else {
+      send()
+    }
+  }
 
-        if (selectedFile.type === ACCEPTED_FILE_TYPES.CSV) {
-          const reader = new FileReader()
+  const extractDataFromFile = async (selectedFile: File): Promise<UploadedFile> => {
+    let uploadedFile: UploadedFile = { name: '', contents: '', extension: '', size: 0 }
 
-          reader.onloadend = () => {
-            uploadedFiles.push({
-              name: selectedFile.name,
-              contents: reader.result as string,
-              extension: selectedFile.type,
-              size: selectedFile.size
-            })
-          }
+    if (selectedFile.type === ACCEPTED_FILE_TYPES.PDF) {
+      try {
+        const extractedText = await pdfToText(selectedFile)
 
-          reader.readAsText(selectedFile)
-
-          return
-        }
-
-        if (selectedFile.type === ACCEPTED_FILE_TYPES.DOCX) {
-          try {
-            const arrayBuffer = await selectedFile.arrayBuffer()
-            const extractedText = (await extractRawText({ arrayBuffer })).value
-
-            if (extractedText.length === 0) {
-              fileUploadInputErrors.push({
-                message: `Could not read text from .docx file: ${selectedFile.name}. Please try uploading a different file.`,
-                id: `${selectedFile.name}-couldNotReadText-${Date.now()}`
-              })
-            } else {
-              uploadedFiles.push({
-                name: selectedFile.name,
-                contents: extractedText,
-                extension: selectedFile.type,
-                size: selectedFile.size
-              })
+        if (extractedText.length === 0) {
+          setInputErrors([
+            ...inputErrors,
+            {
+              message: `Could not read text from PDF: ${selectedFile.name}. Please try uploading a different file.`,
+              id: `${selectedFile.name}-couldNotReadText-${Date.now()}`
             }
-          } catch (err) {
-            fileUploadInputErrors.push({
-              message: `Failed to upload .docx file: ${selectedFile.name}. Please try uploading a different file.`,
-              id: `${selectedFile.name}-failedToUpload-${Date.now()}`
-            })
-
-            return
-          }
+          ])
         } else {
-          const reader = new FileReader()
-          uploadedFiles.push({
+          uploadedFile = {
             name: selectedFile.name,
-            contents: reader.result as string,
+            contents: extractedText,
+            extension: selectedFile.type,
+            size: selectedFile.size
+          }
+        }
+      } catch (e) {
+        setInputErrors([
+          ...inputErrors,
+          {
+            message: `Failed to upload PDF: ${selectedFile.name}. Please try uploading a different file.`,
+            id: `${selectedFile.name}-failedToUpload-${Date.now()}`
+          }
+        ])
+      }
+    } else if (selectedFile.type === ACCEPTED_FILE_TYPES.CSV) {
+      uploadedFile = await new Promise<UploadedFile>(resolve => {
+        const reader = new FileReader()
+
+        reader.onload = () => {
+          const result = reader.result as string
+          resolve({
+            name: selectedFile.name,
+            contents: result,
             extension: selectedFile.type,
             size: selectedFile.size
           })
-          reader.readAsDataURL(selectedFile)
         }
+
+        reader.readAsText(selectedFile)
+      })
+    } else if (selectedFile.type === ACCEPTED_FILE_TYPES.DOCX) {
+      try {
+        const arrayBuffer = await selectedFile.arrayBuffer()
+        const extractedText = (await extractRawText({ arrayBuffer })).value
+
+        if (extractedText.length === 0) {
+          setInputErrors([
+            ...inputErrors,
+            {
+              message: `Could not read text from .docx file: ${selectedFile.name}. Please try uploading a different file.`,
+              id: `${selectedFile.name}-couldNotReadText-${Date.now()}`
+            }
+          ])
+        } else {
+          uploadedFile = {
+            name: selectedFile.name,
+            contents: extractedText,
+            extension: selectedFile.type,
+            size: selectedFile.size
+          }
+        }
+      } catch (err) {
+        setInputErrors([
+          ...inputErrors,
+          {
+            message: `Failed to upload .docx file: ${selectedFile.name}. Please try uploading a different file.`,
+            id: `${selectedFile.name}-failedToUpload-${Date.now()}`
+          }
+        ])
+      }
+    } else {
+      uploadedFile = await new Promise<UploadedFile>(resolve => {
+        const reader = new FileReader()
+
+        reader.onload = () => {
+          const result = reader.result as string
+          resolve({
+            name: selectedFile.name,
+            contents: result,
+            extension: selectedFile.type,
+            size: selectedFile.size
+          })
+        }
+
+        reader.readAsDataURL(selectedFile)
       })
     }
+
+    return uploadedFile
   }
 
   const onEnterPress = (ev: React.KeyboardEvent<Element>) => {
@@ -294,7 +319,14 @@ export const QuestionInput = ({ onSend, disabled, placeholder, clearOnSend, conv
   }
 
   const closePreview = (idToClose: string): void => {
-    // setSelectedFiles(selectedFiles => selectedFiles.filter(file => file.id !== idToClose))
+    // setSelectedFiles(selectedFiles => selectedFiles.filter(file => {
+
+
+    // }
+      
+      
+    //   // file.id !== idToClose)
+    // )
   }
 
   const closeError = (idToClose: string): void => {

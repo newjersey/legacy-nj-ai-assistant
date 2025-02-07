@@ -92,7 +92,7 @@
 }
 
 .chatMessageUserMessage {
-  display: flex;
+  /* display: flex; */
   padding: 20px;
   background: #edf5fd;
   border-radius: 8px;
@@ -109,7 +109,7 @@
   white-space: pre-wrap;
   word-wrap: break-word;
   max-width: 80%;
-  flex-wrap: wrap;
+  /* flex-wrap: wrap; */
 }
 
 .chatMessageGpt {
@@ -382,8 +382,17 @@ a {
   padding: 0;
 }
 
-.chatMessageUserAttachment {
+.chatMessageImageAttachmentPreviewContainer {
+  flex-direction: row;
+}
+
+.chatMessageImageAttachmentPreview {
   flex-basis: 100%;
+  max-width: 45%;
+}
+
+.userMessageTextContent {
+
 }
 
 .userAttachmentDisclaimer {

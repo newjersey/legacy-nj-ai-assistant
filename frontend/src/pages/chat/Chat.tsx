@@ -273,9 +273,9 @@ const Chat = () => {
         setMessages([...messages, toolMessage, assistantMessage])
         logEvent('submit_prompt_success', {
           input_length: question.length,
-          object_length: uploadedFiles == null ? '' : uploadedFiles.map((file) => file.contents.length),
-          object_type: uploadedFiles == null ? '' : uploadedFiles.map((file) => file.extension),
-          object_size: uploadedFiles == null ? '' : uploadedFiles.map((file) => file.size),
+          object_length: uploadedFiles == null ? '' : uploadedFiles.map(file => file.contents.length),
+          object_type: uploadedFiles == null ? '' : uploadedFiles.map(file => file.extension),
+          object_size: uploadedFiles == null ? '' : uploadedFiles.map(file => file.size)
         })
       }
     } catch (e) {
@@ -301,9 +301,9 @@ const Chat = () => {
         setMessages([...messages, errorChatMsg])
         logEvent('submit_prompt_server_error', {
           input_length: question.length,
-          object_length: uploadedFiles == null ? '' : uploadedFiles.map((file) => file.contents.length),
-          object_type: uploadedFiles == null ? '' : uploadedFiles.map((file) => file.extension),
-          object_size: uploadedFiles == null ? '' : uploadedFiles.map((file) => file.size),
+          object_length: uploadedFiles == null ? '' : uploadedFiles.map(file => file.contents.length),
+          object_type: uploadedFiles == null ? '' : uploadedFiles.map(file => file.extension),
+          object_size: uploadedFiles == null ? '' : uploadedFiles.map(file => file.size),
           object_description: errorMessage
         })
       } else {
@@ -319,7 +319,11 @@ const Chat = () => {
     return abortController.abort()
   }
 
-  const makeApiRequestWithCosmosDB = async (question: string, conversationId?: string, uploadedFiles?: UploadedFile[]) => {
+  const makeApiRequestWithCosmosDB = async (
+    question: string,
+    conversationId?: string,
+    uploadedFiles?: UploadedFile[]
+  ) => {
     setIsLoading(true)
     setShowLoadingMessage(true)
     const abortController = new AbortController()
@@ -741,6 +745,33 @@ const Chat = () => {
     return []
   }
 
+  const getUserAttachmentDisclaimerText = (uploadedFiles: UploadedFile[]): string => {
+    let disclaimer = ''
+
+    if (uploadedFiles.length === 1 && uploadedFiles[0].contents != null) {
+      disclaimer = `${uploadedFiles[0].name} is being referenced`
+    } else if (uploadedFiles.length > 1) {
+      const referencedFilenames: string[] = []
+
+      uploadedFiles.forEach(file => {
+        if (file.contents != null) {
+          referencedFilenames.push(file.name)
+        }
+      })
+
+      const referencedFilenamesString =
+        referencedFilenames.slice(0, -1).join(', ') + ' and ' + referencedFilenames.slice(-1)
+
+      disclaimer = `${referencedFilenamesString} are being referenced`
+    }
+
+    return disclaimer
+  }
+
+  const getUploadedImageFiles = (uploadedFiles: UploadedFile[]): UploadedFile[] => {
+    return uploadedFiles.filter(file => isImageFile(file))
+  }
+
   const parsePlotFromMessage = (message: ChatMessage) => {
     if (message?.role && message?.role === 'tool') {
       try {
@@ -827,25 +858,24 @@ const Chat = () => {
                 {messages.map((answer, index) => (
                   <>
                     {answer.role === 'user' ? (
-                      <div className={styles.chatMessageUser} tabIndex={0}>
-                        <div className={styles.chatMessageUserMessage}>
-                          {/* {answer.uploaded_files != null && answer.uploaded_files.length > 0 && answer.uploaded_files.some(isImageFile) &&
-                            isImageFile(answer.uploaded_file) &&
-                            answer.uploaded_file.contents && (
-                              <div className={styles.chatMessageUserAttachment}>
-                                <img
-                                  width="100"
-                                  height="auto"
-                                  src={answer.uploaded_file.contents}
-                                  alt={answer.uploaded_file.name}></img>
+                      <div className={`display-flex flex-justify-end  ${styles.chatMessageUser}`} tabIndex={0}>
+                        <div className={`flex-wrap ${styles.chatMessageUserMessage}`}>
+                          {answer.uploaded_files != null &&
+                            answer.uploaded_files.some(isImageFile) && (
+                              <div className={`display-flex flex-row width-full flex-align-end flex-justify-end ${styles.chatMessageImageAttachmentPreviewContainer}`}>
+                                {getUploadedImageFiles(answer.uploaded_files).map(file => (
+                                  <div className={`margin-left-205 ${styles.chatMessageImageAttachmentPreview}`}>
+                                    <img height="auto" src={file.contents} alt={file.name}></img>
+                                  </div>
+                                ))}
                               </div>
                             )}
-                          <div>{answer.content}</div>
-                          {answer.uploaded_file != null && answer.uploaded_file.contents && (
-                            <div className={styles.userAttachmentDisclaimer}>
-                              {answer.uploaded_file.name} is being referenced
+                          <div className={styles.userMessageTextContent}>{answer.content}</div>
+                          {answer.uploaded_files != null && answer.uploaded_files.length > 0 && (
+                            <div className={`${styles.userAttachmentDisclaimer}`}>
+                              {getUserAttachmentDisclaimerText(answer.uploaded_files)}
                             </div>
-                          )} */}
+                          )}
                         </div>
                       </div>
                     ) : answer.role === 'assistant' ? (

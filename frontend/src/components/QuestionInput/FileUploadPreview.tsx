@@ -19,7 +19,7 @@ export const FileUploadPreview = ({ onClose, fileName }: FileUploadPreviewProps)
 
   return (
     <div
-      className={`text-black flex-align-center padding-x-1 ${styles.fileUploadPreview}`}
+      className={`text-black flex-align-center padding-x-1 margin-right-105 margin-bottom-105 height-5 ${styles.fileUploadPreview}`}
       data-testid={`filePreview-${fileName}`}>
       <svg className="usa-icon margin-right-05" aria-hidden="true" focusable="false" role="img">
         <use href={`${icons}#image`} />
