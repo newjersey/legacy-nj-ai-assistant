@@ -16,7 +16,8 @@ This document has information specific to the NJ-specific fork of the Microsoft 
 
 1. Clone repo and go to `nj-stable` branch
 2. Copy `.env` file from Bitwarden (reach out to Platform team for access)
-3. Run `./start.sh`
+3. Ensure that you have python version 3.11 installed locally.
+4. Run `./start.sh`
 
 ## Deployment
 
