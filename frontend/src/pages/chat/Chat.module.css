@@ -1,8 +1,22 @@
 .container {
+  --chat-max-width: 1028px;
+
+  /* we set the max-width via padding to ensure the chat message scrollbar remains at the edge of the viewport (this is also the reason we set padding
+  individually on the message stream and chat input) */
+  --padding-chat-outer: 20px;
+  --padding-chat-inner: 24px;
+  --padding-x-min: calc(var(--padding-chat-outer) + var(--padding-chat-inner));
+  --padding-to-make-chat-max-width: calc((100% - var(--chat-max-width)) / 2);
+  --padding-chat-x: max(
+    var(--padding-x-min), 
+    var(--padding-to-make-chat-max-width)
+  );
+  
+  --message-margin-bottom: 20px;
+  --message-final-margin-bottom: 28px;
+
   flex: 1;
   min-height: 0;
-
-  --chat-max-width: 1028px;
 }
 
 .chatRoot {
@@ -61,18 +75,17 @@
   display: flex;
   flex-direction: column;
   overflow-y: auto;
-  margin-top: 24px;
-  padding: 0 max(calc(20px + 24px), calc((100% - var(--chat-max-width)) / 2));
+  padding: var(--padding-chat-outer) var(--padding-chat-x) 0;
 }
 
 .chatMessageUser {
   display: flex;
   justify-content: flex-end;
-  margin-bottom: 12px;
+  margin-bottom: var(--message-margin-bottom);
 }
 
 .chatMessageUser:nth-last-child(2) {
-  margin-bottom: 28px;
+  margin-bottom: var(--message-final-margin-bottom);
 }
 
 .chatMessageUserMessage {
@@ -97,13 +110,13 @@
 }
 
 .chatMessageGpt {
-  margin-bottom: 12px;
-  max-width: 80%;
   display: flex;
+  max-width: 80%;
+  margin-bottom: var(--message-margin-bottom);
 }
 
 .chatMessageGpt:nth-last-child(2) {
-  margin-bottom: 28px;
+  margin-bottom: var(--message-final-margin-bottom);
 }
 
 
@@ -134,9 +147,8 @@
 }
 
 .chatInput {
-  width: calc(100% - 140px);
-  max-width: var(--chat-max-width);
-  margin-bottom: 40px;
+  width: 100%;
+  padding: 0 var(--padding-chat-x) var(--padding-chat-outer);
 }
 
 #chatHistoryButton {
@@ -334,10 +346,6 @@ a {
 }
 
 @media (max-width: 480px) {
-  .chatInput {
-    width: 90%;
-    max-width: 90%;
-  }
 
   .newChatIcon {
     left: 0px;
