@@ -10,6 +10,7 @@ This document has information specific to the NJ-specific fork of the Microsoft 
 
 ## Contributing to the NJ AI Assistant
 - To contribute to the NJ AI assistant, create a feature branch from the `nj-stable-dev` branch of the `newjersey/nj-ai-assistant` repository. Add changes to the feature branch then open a PR to have it merged into the `nj-stable-dev` branch. **When merging changes to the `nj-stable-dev` branch, the "Squash and merge" option is preferred".**
+- Deploy and preview changes on the dev site by following the steps **in the "Deployment" section below.**
 - After previewing changes on the dev site, open a PR to merge changes from `nj-stable-dev` to `nj-stable`. **When merging changes to the `nj-stable` branch, merging without squashing is preferred.**
 
 ## Local setup
