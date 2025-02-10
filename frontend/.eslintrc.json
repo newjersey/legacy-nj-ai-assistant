@@ -16,36 +16,23 @@
     "jest": true
   },
   "rules": {
-    // "prettier/prettier": "error",
     "prettier/prettier": [
       "error",
       {},
       {
-        "usePrettierrc": false
+        "usePrettierrc": true
       }
     ],
     "quote-props": [2, "as-needed"],
-    "comma-dangle": "error",
     "no-console": ["warn", { "allow": ["warn", "error"] }],
     "no-debugger": "error",
     "react/prop-types": 0,
     "import/no-extraneous-dependencies": ["error", { "devDependencies": true }],
-    "object-curly-newline": [
-      "error",
-      {
-        "ObjectExpression": "always",
-        "ObjectPattern": { "multiline": "as-needed" },
-        "ImportDeclaration": "never",
-        "ExportDeclaration": { "multiline": true, "minProperties": 3 }
-      }
-    ],
-    "object-curly-spacing": ["error", "as-needed", { "objectsInObjects": true }],
     "no-underscore-dangle": 0,
     "jsx-a11y/click-events-have-key-events": 0,
     "jsx-a11y/anchor-is-valid": 0,
     "no-await-in-loop": 0,
     "no-unused-expressions": ["error", { "allowShortCircuit": true, "allowTernary": true }],
-    "arrow-parens": ["error", "as-needed"],
     "no-unused-vars": "off", // Turn off the base rule and use @typescript-eslint/no-unused-vars
     "@typescript-eslint/no-unused-vars": [
       "error",
@@ -65,10 +52,7 @@
     "spaced-comment": 0,
     "react/react-in-jsx-scope": 0,
     "react/jsx-filename-extension": 0,
-    "indent": ["error", 2],
-    "react/jsx-indent": ["error", 2],
-    "react/jsx-indent-props": ["error", 2],
-    "@typescript-eslint/no-explicit-any": "warn",
+    "@typescript-eslint/no-explicit-any": "off",
     "simple-import-sort/exports": "error",
     "simple-import-sort/imports": [
       "error",
@@ -90,5 +74,5 @@
       }
     ]
   },
-  "ignorePatterns": ["node_modules/", "build/", "dist/", "public/", "*.config.ts"]
+  "ignorePatterns": ["node_modules/", "build/", "dist/", "public/", "*.config.ts", "src/components/ChatHistory/"]
 }

@@ -95,7 +95,7 @@ div.fileUploadPreview {
   min-width: 176px;
   border-radius: 0.25rem;
   text-align: center;
-  justify-content:space-between;
-  display:inline-flex;
+  justify-content: space-between;
+  display: inline-flex;
   background: var(--primary-lightest);
 }

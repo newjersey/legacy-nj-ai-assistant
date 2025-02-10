@@ -129,7 +129,7 @@
 }
 
 .chatMessageErrorContent {
-  font-family: 'Segoe UI';
+  font-family: "Segoe UI";
   font-style: normal;
   font-weight: 400;
   font-size: 14px;
@@ -154,12 +154,7 @@
 }
 
 #chatHistoryButton {
-  background: radial-gradient(
-    109.81% 107.82% at 100.1% 90.19%,
-    #0f6cbd 33.63%,
-    #2d87c3 70.31%,
-    #8dddd8 100%
-  );
+  background: radial-gradient(109.81% 107.82% at 100.1% 90.19%, #0f6cbd 33.63%, #2d87c3 70.31%, #8dddd8 100%);
   box-sizing: border-box;
   left: -15px;
   top: 66px;
