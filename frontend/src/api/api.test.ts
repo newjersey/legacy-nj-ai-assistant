@@ -36,6 +36,9 @@ describe("Test the conversationApi function", () => {
 
   beforeEach(() => {
     global.fetch = jest.fn();
+    global.structuredClone = jest.fn().mockImplementation((value) => {
+      return JSON.parse(JSON.stringify(value));
+    });
   });
 
   afterEach(() => {
