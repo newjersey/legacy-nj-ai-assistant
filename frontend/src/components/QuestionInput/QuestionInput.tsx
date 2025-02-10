@@ -238,7 +238,7 @@ export const QuestionInput = ({ onSend, disabled, placeholder, clearOnSend, conv
               <button
                 className={`usa-button usa-button--unstyled ${styles.closeButton}`}
                 aria-label="Remove file upload"
-                onClick={(e) => setSelectedFile(null)}
+                onClick={(_e) => setSelectedFile(null)}
               >
                 <svg className="usa-icon" aria-hidden="true" focusable="false" role="img">
                   <use href={`${icons}#close`} />
