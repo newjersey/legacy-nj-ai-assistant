@@ -6,7 +6,6 @@ frontend/node_modules
 __pycache__/
 .ipynb_checkpoints/
 .DS_Store
-/static/assets/*
 
 # allow files matching paths specified, needed for build
 !/static/assets/index-*.js
