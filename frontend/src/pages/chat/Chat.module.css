@@ -1,40 +1,41 @@
 .container {
+  --chat-max-width: 1028px;
+
+  /* we set the max-width via padding to ensure the chat message scrollbar remains at the edge of the viewport (this is also the reason we set padding
+  individually on the message stream and chat input) */
+  --padding-chat-outer: 20px;
+  --padding-chat-inner: 24px;
+  --padding-x-min: calc(var(--padding-chat-outer) + var(--padding-chat-inner));
+  --padding-to-make-chat-max-width: calc((100% - var(--chat-max-width)) / 2);
+  --padding-chat-x: max(
+    var(--padding-x-min), 
+    var(--padding-to-make-chat-max-width)
+  );
+  
+  --message-margin-bottom: 20px;
+  --message-final-margin-bottom: 28px;
+
   flex: 1;
-  display: flex;
-  flex-direction: column;
-  background: #f2f2f2;
+  min-height: 25rem;
 }
 
 .chatRoot {
-  flex: 1;
-  display: flex;
-  margin-top: 0px;
-  margin-bottom: 5px;
-  margin-left: 20px;
-  margin-right: 20px;
-  gap: 5px;
+  display: block;
+  height: 100%;
 }
 
 .chatContainer {
-  flex: 1;
   display: flex;
   flex-direction: column;
   align-items: center;
-  background: radial-gradient(108.78% 108.78% at 50.02% 19.78%, #ffffff 57.29%, #eef6fe 100%);
-  box-shadow:
-    0px 2px 4px rgba(0, 0, 0, 0.14),
-    0px 0px 2px rgba(0, 0, 0, 0.12);
-  border-radius: 8px;
-  overflow-y: auto;
-  max-height: calc(100vh - 135px);
+  height: 100%;
 }
 
 .chatEmptyState {
-  flex-grow: 1;
   display: flex;
-  flex-direction: column;
-  justify-content: center;
   align-items: center;
+  height: 100%;
+  overflow-y: auto;
 }
 
 .chatEmptyStateTitle {
@@ -70,21 +71,21 @@
 }
 
 .chatMessageStream {
-  flex-grow: 1;
-  max-width: 1028px;
-  width: 100%;
-  overflow-y: auto;
-  padding-left: 24px;
-  padding-right: 24px;
+  flex: 1;
   display: flex;
   flex-direction: column;
-  margin-top: 24px;
+  overflow-y: auto;
+  padding: var(--padding-chat-outer) var(--padding-chat-x) 0;
 }
 
 .chatMessageUser {
   display: flex;
   justify-content: flex-end;
-  margin-bottom: 12px;
+  margin-bottom: var(--message-margin-bottom);
+}
+
+.chatMessageUser:nth-last-child(2) {
+  margin-bottom: var(--message-final-margin-bottom);
 }
 
 .chatMessageUserMessage {
@@ -109,10 +110,15 @@
 }
 
 .chatMessageGpt {
-  margin-bottom: 12px;
-  max-width: 80%;
   display: flex;
+  max-width: 80%;
+  margin-bottom: var(--message-margin-bottom);
 }
+
+.chatMessageGpt:nth-last-child(2) {
+  margin-bottom: var(--message-final-margin-bottom);
+}
+
 
 .chatMessageError {
   padding: 20px;
@@ -141,25 +147,13 @@
 }
 
 .chatInput {
-  position: sticky;
-  flex: 0 0 100px;
-  padding-top: 12px;
-  padding-bottom: 24px;
-  padding-left: 24px;
-  padding-right: 24px;
-  width: calc(100% - 140px);
-  max-width: 1028px;
-  margin-bottom: 20px;
-  margin-top: 8px;
+  width: 100%;
+  padding: 0 var(--padding-chat-x) var(--padding-chat-outer);
 }
 
 #chatHistoryButton {
   background: radial-gradient(109.81% 107.82% at 100.1% 90.19%, #0f6cbd 33.63%, #2d87c3 70.31%, #8dddd8 100%);
   box-sizing: border-box;
-  left: -15px;
-  top: 66px;
-  height: 40px;
-  z-index: 1;
 }
 
 .clearChatCosmosConfigured {
@@ -347,10 +341,6 @@ a {
 }
 
 @media (max-width: 480px) {
-  .chatInput {
-    width: 90%;
-    max-width: 90%;
-  }
 
   .newChatIcon {
     left: 0px;

@@ -195,10 +195,10 @@ export const QuestionInput = ({ onSend, disabled, placeholder, clearOnSend, conv
   };
 
   return (
-    <div className={`flex-wrap flex-column ${styles.questionInputContainer}`}>
+    <div className="width-full">
       {inputError && (
         <div
-          className={`usa-alert usa-alert--error usa-alert--slim line-height-sans-5 width-full padding-y-0 position-absolute display-flex flex-justify ${styles.errorAlert}`}
+          className={`usa-alert usa-alert--error usa-alert--slim line-height-sans-5 width-full padding-y-0 display-flex flex-justify ${styles.errorAlert}`}
           data-testId="errorAlert"
         >
           <div className="usa-alert__body">
@@ -215,76 +215,73 @@ export const QuestionInput = ({ onSend, disabled, placeholder, clearOnSend, conv
           </button>
         </div>
       )}
-      <textarea
-        className={`usa-textarea maxw-none border-0 padding-x-205 height-auto minh-9 ${styles.questionInputTextArea}`}
-        placeholder={placeholder}
-        value={question}
-        onChange={(e) => setQuestion(e.target.value)}
-        onKeyDown={onEnterPress}
-        aria-label="Type a question"
-      ></textarea>
+      <div className={styles.questionInput}>
+        <textarea
+          className={`usa-textarea maxw-none border-0 padding-x-205 height-auto minh-9 ${styles.questionInputTextArea}`}
+          placeholder={placeholder}
+          value={question}
+          onChange={e => setQuestion(e.target.value)}
+          onKeyDown={onEnterPress}
+          aria-label="Type a question"></textarea>
 
-      <div className={`display-flex margin-x-2 margin-bottom-05 ${styles.fileUploadPreviewsContainer}`}>
-        {selectedFile && (
-          <div
-            className={`text-black flex-align-center padding-x-1 ${styles.fileUploadPreview}`}
-            data-testid={`filePreview-${selectedFile.name}`}
-          >
-            <svg className="usa-icon margin-right-05" aria-hidden="true" focusable="false" role="img">
-              <use href={`${icons}#image`} />
-            </svg>
-            <p className={`margin-top-0 font-sans-3xs`}>{formatFileName(selectedFile.name)}</p>
-            <button
-              className={`usa-button usa-button--unstyled ${styles.closeButton}`}
-              aria-label="Remove file upload"
-              onClick={(_e) => setSelectedFile(null)}
-            >
-              <svg className="usa-icon" aria-hidden="true" focusable="false" role="img">
-                <use href={`${icons}#close`} />
+        <div className={`display-flex margin-x-2 margin-bottom-05 ${styles.fileUploadPreviewsContainer}`}>
+          {selectedFile && (
+            <div
+              className={`text-black flex-align-center padding-x-1 ${styles.fileUploadPreview}`}
+              data-testid={`filePreview-${selectedFile.name}`}>
+              <svg className="usa-icon margin-right-05" aria-hidden="true" focusable="false" role="img">
+                <use href={`${icons}#image`} />
               </svg>
-            </button>
+              <p className={`margin-top-0 font-sans-3xs`}>{formatFileName(selectedFile.name)}</p>
+              <button
+                className={`usa-button usa-button--unstyled ${styles.closeButton}`}
+                aria-label="Remove file upload"
+                onClick={e => setSelectedFile(null)}>
+                <svg className="usa-icon" aria-hidden="true" focusable="false" role="img">
+                  <use href={`${icons}#close`} />
+                </svg>
+              </button>
+            </div>
+          )}
+        </div>
+        <div className={`display-flex margin-bottom-3 width-full padding-x-2 ${styles.questionInputChatButtons}`}>
+          <div>
+            <label
+              htmlFor="file-upload"
+              className={`usa-button usa-button--unstyled text-no-underline ${styles.fileInputLabel}`}>
+              <svg className="usa-icon margin-right-05" aria-hidden="true" focusable="false" role="img">
+                <use href={`${icons}#attach_file`} />
+              </svg>
+              Upload files
+            </label>
+            <input
+              ref={fileInputRef}
+              type="file"
+              id="file-upload"
+              accept={(Object.values(ACCEPTED_FILE_TYPES) as string[]).join(',')}
+              onChange={onFileChange}
+              disabled={disabled}
+              className={styles.fileInput}
+              aria-label="Upload file"
+            />
           </div>
-        )}
-      </div>
-      <div className={`display-flex margin-bottom-3 width-full padding-x-2 ${styles.questionInputChatButtons}`}>
-        <div>
-          <label
-            htmlFor="file-upload"
-            className={`usa-button usa-button--unstyled text-no-underline ${styles.fileInputLabel}`}
-          >
-            <svg className="usa-icon margin-right-05" aria-hidden="true" focusable="false" role="img">
-              <use href={`${icons}#attach_file`} />
+          <div
+            className="usa-button margin-right-0"
+            id={styles.questionInputSendButtonContainer}
+            role="button"
+            tabIndex={0}
+            aria-label="Ask question button"
+            onClick={sendQuestion}
+            onKeyDown={e => (e.key === 'Enter' || e.key === ' ' ? sendQuestion() : null)}>
+            <svg className="usa-icon" aria-hidden="true" focusable="false" role="img">
+              <use href={`${icons}#send`} />
             </svg>
-            Upload files
-          </label>
-          <input
-            ref={fileInputRef}
-            type="file"
-            id="file-upload"
-            accept={(Object.values(ACCEPTED_FILE_TYPES) as string[]).join(",")}
-            onChange={onFileChange}
-            disabled={disabled}
-            className={styles.fileInput}
-            aria-label="Upload file"
-          />
+          </div>
         </div>
-        <div
-          className="usa-button margin-right-0"
-          id={styles.questionInputSendButtonContainer}
-          role="button"
-          tabIndex={0}
-          aria-label="Ask question button"
-          onClick={sendQuestion}
-          onKeyDown={(e) => (e.key === "Enter" || e.key === " " ? sendQuestion() : null)}
-        >
-          <svg className="usa-icon" aria-hidden="true" focusable="false" role="img">
-            <use href={`${icons}#send`} />
-          </svg>
-        </div>
+        <hr
+          className={`margin-bottom-0 width-full bottom-0 left-0 border-0 ${styles.questionInputBottomBorder}`}
+        />
       </div>
-      <hr
-        className={`margin-bottom-0 position-absolute width-full bottom-0 left-0 border-0 ${styles.questionInputBottomBorder}`}
-      />
     </div>
   );
 };

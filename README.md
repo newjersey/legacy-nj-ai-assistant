@@ -1,4 +1,6 @@
-# [Preview] Sample Chat App with AOAI
+# For contributors to the NJ AI Assistant please visit the [NJ-specific README](./NJ_README.md)
+
+# Sample Chat App with AOAI
 
 This repo contains sample code for a simple chat webapp that integrates with Azure OpenAI. Note: some portions of the app use preview APIs.
 
