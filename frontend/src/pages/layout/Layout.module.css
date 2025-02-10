@@ -1,11 +1,8 @@
 .layout {
   display: flex;
   flex-direction: column;
-  height: 100%;
-}
-
-.header {
-  background-color: #f2f2f2;
+  height: 100vh;
+  background: linear-gradient(180deg, #FFFFFF 0%, #F5FAFE 100%);
 }
 
 .headerContainer {
