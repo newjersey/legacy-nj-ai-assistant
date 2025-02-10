@@ -1,0 +1,31 @@
+name: Automated testing
+
+on:
+  push:
+    branches: [nj-stable-dev, nj-stable]
+  pull_request:
+    branches: [nj-stable-dev, nj-stable]
+  jobs:
+  install-and-test:
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: frontend
+    steps:
+      - uses: actions/checkout@eef61447b9ff4aafe5dcd4e0bbf5d482be7e7871 # v4
+      - name: Use Node.js 18.x
+        uses: actions/setup-node@0a44ba7841725637a19e28fa30b79a866c81b0a6 # v4
+        with:
+          node-version: 18.x
+      - name: Install dependencies
+        run: npm ci
+      - name: Check for critical vulnerabilities
+        run: npm audit --audit-level=critical
+      - name: Run ESLint
+        run: npm run lint
+      - name: Run TypeScript typecheck
+        run: npm run typecheck
+      - name: Run frontend tests
+        run: npm run test:react
+      - name: Run API tests
+        run: npm run test:api
