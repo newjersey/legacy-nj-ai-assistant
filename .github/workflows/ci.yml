@@ -1,3 +1,6 @@
+# This workflow will do a clean installation of node dependencies, cache/restore them, build the source code, and run tests
+# For more information see: https://docs.github.com/en/actions/automating-builds-and-tests/building-and-testing-nodejs
+
 name: Automated testing
 
 on:
@@ -5,16 +8,18 @@ on:
     branches: [nj-stable-dev, nj-stable]
   pull_request:
     branches: [nj-stable-dev, nj-stable]
-  jobs:
-  install-and-test:
+
+jobs:
+  build-and-test:
     runs-on: ubuntu-latest
     defaults:
       run:
         working-directory: frontend
+
     steps:
-      - uses: actions/checkout@eef61447b9ff4aafe5dcd4e0bbf5d482be7e7871 # v4
+      - uses: actions/checkout@v4
       - name: Use Node.js 18.x
-        uses: actions/setup-node@0a44ba7841725637a19e28fa30b79a866c81b0a6 # v4
+        uses: actions/setup-node@v3
         with:
           node-version: 18.x
       - name: Install dependencies
@@ -23,8 +28,7 @@ on:
         run: npm audit --audit-level=critical
       - name: Run ESLint
         run: npm run lint
-      - name: Run TypeScript typecheck
-        run: npm run typecheck
+      - run: NODE_OPTIONS=--max_old_space_size=8192 npm run build --if-present
       - name: Run frontend tests
         run: npm run test:react
       - name: Run API tests
