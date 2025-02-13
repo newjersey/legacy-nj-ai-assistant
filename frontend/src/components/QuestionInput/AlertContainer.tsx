@@ -12,7 +12,7 @@ interface AlertContainerProps {
 export const AlertContainer = ({ onClose, alerts }: AlertContainerProps) => {
   return (
     <div
-      className={`alertContainer display-flex flex-column position-absolute width-full  ${styles.errorAlertContainer}`}
+      className={`alertContainer display-flex flex-column width-full  ${styles.errorAlertContainer}`}
     >
       {alerts.map((alert) => (
         <AlertBanner onClose={onClose} alert={alert} />
