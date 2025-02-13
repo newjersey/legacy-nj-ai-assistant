@@ -1,12 +1,13 @@
-import { useRef, useState } from 'react'
-import pdfToText from 'react-pdftotext'
-import { extractRawText } from 'mammoth'
+import { useRef, useState } from "react";
+import pdfToText from "react-pdftotext";
+import icons from "@newjersey/njwds/dist/img/sprite.svg";
+import { extractRawText } from "mammoth";
 
 import styles from './QuestionInput.module.css'
 import { ACCEPTED_FILE_TYPES, UploadedFile, isImageFile } from '../../custom/fileUploadUtils'
 import { Alert } from '../../custom/alertUtils'
 import { logEvent } from '../../custom/logEvent'
-import icons from '@newjersey/njwds/dist/img/sprite.svg'
+
 
 import { AlertContainer } from './AlertContainer'
 import { FileUploadPreviewContainer } from './FileUploadPreviewContainer'
@@ -23,7 +24,7 @@ const MAX_INPUT_LENGTH = 1048576
 const MAX_UPLOADED_FILE_COUNT = 10
 
 function isValidLength(content: string) {
-  return content.length <= MAX_INPUT_LENGTH
+  return content.length <= MAX_INPUT_LENGTH;
 }
 
 export const QuestionInput = ({ onSend, disabled, placeholder, clearOnSend, conversationId }: Props) => {
@@ -98,7 +99,7 @@ export const QuestionInput = ({ onSend, disabled, placeholder, clearOnSend, conv
 
   const sendQuestion = async () => {
     if (disabled || !question.trim()) {
-      return
+      return;
     }
 
     const send = (uploadedFiles?: UploadedFile[]) => {
@@ -125,7 +126,7 @@ export const QuestionInput = ({ onSend, disabled, placeholder, clearOnSend, conv
         setSelectedFiles([])
 
         if (fileInputRef?.current?.value) {
-          fileInputRef.current.value = ''
+          fileInputRef.current.value = "";
         }
 
         logEvent('submit_prompt_client_error_file_length', {
@@ -160,7 +161,7 @@ export const QuestionInput = ({ onSend, disabled, placeholder, clearOnSend, conv
         setSelectedFiles([])
         setInputErrors([])
         if (fileInputRef?.current?.value) {
-          fileInputRef.current.value = ''
+          fileInputRef.current.value = "";
         }
       }
 
@@ -224,9 +225,9 @@ export const QuestionInput = ({ onSend, disabled, placeholder, clearOnSend, conv
             name: selectedFile.name,
             contents: result,
             extension: selectedFile.type,
-            size: selectedFile.size
-          })
-        }
+            size: selectedFile.size,
+          });
+        };
 
         reader.readAsText(selectedFile)
       })
@@ -282,11 +283,11 @@ export const QuestionInput = ({ onSend, disabled, placeholder, clearOnSend, conv
   }
 
   const onEnterPress = (ev: React.KeyboardEvent<Element>) => {
-    if (ev.key === 'Enter' && !ev.shiftKey && !(ev.nativeEvent?.isComposing === true)) {
-      ev.preventDefault()
-      sendQuestion()
+    if (ev.key === "Enter" && !ev.shiftKey && !(ev.nativeEvent?.isComposing === true)) {
+      ev.preventDefault();
+      sendQuestion();
     }
-  }
+  };
 
   const onFileChange = (event: React.ChangeEvent<HTMLInputElement>) => {
     const files = event.target.files
@@ -316,7 +317,7 @@ export const QuestionInput = ({ onSend, disabled, placeholder, clearOnSend, conv
         setSelectedFiles([...selectedFiles, ...validFilesBySize])
       }
     }
-  }
+  };
 
   const closePreview = (idToClose: string): void => {
     // setSelectedFiles(selectedFiles => selectedFiles.filter(file => {
@@ -381,10 +382,10 @@ export const QuestionInput = ({ onSend, disabled, placeholder, clearOnSend, conv
             <use href={`${icons}#send`} />
           </svg>
         </div>
+        <hr
+          className={`margin-bottom-0 width-full bottom-0 left-0 border-0 ${styles.questionInputBottomBorder}`}
+        />
       </div>
-      <hr
-        className={`margin-bottom-0 position-absolute width-full bottom-0 left-0 border-0 ${styles.questionInputBottomBorder}`}
-      />
     </div>
-  )
-}
+  );
+};
