@@ -33,7 +33,7 @@ jobs:
         run: npm run lint
       - name: Run prettier check
         run: npm run prettier
-      - name: Set maximum memory size for build
+      - name: Set maximum memory size for build + run build
         run: NODE_OPTIONS=--max_old_space_size=8192 npm run build --if-present
       - name: Run frontend tests
         run: npm run test:react
