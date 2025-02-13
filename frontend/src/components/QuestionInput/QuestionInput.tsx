@@ -3,13 +3,14 @@ import pdfToText from "react-pdftotext";
 import icons from "@newjersey/njwds/dist/img/sprite.svg";
 import { extractRawText } from "mammoth";
 
-import styles from "./QuestionInput.module.css";
-import { ACCEPTED_FILE_TYPES, UploadedFile, isImageFile } from "../../custom/fileUploadUtils";
 import { Alert } from "../../custom/alertUtils";
+import { ACCEPTED_FILE_TYPES, isImageFile, UploadedFile } from "../../custom/fileUploadUtils";
 import { logEvent } from "../../custom/logEvent";
 
 import { AlertContainer } from "./AlertContainer";
 import { FileUploadPreviewContainer } from "./FileUploadPreviewContainer";
+
+import styles from "./QuestionInput.module.css";
 
 interface Props {
   onSend: (question: string, id?: string, uploadedFiles?: UploadedFile[]) => void;

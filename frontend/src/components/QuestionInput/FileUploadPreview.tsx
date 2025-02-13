@@ -1,5 +1,6 @@
-import styles from "./QuestionInput.module.css";
 import icons from "@newjersey/njwds/dist/img/sprite.svg";
+
+import styles from "./QuestionInput.module.css";
 
 interface FileUploadPreviewProps {
   onClose: (id: string) => void;

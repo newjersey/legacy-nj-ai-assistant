@@ -1,5 +1,6 @@
-import { AlertBanner } from "./AlertBanner";
 import { Alert } from "../../custom/alertUtils";
+
+import { AlertBanner } from "./AlertBanner";
 
 import styles from "./QuestionInput.module.css";
 

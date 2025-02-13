@@ -331,11 +331,7 @@ const Chat = () => {
     return abortController.abort();
   };
 
-  const makeApiRequestWithCosmosDB = async (
-    question: string,
-    conversationId?: string,
-    uploadedFiles?: UploadedFile[]
-  ) => {
+  const makeApiRequestWithCosmosDB = async (question: string, conversationId?: string) => {
     setIsLoading(true);
     setShowLoadingMessage(true);
     const abortController = new AbortController();
@@ -910,7 +906,7 @@ const Chat = () => {
                     {answer.role === "user" ? (
                       <div
                         className={`display-flex flex-justify-end  ${styles.chatMessageUser}`}
-                        tabIndex={0}
+                        role="log"
                       >
                         <div className={`flex-wrap ${styles.chatMessageUserMessage}`}>
                           {answer.uploaded_files != null &&

@@ -1,6 +1,8 @@
-import styles from "./QuestionInput.module.css";
-import { Alert } from "../../custom/alertUtils";
 import icons from "@newjersey/njwds/dist/img/sprite.svg";
+
+import { Alert } from "../../custom/alertUtils";
+
+import styles from "./QuestionInput.module.css";
 
 interface AlertBannerProps {
   onClose: (id: string) => void;
