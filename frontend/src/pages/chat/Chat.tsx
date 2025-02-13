@@ -995,7 +995,7 @@ const Chat = () => {
                 </Stack>
               )}
               <div className="display-flex width-full">
-                <Stack className="flex-justify-center">
+                <Stack className="flex-justify-end margin-bottom-5">
                   {isCosmosDbConfigured() && (
                     <CommandBarButton
                       role="button"
