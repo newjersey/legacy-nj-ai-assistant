@@ -58,51 +58,30 @@ describe("Test the conversationApi function", () => {
     });
   });
 
-  it("formats content correctly when an image file is uploaded", async () => {
-    const imageFile: UploadedFile = { ...defaultUploadedFile, extension: ACCEPTED_FILE_TYPES.JPEG };
-    const conversationRequest = createConversationRequestWithUploadedFile([imageFile]);
+  it.each([
+    ["jpg", ACCEPTED_FILE_TYPES.JPEG, "image_url"],
+    ["png", ACCEPTED_FILE_TYPES.PNG, "image_url"],
+    ["gif", ACCEPTED_FILE_TYPES.GIF, "image_url"],
+    ["bmp", ACCEPTED_FILE_TYPES.BMP, "image_url"],
+    ["tiff", ACCEPTED_FILE_TYPES.TIFF, "image_url"],
+    ["docx", ACCEPTED_FILE_TYPES.DOCX, "CSV format"],
+    ["csv", ACCEPTED_FILE_TYPES.CSV, "Use the following document in your responses"],
+    ["pdf", ACCEPTED_FILE_TYPES.PDF, "Use the following document in your responses"],
+  ])(
+    "formats content correctly when a file of type .%s is uploaded",
+    async (extension: string, fileType: ACCEPTED_FILE_TYPES, expectedString: string) => {
+      const uploadedFile: UploadedFile = {
+        ...defaultUploadedFile,
+        extension: fileType,
+      };
+      const conversationRequest = createConversationRequestWithUploadedFile([uploadedFile]);
 
-    await conversationApi(conversationRequest, defaultAbortSignal, null);
+      await conversationApi(conversationRequest, defaultAbortSignal, null);
 
-    expect(fetch).toHaveBeenCalledWith("/conversation", {
-      ...defaultFetchRequest,
-      body: expect.stringContaining("image_url"),
-    });
-  });
-
-  it("formats content correctly when a .pdf is uploaded", async () => {
-    const pdfFile: UploadedFile = { ...defaultUploadedFile, extension: ACCEPTED_FILE_TYPES.PDF };
-    const conversationRequest = createConversationRequestWithUploadedFile([pdfFile]);
-
-    await conversationApi(conversationRequest, defaultAbortSignal, null);
-
-    expect(fetch).toHaveBeenCalledWith("/conversation", {
-      ...defaultFetchRequest,
-      body: expect.stringContaining("Use the following document in your responses"),
-    });
-  });
-
-  it("formats content correctly when a .docx file is uploaded", async () => {
-    const docxFile: UploadedFile = { ...defaultUploadedFile, extension: ACCEPTED_FILE_TYPES.DOCX };
-    const conversationRequest = createConversationRequestWithUploadedFile([docxFile]);
-
-    await conversationApi(conversationRequest, defaultAbortSignal, null);
-
-    expect(fetch).toHaveBeenCalledWith("/conversation", {
-      ...defaultFetchRequest,
-      body: expect.stringContaining("Use the following document in your responses"),
-    });
-  });
-
-  it("formats content correctly when a .csv file is uploaded", async () => {
-    const csvFile: UploadedFile = { ...defaultUploadedFile, extension: ACCEPTED_FILE_TYPES.CSV };
-    const conversationRequest = createConversationRequestWithUploadedFile([csvFile]);
-
-    await conversationApi(conversationRequest, defaultAbortSignal, null);
-
-    expect(fetch).toHaveBeenCalledWith("/conversation", {
-      ...defaultFetchRequest,
-      body: expect.stringContaining("CSV format"),
-    });
-  });
+      expect(fetch).toHaveBeenCalledWith("/conversation", {
+        ...defaultFetchRequest,
+        body: expect.stringContaining(expectedString),
+      });
+    }
+  );
 });
