@@ -193,8 +193,8 @@ const Chat = () => {
       role: "user",
       content: question,
       date: new Date().toISOString(),
-      uploaded_files: uploadedFiles
-    }
+      uploaded_files: uploadedFiles,
+    };
 
     let conversation: Conversation | null | undefined;
     if (!conversationId) {
@@ -283,10 +283,11 @@ const Chat = () => {
         setMessages([...messages, toolMessage, assistantMessage]);
         logEvent("submit_prompt_success", {
           input_length: question.length,
-          object_length: uploadedFiles == null ? '' : uploadedFiles.map(file => file.contents.length),
-          object_type: uploadedFiles == null ? '' : uploadedFiles.map(file => file.extension),
-          object_size: uploadedFiles == null ? '' : uploadedFiles.map(file => file.size)
-        })
+          object_length:
+            uploadedFiles == null ? "" : uploadedFiles.map((file) => file.contents.length),
+          object_type: uploadedFiles == null ? "" : uploadedFiles.map((file) => file.extension),
+          object_size: uploadedFiles == null ? "" : uploadedFiles.map((file) => file.size),
+        });
       }
     } catch (e) {
       if (!abortController.signal.aborted) {
@@ -311,11 +312,12 @@ const Chat = () => {
         setMessages([...messages, errorChatMsg]);
         logEvent("submit_prompt_server_error", {
           input_length: question.length,
-          object_length: uploadedFiles == null ? '' : uploadedFiles.map(file => file.contents.length),
-          object_type: uploadedFiles == null ? '' : uploadedFiles.map(file => file.extension),
-          object_size: uploadedFiles == null ? '' : uploadedFiles.map(file => file.size),
-          object_description: errorMessage
-        })
+          object_length:
+            uploadedFiles == null ? "" : uploadedFiles.map((file) => file.contents.length),
+          object_type: uploadedFiles == null ? "" : uploadedFiles.map((file) => file.extension),
+          object_size: uploadedFiles == null ? "" : uploadedFiles.map((file) => file.size),
+          object_description: errorMessage,
+        });
       } else {
         setMessages([...messages, userMessage]);
       }
@@ -334,10 +336,10 @@ const Chat = () => {
     conversationId?: string,
     uploadedFiles?: UploadedFile[]
   ) => {
-    setIsLoading(true)
-    setShowLoadingMessage(true)
-    const abortController = new AbortController()
-    abortFuncs.current.unshift(abortController)
+    setIsLoading(true);
+    setShowLoadingMessage(true);
+    const abortController = new AbortController();
+    abortFuncs.current.unshift(abortController);
 
     const userMessage: ChatMessage = {
       id: uuid(),
@@ -786,35 +788,35 @@ const Chat = () => {
         return [];
       }
     }
-    return []
-  }
+    return [];
+  };
 
   const getUserAttachmentDisclaimerText = (uploadedFiles: UploadedFile[]): string => {
-    let disclaimer = ''
+    let disclaimer = "";
 
     if (uploadedFiles.length === 1 && uploadedFiles[0].contents != null) {
-      disclaimer = `${uploadedFiles[0].name} is being referenced`
+      disclaimer = `${uploadedFiles[0].name} is being referenced`;
     } else if (uploadedFiles.length > 1) {
-      const referencedFilenames: string[] = []
+      const referencedFilenames: string[] = [];
 
-      uploadedFiles.forEach(file => {
+      uploadedFiles.forEach((file) => {
         if (file.contents != null) {
-          referencedFilenames.push(file.name)
+          referencedFilenames.push(file.name);
         }
-      })
+      });
 
       const referencedFilenamesString =
-        referencedFilenames.slice(0, -1).join(', ') + ' and ' + referencedFilenames.slice(-1)
+        referencedFilenames.slice(0, -1).join(", ") + " and " + referencedFilenames.slice(-1);
 
-      disclaimer = `${referencedFilenamesString} are being referenced`
+      disclaimer = `${referencedFilenamesString} are being referenced`;
     }
 
-    return disclaimer
-  }
+    return disclaimer;
+  };
 
   const getUploadedImageFiles = (uploadedFiles: UploadedFile[]): UploadedFile[] => {
-    return uploadedFiles.filter(file => isImageFile(file))
-  }
+    return uploadedFiles.filter((file) => isImageFile(file));
+  };
 
   const parsePlotFromMessage = (message: ChatMessage) => {
     if (message?.role && message?.role === "tool") {
@@ -905,14 +907,21 @@ const Chat = () => {
               <div className={styles.chatMessageStream} role="log">
                 {messages.map((answer, index) => (
                   <>
-                    {answer.role === 'user' ? (
-                      <div className={`display-flex flex-justify-end  ${styles.chatMessageUser}`} tabIndex={0}>
+                    {answer.role === "user" ? (
+                      <div
+                        className={`display-flex flex-justify-end  ${styles.chatMessageUser}`}
+                        tabIndex={0}
+                      >
                         <div className={`flex-wrap ${styles.chatMessageUserMessage}`}>
                           {answer.uploaded_files != null &&
                             answer.uploaded_files.some(isImageFile) && (
-                              <div className={`display-flex flex-row width-full flex-align-end flex-justify-end ${styles.chatMessageImageAttachmentPreviewContainer}`}>
-                                {getUploadedImageFiles(answer.uploaded_files).map(file => (
-                                  <div className={`margin-left-205 ${styles.chatMessageImageAttachmentPreview}`}>
+                              <div
+                                className={`display-flex flex-row width-full flex-align-end flex-justify-end ${styles.chatMessageImageAttachmentPreviewContainer}`}
+                              >
+                                {getUploadedImageFiles(answer.uploaded_files).map((file) => (
+                                  <div
+                                    className={`margin-left-205 ${styles.chatMessageImageAttachmentPreview}`}
+                                  >
                                     <img height="auto" src={file.contents} alt={file.name}></img>
                                   </div>
                                 ))}

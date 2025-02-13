@@ -16,42 +16,43 @@ export async function conversationApi(
   conversationIdHeader: string | null | undefined
 ): Promise<Response> {
   const formatContent = (message: any) => {
-    const uploadedFiles = message.uploaded_files as UploadedFile[] | undefined | null
+    const uploadedFiles = message.uploaded_files as UploadedFile[] | undefined | null;
 
-    const apiMessage = structuredClone(message)
-    delete apiMessage.uploaded_files
+    const apiMessage = structuredClone(message);
+    delete apiMessage.uploaded_files;
 
     if (uploadedFiles != null && uploadedFiles.length > 0) {
-      const fileContents: any[] = []
+      const fileContents: any[] = [];
 
-      uploadedFiles.forEach(uploadedFile => {
+      uploadedFiles.forEach((uploadedFile) => {
         if (uploadedFile.contents == null) {
-          return
+          return;
         }
 
         if (isImageFile(uploadedFile)) {
-          fileContents.push({ type: 'image_url', image_url: { url: uploadedFile.contents } })
+          fileContents.push({ type: "image_url", image_url: { url: uploadedFile.contents } });
         } else if (
           uploadedFile.extension === ACCEPTED_FILE_TYPES.PDF ||
           uploadedFile.extension === ACCEPTED_FILE_TYPES.DOCX
         ) {
           fileContents.push({
-            type: 'text',
-            text: `Use the following document in your responses:\n ---BEGIN DOCUMENT---${uploadedFile.contents}---END DOCUMENT---`
-          })
+            type: "text",
+            text: `Use the following document in your responses:\n ---BEGIN DOCUMENT---${uploadedFile.contents}---END DOCUMENT---`,
+          });
         } else if (uploadedFile.extension === ACCEPTED_FILE_TYPES.CSV) {
           fileContents.push({
-            type: 'text',
-            text: `The following document is in CSV format. Use the following document in your responses:\n ---BEGIN DOCUMENT---${uploadedFile.contents}---END DOCUMENT---`
-          })
+            type: "text",
+            text: `The following document is in CSV format. Use the following document in your responses:\n ---BEGIN DOCUMENT---${uploadedFile.contents}---END DOCUMENT---`,
+          });
         }
-      })
+      });
 
-      if (fileContents) apiMessage.content = [...fileContents, { type: 'text', text: apiMessage.content }]
+      if (fileContents)
+        apiMessage.content = [...fileContents, { type: "text", text: apiMessage.content }];
     }
 
-    return apiMessage
-  }
+    return apiMessage;
+  };
 
   const response = await fetch("/conversation", {
     method: "POST",

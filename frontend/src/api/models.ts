@@ -47,16 +47,15 @@ export type AzureSqlServerExecResults = {
 };
 
 export type ChatMessage = {
-  id: string
-  role: string
-  content: string
-  end_turn?: boolean
-  date: string
-  feedback?: Feedback
-  context?: string
-  uploaded_files?: UploadedFile[]
-}
-
+  id: string;
+  role: string;
+  content: string;
+  end_turn?: boolean;
+  date: string;
+  feedback?: Feedback;
+  context?: string;
+  uploaded_files?: UploadedFile[];
+};
 
 export type ExecResults = {
   intent: string;
