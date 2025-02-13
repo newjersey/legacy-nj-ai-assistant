@@ -871,11 +871,7 @@ const Chat = () => {
                 ></h2>
               </Stack>
             ) : (
-              <div
-                className={styles.chatMessageStream}
-                style={{ marginBottom: isLoading ? "40px" : "0px" }}
-                role="log"
-              >
+              <div className={styles.chatMessageStream} role="log">
                 {messages.map((answer, index) => (
                   <>
                     {answer.role === "user" ? (
@@ -948,7 +944,6 @@ const Chat = () => {
                 <div ref={chatMessageStreamEnd} />
               </div>
             )}
-
             <Stack horizontal className={styles.chatInput}>
               {isLoading && messages.length > 0 && (
                 <Stack
@@ -966,70 +961,63 @@ const Chat = () => {
                   </span>
                 </Stack>
               )}
-              <Stack className="flex-justify-center">
-                {isCosmosDbConfigured() && (
-                  <CommandBarButton
-                    role="button"
-                    styles={{
-                      icon: {
-                        color: "#FFFFFF",
-                      },
-                      iconDisabled: {
-                        color: "#BDBDBD !important",
-                      },
-                      root: {
-                        color: "#FFFFFF",
-                        background:
-                          "radial-gradient(109.81% 107.82% at 100.1% 90.19%, #0F6CBD 33.63%, #2D87C3 70.31%, #8DDDD8 100%)",
-                      },
-                      rootDisabled: {
-                        background: "#F0F0F0",
-                      },
-                    }}
-                    className={styles.newChatIcon}
-                    iconProps={{ iconName: "Add" }}
-                    onClick={newChat}
-                    disabled={disabledButton()}
-                    aria-label="start a new chat button"
-                  />
-                )}
-                <button
-                  className={`usa-button width-7 display-flex flex-row flex-justify-center flex-align-center ${additionalClearChatStyles}`}
-                  id={styles.chatHistoryButton}
-                  onClick={isCosmosDbConfigured() ? clearChat : newChat}
-                  aria-label="clear chat button"
-                >
-                  <svg
-                    className="usa-icon margin-right-05"
-                    aria-hidden="true"
-                    focusable="false"
-                    role="img"
-                  >
-                    <use href={`${icons}#history`} />
-                  </svg>
-                </button>
-                <Dialog
-                  hidden={hideErrorDialog}
-                  onDismiss={handleErrorDialogClose}
-                  dialogContentProps={errorDialogContentProps}
-                  modalProps={modalProps}
-                ></Dialog>
-              </Stack>
-              <QuestionInput
-                clearOnSend
-                placeholder="Type a new question..."
-                disabled={isLoading}
-                onSend={(question, id, uploadedFile) => {
-                  appStateContext?.state.isCosmosDBAvailable?.cosmosDB
-                    ? makeApiRequestWithCosmosDB(question, id)
-                    : makeApiRequestWithoutCosmosDB(question, id, uploadedFile);
-                }}
-                conversationId={
-                  appStateContext?.state.currentChat?.id
-                    ? appStateContext?.state.currentChat?.id
-                    : undefined
-                }
-              />
+              <div className='display-flex width-full'>
+                <Stack className='flex-justify-center'>
+                  {isCosmosDbConfigured() && (
+                    <CommandBarButton
+                      role="button"
+                      styles={{
+                        icon: {
+                          color: '#FFFFFF'
+                        },
+                        iconDisabled: {
+                          color: '#BDBDBD !important'
+                        },
+                        root: {
+                          color: '#FFFFFF',
+                          background:
+                            'radial-gradient(109.81% 107.82% at 100.1% 90.19%, #0F6CBD 33.63%, #2D87C3 70.31%, #8DDDD8 100%)'
+                        },
+                        rootDisabled: {
+                          background: '#F0F0F0'
+                        }
+                      }}
+                      className={styles.newChatIcon}
+                      iconProps={{ iconName: 'Add' }}
+                      onClick={newChat}
+                      disabled={disabledButton()}
+                      aria-label="start a new chat button"
+                    />
+                  )}
+                  <button
+                    className={`usa-button width-7 display-flex flex-row flex-justify-center flex-align-center ${additionalClearChatStyles}`}
+                    id={styles.chatHistoryButton}
+                    onClick={isCosmosDbConfigured() ? clearChat : newChat}
+                    aria-label="clear chat button">
+                    <svg className="usa-icon margin-right-05" aria-hidden="true" focusable="false" role="img">
+                      <use href={`${icons}#history`} />
+                    </svg>
+                  </button>
+                  <Dialog
+                    hidden={hideErrorDialog}
+                    onDismiss={handleErrorDialogClose}
+                    dialogContentProps={errorDialogContentProps}
+                    modalProps={modalProps}></Dialog>
+                </Stack>
+                <QuestionInput
+                  clearOnSend
+                  placeholder="Type a new question..."
+                  disabled={isLoading}
+                  onSend={(question, id, uploadedFile) => {
+                    appStateContext?.state.isCosmosDBAvailable?.cosmosDB
+                      ? makeApiRequestWithCosmosDB(question, id, uploadedFile)
+                      : makeApiRequestWithoutCosmosDB(question, id, uploadedFile)
+                  }}
+                  conversationId={
+                    appStateContext?.state.currentChat?.id ? appStateContext?.state.currentChat?.id : undefined
+                  }
+                />
+              </div>
             </Stack>
           </div>
           {/* Citation Panel */}
