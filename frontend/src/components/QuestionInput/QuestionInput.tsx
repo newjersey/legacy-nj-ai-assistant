@@ -343,7 +343,7 @@ export const QuestionInput = ({
   };
 
   return (
-    <div className={`flex-wrap flex-column ${styles.questionInputContainer}`}>
+    <div className="width-full">
       {inputErrors.length > 0 && <AlertContainer onClose={closeError} alerts={inputErrors} />}
 
       <textarea
@@ -360,7 +360,7 @@ export const QuestionInput = ({
       )}
 
       <div
-        className={`display-flex margin-bottom-3 width-full padding-x-2 ${styles.questionInputChatButtons}`}
+        className={`width-full margin-bottom-3 padding-x-2 ${styles.questionInputChatButtons}`}
       >
         <div>
           <label

@@ -905,10 +905,9 @@ const Chat = () => {
                   <>
                     {answer.role === "user" ? (
                       <div
-                        className={`display-flex flex-justify-end  ${styles.chatMessageUser}`}
-                        role="log"
+                        className={`${styles.chatMessageUser}`}
                       >
-                        <div className={`flex-wrap ${styles.chatMessageUserMessage}`}>
+                        <div className={`${styles.chatMessageUserMessage}`}>
                           {answer.uploaded_files != null &&
                             answer.uploaded_files.some(isImageFile) && (
                               <div
