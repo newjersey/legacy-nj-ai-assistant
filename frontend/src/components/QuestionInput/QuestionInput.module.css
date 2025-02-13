@@ -64,7 +64,7 @@ textarea.questionInputTextArea {
   bottom: 190px;
   z-index: 1;
   gap: 12px;
-  background-color:#ffffff;
+  background-color: #ffffff;
 }
 
 .errorAlert {

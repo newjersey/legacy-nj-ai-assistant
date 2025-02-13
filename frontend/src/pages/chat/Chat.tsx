@@ -905,19 +905,17 @@ const Chat = () => {
               <div className={styles.chatMessageStream} role="log">
                 {messages.map((answer, index) => (
                   <>
-                    {answer.role === "user" ? (
-                      <div className={styles.chatMessageUser}>
-                        <div className={styles.chatMessageUserMessage}>
-                          {answer.uploaded_file != null &&
-                            isImageFile(answer.uploaded_file) &&
-                            answer.uploaded_file.contents && (
-                              <div className={styles.chatMessageUserAttachment}>
-                                <img
-                                  width="100"
-                                  height="auto"
-                                  src={answer.uploaded_file.contents}
-                                  alt={answer.uploaded_file.name}
-                                ></img>
+                    {answer.role === 'user' ? (
+                      <div className={`display-flex flex-justify-end  ${styles.chatMessageUser}`} tabIndex={0}>
+                        <div className={`flex-wrap ${styles.chatMessageUserMessage}`}>
+                          {answer.uploaded_files != null &&
+                            answer.uploaded_files.some(isImageFile) && (
+                              <div className={`display-flex flex-row width-full flex-align-end flex-justify-end ${styles.chatMessageImageAttachmentPreviewContainer}`}>
+                                {getUploadedImageFiles(answer.uploaded_files).map(file => (
+                                  <div className={`margin-left-205 ${styles.chatMessageImageAttachmentPreview}`}>
+                                    <img height="auto" src={file.contents} alt={file.name}></img>
+                                  </div>
+                                ))}
                               </div>
                             )}
                           <div className={styles.userMessageTextContent}>{answer.content}</div>

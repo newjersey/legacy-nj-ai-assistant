@@ -1,26 +1,27 @@
-import styles from './QuestionInput.module.css'
-import icons from '@newjersey/njwds/dist/img/sprite.svg'
+import styles from "./QuestionInput.module.css";
+import icons from "@newjersey/njwds/dist/img/sprite.svg";
 
 interface FileUploadPreviewProps {
-  onClose: (id: string) => void
-  fileName: string
+  onClose: (id: string) => void;
+  fileName: string;
 }
 
 export const FileUploadPreview = ({ onClose, fileName }: FileUploadPreviewProps) => {
   const formatFileName = (fileName: string) => {
     if (fileName.length < 20) {
-      return fileName
+      return fileName;
     }
 
-    return `${fileName.substring(0, 9)}...${fileName.substring(fileName.length - 9)}`
-  }
+    return `${fileName.substring(0, 9)}...${fileName.substring(fileName.length - 9)}`;
+  };
 
-  const fileUploadPreviewId = `filePreview-${fileName}-${Date.now()}`
+  const fileUploadPreviewId = `filePreview-${fileName}-${Date.now()}`;
 
   return (
     <div
       className={`text-black flex-align-center padding-x-1 margin-right-105 margin-bottom-105 height-5 ${styles.fileUploadPreview}`}
-      data-testid={`filePreview-${fileName}`}>
+      data-testid={`filePreview-${fileName}`}
+    >
       <svg className="usa-icon margin-right-05" aria-hidden="true" focusable="false" role="img">
         <use href={`${icons}#image`} />
       </svg>
@@ -28,11 +29,12 @@ export const FileUploadPreview = ({ onClose, fileName }: FileUploadPreviewProps)
       <button
         className={`usa-button usa-button--unstyled ${styles.closeButton}`}
         aria-label="Remove file upload"
-        onClick={() => onClose(fileUploadPreviewId)}>
+        onClick={() => onClose(fileUploadPreviewId)}
+      >
         <svg className="usa-icon" aria-hidden="true" focusable="false" role="img">
           <use href={`${icons}#close`} />
         </svg>
       </button>
     </div>
-  )
-}
+  );
+};
