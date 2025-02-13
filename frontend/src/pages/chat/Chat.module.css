@@ -21,6 +21,10 @@
   height: 100%;
 }
 
+.chatHeader {
+  justify-content: space-around
+}
+
 .chatContainer {
   display: flex;
   flex-direction: column;
@@ -33,10 +37,6 @@
   align-items: center;
   height: 100%;
   overflow-y: auto;
-}
-
-.chatHeader {
-  background-color: pink;
 }
 
 .chatEmptyStateTitle {
@@ -66,7 +66,7 @@
 }
 
 .chatIcon {
-  height: 62px;
+  height: 36px;
   width: auto;
   margin-top: 36px;
 }

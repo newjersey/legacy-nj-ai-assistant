@@ -884,29 +884,29 @@ const Chat = () => {
         </Stack>
       ) : (
         <Stack horizontal className={styles.chatRoot}>
-          <div className={styles.chatContainer}>
+          <div className={`${styles.chatContainer}`}>
             {!messages || messages.length < 1 ? (
-              <Stack className={styles.chatEmptyState}>
-                <img
-                  src={logo}
-                  className={styles.chatIcon}
-                  aria-hidden="true"
-                  alt="Official logo for the State of New Jersey"
-                />
-                <h1 className={styles.chatEmptyStateTitle}>{ui?.chat_title}</h1>
+              <div className={`display-flex flex-column ${styles.chatEmptyState}`}>
+                <div className={`display-flex flex-row flex-align-center ${styles.chatHeader}`}>
+                  <img
+                    src={logo}
+                    className={`margin-x-1 ${styles.chatIcon}`}
+                    aria-hidden="true"
+                    alt="Official logo for the State of New Jersey"
+                  />
+                  <h1 className={`margin-x-1 ${styles.chatEmptyStateTitle}`}>{ui?.chat_title}</h1>
+                </div>
                 <h2
                   className={styles.chatEmptyStateSubtitle}
                   dangerouslySetInnerHTML={{ __html: ui?.chat_description ?? "" }}
                 ></h2>
-              </Stack>
+              </div>
             ) : (
               <div className={styles.chatMessageStream} role="log">
                 {messages.map((answer, index) => (
                   <>
                     {answer.role === "user" ? (
-                      <div
-                        className={`${styles.chatMessageUser}`}
-                      >
+                      <div className={`${styles.chatMessageUser}`}>
                         <div className={`${styles.chatMessageUserMessage}`}>
                           {answer.uploaded_files != null &&
                             answer.uploaded_files.some(isImageFile) && (
