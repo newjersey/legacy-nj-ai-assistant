@@ -247,7 +247,7 @@ export const QuestionInput = ({ onSend, disabled, placeholder, clearOnSend, conv
             </div>
           )}
         </div>
-        <div className={`display-flex margin-bottom-3 width-full padding-x-2 ${styles.questionInputChatButtons}`}>
+        <div className={`width-full margin-bottom-3 padding-x-2 ${styles.questionInputChatButtons}`}>
           <div>
             <label
               htmlFor="file-upload"

@@ -71,6 +71,7 @@
   flex: 1;
   display: flex;
   flex-direction: column;
+  width: 100%;
   overflow-y: auto;
   padding: var(--padding-chat-outer) var(--padding-chat-x) 0;
 }
@@ -143,6 +144,10 @@
 }
 
 .chatInput {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 8px;
   width: 100%;
   padding: 0 var(--padding-chat-x) var(--padding-chat-outer);
 }
@@ -174,18 +179,9 @@
 }
 
 .stopGeneratingContainer {
-  box-sizing: border-box;
-  display: flex;
-  flex-direction: row;
-  justify-content: center;
   align-items: center;
-  padding: 5px 16px;
+  padding: 8px 16px;
   gap: 4px;
-  position: absolute;
-  width: 161px;
-  height: 32px;
-  left: calc(50% - 161px / 2 + 25.8px);
-  bottom: 116px;
   border: 1px solid #d1d1d1;
   border-radius: 16px;
 }
@@ -193,22 +189,11 @@
 .stopGeneratingIcon {
   width: 14px;
   height: 14px;
-  color: #424242;
 }
 
 .stopGeneratingText {
-  width: 103px;
-  height: 20px;
-  font-style: normal;
   font-weight: 600;
   font-size: 14px;
-  line-height: 20px;
-  display: flex;
-  align-items: center;
-  color: #242424;
-  flex: none;
-  order: 0;
-  flex-grow: 0;
 }
 
 .citationPanel {
