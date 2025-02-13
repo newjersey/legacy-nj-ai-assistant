@@ -1017,7 +1017,7 @@ const Chat = () => {
                   disabled={isLoading}
                   onSend={(question, id, uploadedFile) => {
                     appStateContext?.state.isCosmosDBAvailable?.cosmosDB
-                      ? makeApiRequestWithCosmosDB(question, id, uploadedFile)
+                      ? makeApiRequestWithCosmosDB(question, id)
                       : makeApiRequestWithoutCosmosDB(question, id, uploadedFile);
                   }}
                   conversationId={
