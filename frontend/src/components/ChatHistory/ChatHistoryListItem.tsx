@@ -49,7 +49,10 @@ const formatMonth = (month: string) => {
   }
 };
 
-export const ChatHistoryListItemCell: React.FC<ChatHistoryListItemCellProps> = ({ item, onSelect }) => {
+export const ChatHistoryListItemCell: React.FC<ChatHistoryListItemCellProps> = ({
+  item,
+  onSelect,
+}) => {
   const [isHovered, setIsHovered] = React.useState(false);
   const [edit, setEdit] = useState(false);
   const [editTitle, setEditTitle] = useState("");
@@ -118,7 +121,8 @@ export const ChatHistoryListItemCell: React.FC<ChatHistoryListItemCellProps> = (
     appStateContext?.dispatch({ type: "UPDATE_CURRENT_CHAT", payload: item });
   };
 
-  const truncatedTitle = item?.title?.length > 28 ? `${item.title.substring(0, 28)} ...` : item.title;
+  const truncatedTitle =
+    item?.title?.length > 28 ? `${item.title.substring(0, 28)} ...` : item.title;
 
   const handleSaveEdit = async (e: any) => {
     e.preventDefault();
@@ -198,7 +202,11 @@ export const ChatHistoryListItemCell: React.FC<ChatHistoryListItemCellProps> = (
       {edit ? (
         <>
           <Stack.Item style={{ width: "100%" }}>
-            <form aria-label="edit title form" onSubmit={(e) => handleSaveEdit(e)} style={{ padding: "5px 0px" }}>
+            <form
+              aria-label="edit title form"
+              onSubmit={(e) => handleSaveEdit(e)}
+              style={{ padding: "5px 0px" }}
+            >
               <Stack horizontal verticalAlign={"start"}>
                 <Stack.Item>
                   <TextField
@@ -218,7 +226,9 @@ export const ChatHistoryListItemCell: React.FC<ChatHistoryListItemCellProps> = (
                       <IconButton
                         role="button"
                         disabled={errorRename !== undefined}
-                        onKeyDown={(e) => (e.key === " " || e.key === "Enter" ? handleSaveEdit(e) : null)}
+                        onKeyDown={(e) =>
+                          e.key === " " || e.key === "Enter" ? handleSaveEdit(e) : null
+                        }
                         onClick={(e) => handleSaveEdit(e)}
                         aria-label="confirm new title"
                         iconProps={{ iconName: "CheckMark" }}
@@ -227,7 +237,9 @@ export const ChatHistoryListItemCell: React.FC<ChatHistoryListItemCellProps> = (
                       <IconButton
                         role="button"
                         disabled={errorRename !== undefined}
-                        onKeyDown={(e) => (e.key === " " || e.key === "Enter" ? cancelEditTitle() : null)}
+                        onKeyDown={(e) =>
+                          e.key === " " || e.key === "Enter" ? cancelEditTitle() : null
+                        }
                         onClick={() => cancelEditTitle()}
                         aria-label="cancel edit title"
                         iconProps={{ iconName: "Cancel" }}
@@ -298,7 +310,9 @@ export const ChatHistoryListItemCell: React.FC<ChatHistoryListItemCellProps> = (
   );
 };
 
-export const ChatHistoryListItemGroups: React.FC<ChatHistoryListItemGroupsProps> = ({ groupedChatHistory }) => {
+export const ChatHistoryListItemGroups: React.FC<ChatHistoryListItemGroupsProps> = ({
+  groupedChatHistory,
+}) => {
   const appStateContext = useContext(AppStateContext);
   const observerTarget = useRef(null);
   const [, setSelectedItem] = React.useState<Conversation | null>(null);
@@ -331,7 +345,8 @@ export const ChatHistoryListItemGroups: React.FC<ChatHistoryListItemGroupsProps>
     setShowSpinner(true);
 
     await historyList(offset).then((response) => {
-      const concatenatedChatHistory = currentChatHistory && response && currentChatHistory.concat(...response);
+      const concatenatedChatHistory =
+        currentChatHistory && response && currentChatHistory.concat(...response);
       if (response) {
         appStateContext?.dispatch({
           type: "FETCH_CHAT_HISTORY",
@@ -348,7 +363,8 @@ export const ChatHistoryListItemGroups: React.FC<ChatHistoryListItemGroupsProps>
   useEffect(() => {
     const observer = new IntersectionObserver(
       (entries) => {
-        if (entries[0].isIntersecting) setObserverCounter((observerCounter) => (observerCounter += 1));
+        if (entries[0].isIntersecting)
+          setObserverCounter((observerCounter) => (observerCounter += 1));
       },
       { threshold: 1 }
     );
@@ -398,7 +414,11 @@ export const ChatHistoryListItemGroups: React.FC<ChatHistoryListItemGroupsProps>
       )}
       {showSpinner && (
         <div className={styles.spinnerContainer}>
-          <Spinner size={SpinnerSize.small} aria-label="loading more chat history" className={styles.spinner} />
+          <Spinner
+            size={SpinnerSize.small}
+            aria-label="loading more chat history"
+            className={styles.spinner}
+          />
         </div>
       )}
     </div>

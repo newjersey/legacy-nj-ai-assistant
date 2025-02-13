@@ -70,7 +70,12 @@ const ChatHistoryList: React.FC<ChatHistoryListProps> = () => {
     groupedChatHistory = groupByMonth(chatHistory);
   } else {
     return (
-      <Stack horizontal horizontalAlign="center" verticalAlign="center" style={{ width: "100%", marginTop: 10 }}>
+      <Stack
+        horizontal
+        horizontalAlign="center"
+        verticalAlign="center"
+        style={{ width: "100%", marginTop: 10 }}
+      >
         <StackItem>
           <Text style={{ alignSelf: "center", fontWeight: "400", fontSize: 14 }}>
             <span>No chat history.</span>

@@ -174,5 +174,7 @@ export const AppStateProvider: React.FC<AppStateProviderProps> = ({ children }) 
     getFrontendSettings();
   }, []);
 
-  return <AppStateContext.Provider value={{ state, dispatch }}>{children}</AppStateContext.Provider>;
+  return (
+    <AppStateContext.Provider value={{ state, dispatch }}>{children}</AppStateContext.Provider>
+  );
 };

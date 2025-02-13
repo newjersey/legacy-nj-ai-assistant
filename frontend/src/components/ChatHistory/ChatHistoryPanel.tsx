@@ -52,7 +52,9 @@ export function ChatHistoryPanel(_props: ChatHistoryPanelProps) {
 
   const clearAllDialogContentProps = {
     type: DialogType.close,
-    title: !clearingError ? "Are you sure you want to clear all chat history?" : "Error deleting all of chat history",
+    title: !clearingError
+      ? "Are you sure you want to clear all chat history?"
+      : "Error deleting all of chat history",
     closeButtonAriaLabel: "Close",
     subText: !clearingError
       ? "All chat history will be permanently removed."
@@ -104,7 +106,13 @@ export function ChatHistoryPanel(_props: ChatHistoryPanelProps) {
 
   return (
     <section className={styles.container} data-is-scrollable aria-label={"chat history panel"}>
-      <Stack horizontal horizontalAlign="space-between" verticalAlign="center" wrap aria-label="chat history header">
+      <Stack
+        horizontal
+        horizontalAlign="space-between"
+        verticalAlign="center"
+        wrap
+        aria-label="chat history header"
+      >
         <StackItem>
           <Text
             role="heading"
@@ -175,13 +183,19 @@ export function ChatHistoryPanel(_props: ChatHistoryPanelProps) {
             appStateContext?.state.isCosmosDBAvailable && (
               <>
                 <Stack>
-                  <Stack horizontalAlign="center" verticalAlign="center" style={{ width: "100%", marginTop: 10 }}>
+                  <Stack
+                    horizontalAlign="center"
+                    verticalAlign="center"
+                    style={{ width: "100%", marginTop: 10 }}
+                  >
                     <StackItem>
                       <Text style={{ alignSelf: "center", fontWeight: "400", fontSize: 16 }}>
                         {appStateContext?.state.isCosmosDBAvailable?.status && (
                           <span>{appStateContext?.state.isCosmosDBAvailable?.status}</span>
                         )}
-                        {!appStateContext?.state.isCosmosDBAvailable?.status && <span>Error loading chat history</span>}
+                        {!appStateContext?.state.isCosmosDBAvailable?.status && (
+                          <span>Error loading chat history</span>
+                        )}
                       </Text>
                     </StackItem>
                     <StackItem>
@@ -226,7 +240,9 @@ export function ChatHistoryPanel(_props: ChatHistoryPanelProps) {
         modalProps={modalProps}
       >
         <DialogFooter>
-          {!clearingError && <PrimaryButton onClick={onClearAllChatHistory} disabled={clearing} text="Clear All" />}
+          {!clearingError && (
+            <PrimaryButton onClick={onClearAllChatHistory} disabled={clearing} text="Clear All" />
+          )}
           <DefaultButton
             onClick={onHideClearAllDialog}
             disabled={clearing}

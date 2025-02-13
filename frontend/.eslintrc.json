@@ -74,5 +74,9 @@
       }
     ]
   },
+  // Ignore files related to ChatHistory until this feature is 
+  // enabled + we have a deeper understanding of how to handle 
+  // lint errors and warnings here
+
   "ignorePatterns": ["node_modules/", "build/", "dist/", "public/", "*.config.ts", "src/components/ChatHistory/"]
 }

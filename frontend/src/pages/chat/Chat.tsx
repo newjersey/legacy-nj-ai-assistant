@@ -118,7 +118,9 @@ const Chat = () => {
   }, [appStateContext?.state.isLoading]);
 
   useEffect(() => {
-    setIsLoading(appStateContext?.state.chatHistoryLoadingState === ChatHistoryLoadingState.Loading);
+    setIsLoading(
+      appStateContext?.state.chatHistoryLoadingState === ChatHistoryLoadingState.Loading
+    );
   }, [appStateContext?.state.chatHistoryLoadingState]);
 
   const getUserInfoList = async () => {
@@ -138,7 +140,11 @@ const Chat = () => {
   let toolMessage = {} as ChatMessage;
   let assistantContent = "";
 
-  const processResultMessage = (resultMessage: ChatMessage, userMessage: ChatMessage, conversationId?: string) => {
+  const processResultMessage = (
+    resultMessage: ChatMessage,
+    userMessage: ChatMessage,
+    conversationId?: string
+  ) => {
     if (resultMessage.content.includes("all_exec_results")) {
       const parsedExecResults = JSON.parse(resultMessage.content) as AzureSqlServerExecResults;
       setExecResults(parsedExecResults.all_exec_results);
@@ -340,7 +346,9 @@ const Chat = () => {
     let request: ConversationRequest;
     let conversation;
     if (conversationId) {
-      conversation = appStateContext?.state?.chatHistory?.find((conv) => conv.id === conversationId);
+      conversation = appStateContext?.state?.chatHistory?.find(
+        (conv) => conv.id === conversationId
+      );
       if (!conversation) {
         console.error("Conversation not found.");
         setIsLoading(false);
@@ -360,7 +368,8 @@ const Chat = () => {
       setMessages(request.messages);
     }
     let result = {} as ChatResponse;
-    let errorResponseMessage = "Please try again. If the problem persists, please contact the site administrator.";
+    let errorResponseMessage =
+      "Please try again. If the problem persists, please contact the site administrator.";
     try {
       const response = conversationId
         ? await historyGenerate(request, abortController.signal, conversationId)
@@ -368,7 +377,9 @@ const Chat = () => {
       if (!response?.ok) {
         const responseJson = await response.json();
         errorResponseMessage =
-          responseJson.error === undefined ? errorResponseMessage : parseErrorMessage(responseJson.error);
+          responseJson.error === undefined
+            ? errorResponseMessage
+            : parseErrorMessage(responseJson.error);
         const errorChatMsg: ChatMessage = {
           id: uuid(),
           role: ERROR,
@@ -377,7 +388,9 @@ const Chat = () => {
         };
         let resultConversation;
         if (conversationId) {
-          resultConversation = appStateContext?.state?.chatHistory?.find((conv) => conv.id === conversationId);
+          resultConversation = appStateContext?.state?.chatHistory?.find(
+            (conv) => conv.id === conversationId
+          );
           if (!resultConversation) {
             console.error("Conversation not found.");
             setIsLoading(false);
@@ -451,7 +464,9 @@ const Chat = () => {
 
         let resultConversation;
         if (conversationId) {
-          resultConversation = appStateContext?.state?.chatHistory?.find((conv) => conv.id === conversationId);
+          resultConversation = appStateContext?.state?.chatHistory?.find(
+            (conv) => conv.id === conversationId
+          );
           if (!resultConversation) {
             console.error("Conversation not found.");
             setIsLoading(false);
@@ -503,7 +518,9 @@ const Chat = () => {
         };
         let resultConversation;
         if (conversationId) {
-          resultConversation = appStateContext?.state?.chatHistory?.find((conv) => conv.id === conversationId);
+          resultConversation = appStateContext?.state?.chatHistory?.find(
+            (conv) => conv.id === conversationId
+          );
           if (!resultConversation) {
             console.error("Conversation not found.");
             setIsLoading(false);
@@ -557,12 +574,16 @@ const Chat = () => {
 
   const clearChat = async () => {
     setClearingChat(true);
-    if (appStateContext?.state.currentChat?.id && appStateContext?.state.isCosmosDBAvailable.cosmosDB) {
+    if (
+      appStateContext?.state.currentChat?.id &&
+      appStateContext?.state.isCosmosDBAvailable.cosmosDB
+    ) {
       const response = await historyClear(appStateContext?.state.currentChat.id);
       if (!response.ok) {
         setErrorMsg({
           title: "Error clearing current chat",
-          subtitle: "Please try again. If the problem persists, please contact the site administrator.",
+          subtitle:
+            "Please try again. If the problem persists, please contact the site administrator.",
         });
         toggleErrorDialog();
       } else {
@@ -669,13 +690,19 @@ const Chat = () => {
       return response;
     };
 
-    if (appStateContext && appStateContext.state.currentChat && processMessages === messageStatus.Done) {
+    if (
+      appStateContext &&
+      appStateContext.state.currentChat &&
+      processMessages === messageStatus.Done
+    ) {
       if (appStateContext.state.isCosmosDBAvailable.cosmosDB) {
         if (!appStateContext?.state.currentChat?.messages) {
           console.error("Failure fetching current chat state.");
           return;
         }
-        const noContentError = appStateContext.state.currentChat.messages.find((m) => m.role === ERROR);
+        const noContentError = appStateContext.state.currentChat.messages.find(
+          (m) => m.role === ERROR
+        );
 
         if (!noContentError?.content.includes(NO_CONTENT_ERROR)) {
           saveToDB(appStateContext.state.currentChat.messages, appStateContext.state.currentChat.id)
@@ -802,7 +829,8 @@ const Chat = () => {
           />
           <h1 className={styles.chatEmptyStateTitle}>Authentication Not Configured</h1>
           <h2 className={styles.chatEmptyStateSubtitle}>
-            This app does not have authentication configured. Please add an identity provider by finding your app in the{" "}
+            This app does not have authentication configured. Please add an identity provider by
+            finding your app in the{" "}
             <a href="https://portal.azure.com/" target="_blank">
               Azure Portal
             </a>
@@ -819,7 +847,10 @@ const Chat = () => {
             <strong>Authentication configuration takes a few minutes to apply. </strong>
           </h2>
           <h2 className={styles.chatEmptyStateSubtitle} style={{ fontSize: "20px" }}>
-            <strong>If you deployed in the last 10 minutes, please wait and reload the page after 10 minutes.</strong>
+            <strong>
+              If you deployed in the last 10 minutes, please wait and reload the page after 10
+              minutes.
+            </strong>
           </h2>
         </Stack>
       ) : (
@@ -840,7 +871,11 @@ const Chat = () => {
                 ></h2>
               </Stack>
             ) : (
-              <div className={styles.chatMessageStream} style={{ marginBottom: isLoading ? "40px" : "0px" }} role="log">
+              <div
+                className={styles.chatMessageStream}
+                style={{ marginBottom: isLoading ? "40px" : "0px" }}
+                role="log"
+              >
                 {messages.map((answer, index) => (
                   <>
                     {answer.role === "user" ? (
@@ -884,7 +919,10 @@ const Chat = () => {
                     ) : answer.role === ERROR ? (
                       <div className={styles.chatMessageError}>
                         <Stack horizontal className={styles.chatMessageErrorContent}>
-                          <ErrorCircleRegular className={styles.errorIcon} style={{ color: "rgba(182, 52, 67, 1)" }} />
+                          <ErrorCircleRegular
+                            className={styles.errorIcon}
+                            style={{ color: "rgba(182, 52, 67, 1)" }}
+                          />
                           <span>Error</span>
                         </Stack>
                         <span className={styles.chatMessageErrorContent}>{answer.content}</span>
@@ -961,7 +999,12 @@ const Chat = () => {
                   onClick={isCosmosDbConfigured() ? clearChat : newChat}
                   aria-label="clear chat button"
                 >
-                  <svg className="usa-icon margin-right-05" aria-hidden="true" focusable="false" role="img">
+                  <svg
+                    className="usa-icon margin-right-05"
+                    aria-hidden="true"
+                    focusable="false"
+                    role="img"
+                  >
                     <use href={`${icons}#history`} />
                   </svg>
                 </button>
@@ -982,14 +1025,21 @@ const Chat = () => {
                     : makeApiRequestWithoutCosmosDB(question, id, uploadedFile);
                 }}
                 conversationId={
-                  appStateContext?.state.currentChat?.id ? appStateContext?.state.currentChat?.id : undefined
+                  appStateContext?.state.currentChat?.id
+                    ? appStateContext?.state.currentChat?.id
+                    : undefined
                 }
               />
             </Stack>
           </div>
           {/* Citation Panel */}
           {messages && messages.length > 0 && isCitationPanelOpen && activeCitation && (
-            <Stack.Item className={styles.citationPanel} tabIndex={0} role="tabpanel" aria-label="Citations Panel">
+            <Stack.Item
+              className={styles.citationPanel}
+              tabIndex={0}
+              role="tabpanel"
+              aria-label="Citations Panel"
+            >
               <Stack
                 aria-label="Citations Panel Header Container"
                 horizontal
@@ -1033,7 +1083,12 @@ const Chat = () => {
             </Stack.Item>
           )}
           {messages && messages.length > 0 && isIntentsPanelOpen && (
-            <Stack.Item className={styles.citationPanel} tabIndex={0} role="tabpanel" aria-label="Intents Panel">
+            <Stack.Item
+              className={styles.citationPanel}
+              tabIndex={0}
+              role="tabpanel"
+              aria-label="Intents Panel"
+            >
               <Stack
                 aria-label="Intents Panel Header Container"
                 horizontal
@@ -1100,7 +1155,9 @@ const Chat = () => {
               </Stack>
             </Stack.Item>
           )}
-          {appStateContext?.state.isChatHistoryOpen && isCosmosDbConfigured() && <ChatHistoryPanel />}
+          {appStateContext?.state.isChatHistoryOpen && isCosmosDbConfigured() && (
+            <ChatHistoryPanel />
+          )}
         </Stack>
       )}
     </div>

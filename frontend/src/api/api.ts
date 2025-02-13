@@ -1,7 +1,14 @@
 import { chatHistorySampleData } from "../constants/chatHistory";
 import { ACCEPTED_FILE_TYPES, isImageFile, UploadedFile } from "../custom/fileUploadUtils";
 
-import { ChatMessage, Conversation, ConversationRequest, CosmosDBHealth, CosmosDBStatus, UserInfo } from "./models";
+import {
+  ChatMessage,
+  Conversation,
+  ConversationRequest,
+  CosmosDBHealth,
+  CosmosDBStatus,
+  UserInfo,
+} from "./models";
 
 export async function conversationApi(
   options: ConversationRequest,
@@ -336,7 +343,10 @@ export const frontendSettings = async (): Promise<Response | null> => {
 
   return response;
 };
-export const historyMessageFeedback = async (messageId: string, feedback: string): Promise<Response> => {
+export const historyMessageFeedback = async (
+  messageId: string,
+  feedback: string
+): Promise<Response> => {
   const response = await fetch("/history/message_feedback", {
     method: "POST",
     body: JSON.stringify({

@@ -21,7 +21,13 @@ function isValidLength(content: string) {
   return content.length <= MAX_INPUT_LENGTH;
 }
 
-export const QuestionInput = ({ onSend, disabled, placeholder, clearOnSend, conversationId }: Props) => {
+export const QuestionInput = ({
+  onSend,
+  disabled,
+  placeholder,
+  clearOnSend,
+  conversationId,
+}: Props) => {
   const [question, setQuestion] = useState<string>("");
   const [selectedFile, setSelectedFile] = useState<File | null>(null);
   const fileInputRef = useRef<HTMLInputElement | null>(null);
@@ -33,8 +39,14 @@ export const QuestionInput = ({ onSend, disabled, placeholder, clearOnSend, conv
     }
 
     const send = (uploadedFile?: UploadedFile) => {
-      if (uploadedFile != null && !isImageFile(uploadedFile) && !isValidLength(uploadedFile.contents)) {
-        setInputError(`File contents cannot exceed ${MAX_INPUT_LENGTH} characters. Please try a smaller file.`);
+      if (
+        uploadedFile != null &&
+        !isImageFile(uploadedFile) &&
+        !isValidLength(uploadedFile.contents)
+      ) {
+        setInputError(
+          `File contents cannot exceed ${MAX_INPUT_LENGTH} characters. Please try a smaller file.`
+        );
         setSelectedFile(null);
         if (fileInputRef?.current?.value) {
           fileInputRef.current.value = "";
@@ -48,7 +60,9 @@ export const QuestionInput = ({ onSend, disabled, placeholder, clearOnSend, conv
       }
 
       if (!isValidLength(question)) {
-        setInputError(`Prompt cannot exceed ${MAX_INPUT_LENGTH} characters. Please try a smaller prompt.`);
+        setInputError(
+          `Prompt cannot exceed ${MAX_INPUT_LENGTH} characters. Please try a smaller prompt.`
+        );
         logEvent("submit_prompt_client_error_prompt_length", {
           input_length: question.length,
         });
@@ -107,7 +121,9 @@ export const QuestionInput = ({ onSend, disabled, placeholder, clearOnSend, conv
           const extractedText = (await extractRawText({ arrayBuffer })).value;
 
           if (extractedText.length === 0) {
-            setInputError("Could not read text from document. Please try uploading a different file.");
+            setInputError(
+              "Could not read text from document. Please try uploading a different file."
+            );
           } else {
             send({
               name: selectedFile.name,
@@ -158,7 +174,9 @@ export const QuestionInput = ({ onSend, disabled, placeholder, clearOnSend, conv
         logEvent("submit_prompt_client_error_file_type", { object_type: file.type });
       } else if (file.type.includes("image") && file.size > 10 * 1024 * 1024) {
         // 10MB limit for image files
-        setInputError("File size of image attachments cannot exceed 10 MB. Please try a smaller file.");
+        setInputError(
+          "File size of image attachments cannot exceed 10 MB. Please try a smaller file."
+        );
         setSelectedFile(null);
         if (fileInputRef?.current?.value) {
           fileInputRef.current.value = "";
@@ -170,7 +188,9 @@ export const QuestionInput = ({ onSend, disabled, placeholder, clearOnSend, conv
         });
       } else if (file.size > 50 * 1024 * 1024) {
         // 50MB limit for other filetypes
-        setInputError("File size of non-image attachments cannot exceed 50 MB. Please try a smaller file.");
+        setInputError(
+          "File size of non-image attachments cannot exceed 50 MB. Please try a smaller file."
+        );
         setSelectedFile(null);
         if (fileInputRef?.current?.value) {
           fileInputRef.current.value = "";
@@ -225,13 +245,20 @@ export const QuestionInput = ({ onSend, disabled, placeholder, clearOnSend, conv
           aria-label="Type a question"
         ></textarea>
 
-        <div className={`display-flex margin-x-2 margin-bottom-05 ${styles.fileUploadPreviewsContainer}`}>
+        <div
+          className={`display-flex margin-x-2 margin-bottom-05 ${styles.fileUploadPreviewsContainer}`}
+        >
           {selectedFile && (
             <div
               className={`text-black flex-align-center padding-x-1 ${styles.fileUploadPreview}`}
               data-testid={`filePreview-${selectedFile.name}`}
             >
-              <svg className="usa-icon margin-right-05" aria-hidden="true" focusable="false" role="img">
+              <svg
+                className="usa-icon margin-right-05"
+                aria-hidden="true"
+                focusable="false"
+                role="img"
+              >
                 <use href={`${icons}#image`} />
               </svg>
               <p className={`margin-top-0 font-sans-3xs`}>{formatFileName(selectedFile.name)}</p>
@@ -247,13 +274,20 @@ export const QuestionInput = ({ onSend, disabled, placeholder, clearOnSend, conv
             </div>
           )}
         </div>
-        <div className={`display-flex margin-bottom-3 width-full padding-x-2 ${styles.questionInputChatButtons}`}>
+        <div
+          className={`display-flex margin-bottom-3 width-full padding-x-2 ${styles.questionInputChatButtons}`}
+        >
           <div>
             <label
               htmlFor="file-upload"
               className={`usa-button usa-button--unstyled text-no-underline ${styles.fileInputLabel}`}
             >
-              <svg className="usa-icon margin-right-05" aria-hidden="true" focusable="false" role="img">
+              <svg
+                className="usa-icon margin-right-05"
+                aria-hidden="true"
+                focusable="false"
+                role="img"
+              >
                 <use href={`${icons}#attach_file`} />
               </svg>
               Upload files
@@ -283,7 +317,9 @@ export const QuestionInput = ({ onSend, disabled, placeholder, clearOnSend, conv
             </svg>
           </div>
         </div>
-        <hr className={`margin-bottom-0 width-full bottom-0 left-0 border-0 ${styles.questionInputBottomBorder}`} />
+        <hr
+          className={`margin-bottom-0 width-full bottom-0 left-0 border-0 ${styles.questionInputBottomBorder}`}
+        />
       </div>
     </div>
   );

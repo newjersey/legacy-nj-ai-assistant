@@ -58,7 +58,9 @@ describe("enumerateCitations", () => {
 describe("parseAnswer", () => {
   it("reformats the answer text and reindexes citations", () => {
     const parsed: ParsedAnswer = parseAnswer(sampleAnswer);
-    expect(parsed.markdownFormatText).toBe("This is an example answer with citations  ^1^  and  ^2^ .");
+    expect(parsed.markdownFormatText).toBe(
+      "This is an example answer with citations  ^1^  and  ^2^ ."
+    );
     expect(parsed.citations.length).toBe(2);
     expect(parsed.citations[0].id).toBe("1");
     expect(parsed.citations[0].reindex_id).toBe("1");

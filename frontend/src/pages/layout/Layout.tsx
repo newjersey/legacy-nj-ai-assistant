@@ -88,7 +88,9 @@ const Layout = () => {
               ui?.show_chat_history_button !== false && (
                 <HistoryButton
                   onClick={handleHistoryClick}
-                  text={appStateContext?.state?.isChatHistoryOpen ? hideHistoryLabel : showHistoryLabel}
+                  text={
+                    appStateContext?.state?.isChatHistoryOpen ? hideHistoryLabel : showHistoryLabel
+                  }
                 />
               )}
             {ui?.show_share_button && <ShareButton onClick={handleShareClick} text={shareLabel} />}

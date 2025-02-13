@@ -52,27 +52,30 @@ describe("Test uploading files", () => {
     ["docx", ACCEPTED_FILE_TYPES.DOCX],
     ["csv", ACCEPTED_FILE_TYPES.CSV],
     ["pdf", ACCEPTED_FILE_TYPES.PDF],
-  ])("uploads files with extension .%s without errors", async (extension: string, fileType: ACCEPTED_FILE_TYPES) => {
-    const uploadedFile = createMockFile(extension, fileType);
+  ])(
+    "uploads files with extension .%s without errors",
+    async (extension: string, fileType: ACCEPTED_FILE_TYPES) => {
+      const uploadedFile = createMockFile(extension, fileType);
 
-    const { container } = render(
-      <QuestionInput
-        onSend={() => {}}
-        disabled={false}
-        placeholder={"placeholder"}
-        conversationId={undefined}
-        clearOnSend={false}
-      />
-    );
+      const { container } = render(
+        <QuestionInput
+          onSend={() => {}}
+          disabled={false}
+          placeholder={"placeholder"}
+          conversationId={undefined}
+          clearOnSend={false}
+        />
+      );
 
-    await act(async () => {
-      uploadFile(uploadedFile);
-      inputChatMessage();
-      submitChatMessage();
-    });
+      await act(async () => {
+        uploadFile(uploadedFile);
+        inputChatMessage();
+        submitChatMessage();
+      });
 
-    expect(await axe(container)).toHaveNoViolations();
-  });
+      expect(await axe(container)).toHaveNoViolations();
+    }
+  );
 
   it("displays an error if the uploaded file is not of a valid filetype", async () => {
     const uploadedFile = createMockFile("fakeExtension", "invalid/filetype");
@@ -156,7 +159,9 @@ describe("Test uploading files", () => {
         uploadFile(uploadedFile);
       });
 
-      const inputError = screen.queryByText(/File size of non-image attachments cannot exceed 50 MB/i);
+      const inputError = screen.queryByText(
+        /File size of non-image attachments cannot exceed 50 MB/i
+      );
 
       expect(inputError).toBeInTheDocument();
 

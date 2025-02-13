@@ -14,7 +14,8 @@ export const chatHistorySampleData: Conversation[] = [
       {
         id: "2",
         role: "assistant",
-        content: "To reset your password, please visit the 'Forgot Password' page and follow the instructions.",
+        content:
+          "To reset your password, please visit the 'Forgot Password' page and follow the instructions.",
         date: "2023-08-10T08:05:00Z",
       },
     ],
@@ -33,7 +34,8 @@ export const chatHistorySampleData: Conversation[] = [
       {
         id: "4",
         role: "assistant",
-        content: "Sure! Let me check the status of your order. Please provide me with your order number.",
+        content:
+          "Sure! Let me check the status of your order. Please provide me with your order number.",
         date: "2023-07-09T15:32:00Z",
       },
       {
@@ -121,7 +123,8 @@ export const chatHistorySampleData: Conversation[] = [
       {
         id: "2",
         role: "assistant",
-        content: "To reset your password, please visit the 'Forgot Password' page and follow the instructions.",
+        content:
+          "To reset your password, please visit the 'Forgot Password' page and follow the instructions.",
         date: "2023-08-10T08:05:00Z",
       },
     ],
@@ -140,7 +143,8 @@ export const chatHistorySampleData: Conversation[] = [
       {
         id: "4",
         role: "assistant",
-        content: "Sure! Let me check the status of your order. Please provide me with your order number.",
+        content:
+          "Sure! Let me check the status of your order. Please provide me with your order number.",
         date: "2023-07-09T15:32:00Z",
       },
       {
@@ -229,7 +233,8 @@ export const chatHistorySampleData: Conversation[] = [
       {
         id: "2",
         role: "assistant",
-        content: "To reset your password, please visit the 'Forgot Password' page and follow the instructions.",
+        content:
+          "To reset your password, please visit the 'Forgot Password' page and follow the instructions.",
         date: "2023-08-10T08:05:00Z",
       },
     ],
@@ -248,7 +253,8 @@ export const chatHistorySampleData: Conversation[] = [
       {
         id: "4",
         role: "assistant",
-        content: "Sure! Let me check the status of your order. Please provide me with your order number.",
+        content:
+          "Sure! Let me check the status of your order. Please provide me with your order number.",
         date: "2023-07-09T15:32:00Z",
       },
       {
@@ -336,7 +342,8 @@ export const chatHistorySampleData: Conversation[] = [
       {
         id: "2",
         role: "assistant",
-        content: "To reset your password, please visit the 'Forgot Password' page and follow the instructions.",
+        content:
+          "To reset your password, please visit the 'Forgot Password' page and follow the instructions.",
         date: "2023-08-10T08:05:00Z",
       },
     ],
@@ -355,7 +362,8 @@ export const chatHistorySampleData: Conversation[] = [
       {
         id: "4",
         role: "assistant",
-        content: "Sure! Let me check the status of your order. Please provide me with your order number.",
+        content:
+          "Sure! Let me check the status of your order. Please provide me with your order number.",
         date: "2023-07-09T15:32:00Z",
       },
       {

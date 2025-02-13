@@ -44,7 +44,8 @@ export const Answer = ({ answer, onCitationClicked, onExectResultClicked }: Prop
   const [negativeFeedbackList, setNegativeFeedbackList] = useState<Feedback[]>([]);
   const appStateContext = useContext(AppStateContext);
   const FEEDBACK_ENABLED =
-    appStateContext?.state.frontendSettings?.feedback_enabled && appStateContext?.state.isCosmosDBAvailable?.cosmosDB;
+    appStateContext?.state.frontendSettings?.feedback_enabled &&
+    appStateContext?.state.isCosmosDBAvailable?.cosmosDB;
   const SANITIZE_ANSWER = appStateContext?.state.frontendSettings?.sanitize_answer;
 
   const handleChevronClick = () => {
@@ -60,7 +61,10 @@ export const Answer = ({ answer, onCitationClicked, onExectResultClicked }: Prop
     if (answer.message_id == undefined) return;
 
     let currentFeedbackState;
-    if (appStateContext?.state.feedbackState && appStateContext?.state.feedbackState[answer.message_id]) {
+    if (
+      appStateContext?.state.feedbackState &&
+      appStateContext?.state.feedbackState[answer.message_id]
+    ) {
       currentFeedbackState = appStateContext?.state.feedbackState[answer.message_id];
     } else {
       currentFeedbackState = initializeAnswerFeedback(answer);
@@ -74,7 +78,8 @@ export const Answer = ({ answer, onCitationClicked, onExectResultClicked }: Prop
     if (citation.filepath && citation.reindex_id) {
       citationFilename = `${citation.filepath} - Part ${citation.reindex_id}`;
     } else if (citation.filepath) {
-      const part_i = citation.part_index ?? (citation.chunk_id ? parseInt(citation.chunk_id) + 1 : "");
+      const part_i =
+        citation.part_index ?? (citation.chunk_id ? parseInt(citation.chunk_id) + 1 : "");
       if (truncate && citation.filepath.length > filePathTruncationLimit) {
         const citationLength = citation.filepath.length;
         citationFilename = `${citation.filepath.substring(0, 20)}...${citation.filepath.substring(citationLength - 20)} - Part ${part_i}`;
@@ -111,7 +116,11 @@ export const Answer = ({ answer, onCitationClicked, onExectResultClicked }: Prop
     if (answer.message_id == undefined) return;
 
     let newFeedbackState = feedbackState;
-    if (feedbackState === undefined || feedbackState === Feedback.Neutral || feedbackState === Feedback.Positive) {
+    if (
+      feedbackState === undefined ||
+      feedbackState === Feedback.Neutral ||
+      feedbackState === Feedback.Positive
+    ) {
       newFeedbackState = Feedback.Negative;
       setFeedbackState(newFeedbackState);
       setIsFeedbackDialogOpen(true);
@@ -127,7 +136,10 @@ export const Answer = ({ answer, onCitationClicked, onExectResultClicked }: Prop
     });
   };
 
-  const updateFeedbackList = (ev?: FormEvent<HTMLElement | HTMLInputElement>, checked?: boolean) => {
+  const updateFeedbackList = (
+    ev?: FormEvent<HTMLElement | HTMLInputElement>,
+    checked?: boolean
+  ) => {
     if (answer.message_id == undefined) return;
     const selectedFeedback = (ev?.target as HTMLInputElement)?.id as Feedback;
 
@@ -317,7 +329,11 @@ export const Answer = ({ answer, onCitationClicked, onExectResultClicked }: Prop
         )}
         <Stack horizontal className={styles.answerFooter}>
           {!!parsedAnswer.citations.length && (
-            <Stack.Item onKeyDown={(e) => (e.key === "Enter" || e.key === " " ? toggleIsRefAccordionOpen() : null)}>
+            <Stack.Item
+              onKeyDown={(e) =>
+                e.key === "Enter" || e.key === " " ? toggleIsRefAccordionOpen() : null
+              }
+            >
               <Stack style={{ width: "100%" }}>
                 <Stack horizontal horizontalAlign="start" verticalAlign="center">
                   <Text
@@ -346,7 +362,11 @@ export const Answer = ({ answer, onCitationClicked, onExectResultClicked }: Prop
             <span className={styles.answerDisclaimer}>AI-generated content may be incorrect</span>
           </Stack.Item>
           {!!answer.exec_results?.length && (
-            <Stack.Item onKeyDown={(e) => (e.key === "Enter" || e.key === " " ? toggleIsRefAccordionOpen() : null)}>
+            <Stack.Item
+              onKeyDown={(e) =>
+                e.key === "Enter" || e.key === " " ? toggleIsRefAccordionOpen() : null
+              }
+            >
               <Stack style={{ width: "100%" }}>
                 <Stack horizontal horizontalAlign="start" verticalAlign="center">
                   <Text
@@ -358,7 +378,11 @@ export const Answer = ({ answer, onCitationClicked, onExectResultClicked }: Prop
                   >
                     <span>Show Intents</span>
                   </Text>
-                  <FontIcon className={styles.accordionIcon} onClick={handleChevronClick} iconName={"ChevronRight"} />
+                  <FontIcon
+                    className={styles.accordionIcon}
+                    onClick={handleChevronClick}
+                    iconName={"ChevronRight"}
+                  />
                 </Stack>
               </Stack>
             </Stack.Item>
@@ -374,7 +398,9 @@ export const Answer = ({ answer, onCitationClicked, onExectResultClicked }: Prop
                   role="link"
                   key={idx}
                   onClick={() => onCitationClicked(citation)}
-                  onKeyDown={(e) => (e.key === "Enter" || e.key === " " ? onCitationClicked(citation) : null)}
+                  onKeyDown={(e) =>
+                    e.key === "Enter" || e.key === " " ? onCitationClicked(citation) : null
+                  }
                   className={styles.citationContainer}
                   aria-label={createCitationFilepath(citation, idx)}
                 >
@@ -416,11 +442,18 @@ export const Answer = ({ answer, onCitationClicked, onExectResultClicked }: Prop
         <Stack tokens={{ childrenGap: 4 }}>
           <div>Your feedback will improve this experience.</div>
 
-          {!showReportInappropriateFeedback ? <UnhelpfulFeedbackContent /> : <ReportInappropriateFeedbackContent />}
+          {!showReportInappropriateFeedback ? (
+            <UnhelpfulFeedbackContent />
+          ) : (
+            <ReportInappropriateFeedbackContent />
+          )}
 
           <div>By pressing submit, your feedback will be visible to the application owner.</div>
 
-          <DefaultButton disabled={negativeFeedbackList.length < 1} onClick={onSubmitNegativeFeedback}>
+          <DefaultButton
+            disabled={negativeFeedbackList.length < 1}
+            onClick={onSubmitNegativeFeedback}
+          >
             Submit
           </DefaultButton>
         </Stack>

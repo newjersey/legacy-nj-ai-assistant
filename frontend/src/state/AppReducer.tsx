@@ -13,7 +13,9 @@ export const appStateReducer = (state: AppState, action: Action): AppState => {
       if (!state.chatHistory || !state.currentChat) {
         return state;
       }
-      const conversationIndex = state.chatHistory.findIndex((conv) => conv.id === action.payload.id);
+      const conversationIndex = state.chatHistory.findIndex(
+        (conv) => conv.id === action.payload.id
+      );
       if (conversationIndex !== -1) {
         const updatedChatHistory = [...state.chatHistory];
         updatedChatHistory[conversationIndex] = state.currentChat;
