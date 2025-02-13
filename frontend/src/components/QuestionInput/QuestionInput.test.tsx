@@ -1,308 +1,315 @@
-import { render, screen, fireEvent, act, within } from '@testing-library/react'
-import '@testing-library/jest-dom'
-import { ACCEPTED_FILE_TYPES } from '../../custom/fileUploadUtils'
-import { QuestionInput } from './QuestionInput'
+import { act, fireEvent, render, screen, within } from "@testing-library/react";
+import { axe, toHaveNoViolations } from "jest-axe";
 
-import { axe, toHaveNoViolations } from 'jest-axe'
-expect.extend(toHaveNoViolations)
+import "@testing-library/jest-dom";
+
+import { ACCEPTED_FILE_TYPES } from "../../custom/fileUploadUtils";
+
+import { QuestionInput } from "./QuestionInput";
+expect.extend(toHaveNoViolations);
 
 async function uploadFile(file: File) {
-  const fileInput = screen.getByLabelText('Upload file')
+  const fileInput = screen.getByLabelText("Upload file");
 
-  await fireEvent.change(fileInput, { target: { files: [file] } })
+  await fireEvent.change(fileInput, { target: { files: [file] } });
 }
 
 function inputChatMessage(message?: string) {
-  const textInputField = screen.getByLabelText('Type a question')
+  const textInputField = screen.getByLabelText("Type a question");
 
   fireEvent.change(textInputField, {
-    target: { value: message ?? 'This is my message' }
-  })
+    target: { value: message ?? "This is my message" },
+  });
 }
 
 function submitChatMessage() {
-  const submitButton = screen.getByLabelText('Ask question button')
+  const submitButton = screen.getByLabelText("Ask question button");
 
-  fireEvent.click(submitButton)
+  fireEvent.click(submitButton);
 }
 
 const createMockFile = (extension: string, fileType: string, fileSizeInMb?: number): File => {
-  const blob = new Blob(['hello'], { type: fileType })
-  const file = new File([blob], `default.${extension}`, { type: fileType })
+  const blob = new Blob(["hello"], { type: fileType });
+  const file = new File([blob], `default.${extension}`, { type: fileType });
   if (fileSizeInMb) {
-    Object.defineProperty(file, 'size', { value: 1024 * 1024 * fileSizeInMb })
+    Object.defineProperty(file, "size", { value: 1024 * 1024 * fileSizeInMb });
   }
 
-  return file
-}
+  return file;
+};
 
-describe('Test uploading files', () => {
+describe("Test uploading files", () => {
   afterEach(() => {
-    jest.clearAllMocks()
-  })
+    jest.clearAllMocks();
+  });
 
   it.each([
-    ['jpg', ACCEPTED_FILE_TYPES.JPEG],
-    ['png', ACCEPTED_FILE_TYPES.PNG],
-    ['gif', ACCEPTED_FILE_TYPES.GIF],
-    ['bmp', ACCEPTED_FILE_TYPES.BMP],
-    ['tiff', ACCEPTED_FILE_TYPES.TIFF],
-    ['docx', ACCEPTED_FILE_TYPES.DOCX],
-    ['csv', ACCEPTED_FILE_TYPES.CSV],
-    ['pdf', ACCEPTED_FILE_TYPES.PDF]
-  ])('uploads files with extension .%s without errors', async (extension: string, fileType: ACCEPTED_FILE_TYPES) => {
-    const uploadedFile = createMockFile(extension, fileType)
-
-    const { container } = render(
-      <QuestionInput
-        onSend={() => {}}
-        disabled={false}
-        placeholder={'placeholder'}
-        conversationId={undefined}
-        clearOnSend={false}
-      />
-    )
-
-    await act(async () => {
-      uploadFile(uploadedFile)
-      inputChatMessage()
-      submitChatMessage()
-    })
-
-    expect(await axe(container)).toHaveNoViolations()
-  })
-
-  it('displays an error if the uploaded file is not of a valid filetype', async () => {
-    const uploadedFile = createMockFile('fakeExtension', 'invalid/filetype')
-
-    const { container } = render(
-      <QuestionInput
-        onSend={() => {}}
-        disabled={false}
-        placeholder={'placeholder'}
-        conversationId={undefined}
-        clearOnSend={false}
-      />
-    )
-
-    await act(async () => {
-      uploadFile(uploadedFile)
-      inputChatMessage()
-      submitChatMessage()
-    })
-
-    const inputError = screen.queryByText(/Only the following file types are supported/i)
-
-    expect(inputError).toBeInTheDocument()
-
-    expect(await axe(container)).toHaveNoViolations()
-  })
-
-  it.each([
-    ['jpg', ACCEPTED_FILE_TYPES.JPEG],
-    ['png', ACCEPTED_FILE_TYPES.PNG],
-    ['gif', ACCEPTED_FILE_TYPES.GIF],
-    ['bmp', ACCEPTED_FILE_TYPES.BMP],
-    ['tiff', ACCEPTED_FILE_TYPES.TIFF]
+    ["jpg", ACCEPTED_FILE_TYPES.JPEG],
+    ["png", ACCEPTED_FILE_TYPES.PNG],
+    ["gif", ACCEPTED_FILE_TYPES.GIF],
+    ["bmp", ACCEPTED_FILE_TYPES.BMP],
+    ["tiff", ACCEPTED_FILE_TYPES.TIFF],
+    ["docx", ACCEPTED_FILE_TYPES.DOCX],
+    ["csv", ACCEPTED_FILE_TYPES.CSV],
+    ["pdf", ACCEPTED_FILE_TYPES.PDF],
   ])(
-    'displays an error if an image file with extension .%s that exceeds the maximum upload size is added',
+    "uploads files with extension .%s without errors",
     async (extension: string, fileType: ACCEPTED_FILE_TYPES) => {
-      const uploadedFile = createMockFile(extension, fileType, 11)
+      const uploadedFile = createMockFile(extension, fileType);
 
       const { container } = render(
         <QuestionInput
           onSend={() => {}}
           disabled={false}
-          placeholder={'placeholder'}
+          placeholder={"placeholder"}
           conversationId={undefined}
           clearOnSend={false}
         />
-      )
+      );
 
       await act(async () => {
-        uploadFile(uploadedFile)
-      })
+        uploadFile(uploadedFile);
+        inputChatMessage();
+        submitChatMessage();
+      });
 
-      const inputError = screen.queryByText(/File size of image attachments cannot exceed 10 MB/i)
-
-      expect(inputError).toBeInTheDocument()
-
-      expect(await axe(container)).toHaveNoViolations()
+      expect(await axe(container)).toHaveNoViolations();
     }
-  )
+  );
+
+  it("displays an error if the uploaded file is not of a valid filetype", async () => {
+    const uploadedFile = createMockFile("fakeExtension", "invalid/filetype");
+
+    const { container } = render(
+      <QuestionInput
+        onSend={() => {}}
+        disabled={false}
+        placeholder={"placeholder"}
+        conversationId={undefined}
+        clearOnSend={false}
+      />
+    );
+
+    await act(async () => {
+      uploadFile(uploadedFile);
+      inputChatMessage();
+      submitChatMessage();
+    });
+
+    const inputError = screen.queryByText(/Only the following file types are supported/i);
+
+    expect(inputError).toBeInTheDocument();
+
+    expect(await axe(container)).toHaveNoViolations();
+  });
 
   it.each([
-    ['docx', ACCEPTED_FILE_TYPES.DOCX],
-    ['csv', ACCEPTED_FILE_TYPES.CSV],
-    ['pdf', ACCEPTED_FILE_TYPES.PDF]
+    ["jpg", ACCEPTED_FILE_TYPES.JPEG],
+    ["png", ACCEPTED_FILE_TYPES.PNG],
+    ["gif", ACCEPTED_FILE_TYPES.GIF],
+    ["bmp", ACCEPTED_FILE_TYPES.BMP],
+    ["tiff", ACCEPTED_FILE_TYPES.TIFF],
   ])(
-    'displays an error if a non-image file with extension .%s that exceeds the maximum upload size is added',
+    "displays an error if an image file with extension .%s that exceeds the maximum upload size is added",
     async (extension: string, fileType: ACCEPTED_FILE_TYPES) => {
-      const uploadedFile = createMockFile(extension, fileType, 51)
+      const uploadedFile = createMockFile(extension, fileType, 11);
 
       const { container } = render(
         <QuestionInput
           onSend={() => {}}
           disabled={false}
-          placeholder={'placeholder'}
+          placeholder={"placeholder"}
           conversationId={undefined}
           clearOnSend={false}
         />
-      )
+      );
 
       await act(async () => {
-        uploadFile(uploadedFile)
-      })
+        uploadFile(uploadedFile);
+      });
 
-      const inputError = screen.queryByText(/File size of non-image attachments cannot exceed 50 MB/i)
+      const inputError = screen.queryByText(/File size of image attachments cannot exceed 10 MB/i);
 
-      expect(inputError).toBeInTheDocument()
+      expect(inputError).toBeInTheDocument();
 
-      expect(await axe(container)).toHaveNoViolations()
+      expect(await axe(container)).toHaveNoViolations();
     }
-  )
-})
+  );
 
-describe('Test file upload previews', () => {
+  it.each([
+    ["docx", ACCEPTED_FILE_TYPES.DOCX],
+    ["csv", ACCEPTED_FILE_TYPES.CSV],
+    ["pdf", ACCEPTED_FILE_TYPES.PDF],
+  ])(
+    "displays an error if a non-image file with extension .%s that exceeds the maximum upload size is added",
+    async (extension: string, fileType: ACCEPTED_FILE_TYPES) => {
+      const uploadedFile = createMockFile(extension, fileType, 51);
+
+      const { container } = render(
+        <QuestionInput
+          onSend={() => {}}
+          disabled={false}
+          placeholder={"placeholder"}
+          conversationId={undefined}
+          clearOnSend={false}
+        />
+      );
+
+      await act(async () => {
+        uploadFile(uploadedFile);
+      });
+
+      const inputError = screen.queryByText(
+        /File size of non-image attachments cannot exceed 50 MB/i
+      );
+
+      expect(inputError).toBeInTheDocument();
+
+      expect(await axe(container)).toHaveNoViolations();
+    }
+  );
+});
+
+describe("Test file upload previews", () => {
   afterEach(() => {
-    jest.clearAllMocks()
-  })
+    jest.clearAllMocks();
+  });
 
-  it('displays the file upload preview when a file is uploaded', async () => {
-    const uploadedFile = createMockFile('jpg', ACCEPTED_FILE_TYPES.JPEG)
-
-    const { container } = render(
-      <QuestionInput
-        onSend={() => {}}
-        disabled={false}
-        placeholder={'placeholder'}
-        conversationId={undefined}
-        clearOnSend={false}
-      />
-    )
-
-    await act(async () => {
-      uploadFile(uploadedFile)
-    })
-
-    const fileUploadPreview = screen.getByTestId(`filePreview-${uploadedFile.name}`)
-    expect(fileUploadPreview).toBeInTheDocument()
-
-    expect(await axe(container)).toHaveNoViolations()
-  })
-
-  it('removes the file upload preview when the close button is clicked', async () => {
-    const uploadedFile = createMockFile('jpg', ACCEPTED_FILE_TYPES.JPEG)
+  it("displays the file upload preview when a file is uploaded", async () => {
+    const uploadedFile = createMockFile("jpg", ACCEPTED_FILE_TYPES.JPEG);
 
     const { container } = render(
       <QuestionInput
         onSend={() => {}}
         disabled={false}
-        placeholder={'placeholder'}
+        placeholder={"placeholder"}
         conversationId={undefined}
         clearOnSend={false}
       />
-    )
+    );
 
     await act(async () => {
-      uploadFile(uploadedFile)
-    })
+      uploadFile(uploadedFile);
+    });
 
-    const fileUploadPreview = screen.getByTestId(`filePreview-${uploadedFile.name}`)
-    expect(fileUploadPreview).toBeInTheDocument()
+    const fileUploadPreview = screen.getByTestId(`filePreview-${uploadedFile.name}`);
+    expect(fileUploadPreview).toBeInTheDocument();
 
-    const fileUploadPreviewCloseButton = within(fileUploadPreview!).getByRole('button')
-    expect(fileUploadPreviewCloseButton).toBeInTheDocument()
+    expect(await axe(container)).toHaveNoViolations();
+  });
 
-    fireEvent.click(fileUploadPreviewCloseButton)
-
-    expect(fileUploadPreview).not.toBeInTheDocument()
-
-    expect(await axe(container)).toHaveNoViolations()
-  })
-
-  it('shows a file upload preview with a correctly abbreviated name when a file with a very long name is uploaded', async () => {
-    const expectedFilename = 'veryveryv...gname.jpg'
-
-    const uploadedFile = createMockFile('jpg', ACCEPTED_FILE_TYPES.JPEG)
-    Object.defineProperty(uploadedFile, 'name', { value: expectedFilename })
+  it("removes the file upload preview when the close button is clicked", async () => {
+    const uploadedFile = createMockFile("jpg", ACCEPTED_FILE_TYPES.JPEG);
 
     const { container } = render(
       <QuestionInput
         onSend={() => {}}
         disabled={false}
-        placeholder={'placeholder'}
+        placeholder={"placeholder"}
         conversationId={undefined}
         clearOnSend={false}
       />
-    )
+    );
 
     await act(async () => {
-      uploadFile(uploadedFile)
-    })
+      uploadFile(uploadedFile);
+    });
 
-    const fileUploadPreview = screen.queryByText(expectedFilename)
-    expect(fileUploadPreview).toBeInTheDocument()
+    const fileUploadPreview = screen.getByTestId(`filePreview-${uploadedFile.name}`);
+    expect(fileUploadPreview).toBeInTheDocument();
 
-    expect(await axe(container)).toHaveNoViolations()
-  })
-})
+    const fileUploadPreviewCloseButton = within(fileUploadPreview!).getByRole("button");
+    expect(fileUploadPreviewCloseButton).toBeInTheDocument();
 
-describe('Test error alerts', () => {
-  it('displays an error alert when there is an error uploading a file', async () => {
-    const uploadedFile = createMockFile('fakeExtension', 'invalid/filetype')
+    fireEvent.click(fileUploadPreviewCloseButton);
+
+    expect(fileUploadPreview).not.toBeInTheDocument();
+
+    expect(await axe(container)).toHaveNoViolations();
+  });
+
+  it("shows a file upload preview with a correctly abbreviated name when a file with a very long name is uploaded", async () => {
+    const expectedFilename = "veryveryv...gname.jpg";
+
+    const uploadedFile = createMockFile("jpg", ACCEPTED_FILE_TYPES.JPEG);
+    Object.defineProperty(uploadedFile, "name", { value: expectedFilename });
 
     const { container } = render(
       <QuestionInput
         onSend={() => {}}
         disabled={false}
-        placeholder={'placeholder'}
+        placeholder={"placeholder"}
         conversationId={undefined}
         clearOnSend={false}
       />
-    )
+    );
 
     await act(async () => {
-      uploadFile(uploadedFile)
-      inputChatMessage()
-      submitChatMessage()
-    })
+      uploadFile(uploadedFile);
+    });
 
-    const inputError = screen.getByTestId('errorAlert')
-    expect(inputError).toBeInTheDocument()
+    const fileUploadPreview = screen.queryByText(expectedFilename);
+    expect(fileUploadPreview).toBeInTheDocument();
 
-    expect(await axe(container)).toHaveNoViolations()
-  })
+    expect(await axe(container)).toHaveNoViolations();
+  });
+});
 
-  it('removes the error alert when the close button is clicked', async () => {
-    const uploadedFile = createMockFile('fakeExtension', 'invalid/filetype')
+describe("Test error alerts", () => {
+  it("displays an error alert when there is an error uploading a file", async () => {
+    const uploadedFile = createMockFile("fakeExtension", "invalid/filetype");
 
     const { container } = render(
       <QuestionInput
         onSend={() => {}}
         disabled={false}
-        placeholder={'placeholder'}
+        placeholder={"placeholder"}
         conversationId={undefined}
         clearOnSend={false}
       />
-    )
+    );
 
     await act(async () => {
-      uploadFile(uploadedFile)
-      inputChatMessage()
-      submitChatMessage()
-    })
+      uploadFile(uploadedFile);
+      inputChatMessage();
+      submitChatMessage();
+    });
 
-    const inputError = screen.getByTestId('errorAlert')
-    expect(inputError).toBeInTheDocument()
+    const inputError = screen.getByTestId("errorAlert");
+    expect(inputError).toBeInTheDocument();
 
-    const inputErrorCloseButton = within(inputError!).getByRole('button')
-    expect(inputErrorCloseButton).toBeInTheDocument()
+    expect(await axe(container)).toHaveNoViolations();
+  });
 
-    fireEvent.click(inputErrorCloseButton)
+  it("removes the error alert when the close button is clicked", async () => {
+    const uploadedFile = createMockFile("fakeExtension", "invalid/filetype");
 
-    expect(inputError).not.toBeInTheDocument()
+    const { container } = render(
+      <QuestionInput
+        onSend={() => {}}
+        disabled={false}
+        placeholder={"placeholder"}
+        conversationId={undefined}
+        clearOnSend={false}
+      />
+    );
 
-    expect(await axe(container)).toHaveNoViolations()
-  })
-})
+    await act(async () => {
+      uploadFile(uploadedFile);
+      inputChatMessage();
+      submitChatMessage();
+    });
+
+    const inputError = screen.getByTestId("errorAlert");
+    expect(inputError).toBeInTheDocument();
+
+    const inputErrorCloseButton = within(inputError!).getByRole("button");
+    expect(inputErrorCloseButton).toBeInTheDocument();
+
+    fireEvent.click(inputErrorCloseButton);
+
+    expect(inputError).not.toBeInTheDocument();
+
+    expect(await axe(container)).toHaveNoViolations();
+  });
+});

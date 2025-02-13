@@ -7,11 +7,8 @@
   --padding-chat-inner: 24px;
   --padding-x-min: calc(var(--padding-chat-outer) + var(--padding-chat-inner));
   --padding-to-make-chat-max-width: calc((100% - var(--chat-max-width)) / 2);
-  --padding-chat-x: max(
-    var(--padding-x-min), 
-    var(--padding-to-make-chat-max-width)
-  );
-  
+  --padding-chat-x: max(var(--padding-x-min), var(--padding-to-make-chat-max-width));
+
   --message-margin-bottom: 20px;
   --message-final-margin-bottom: 28px;
 
@@ -120,7 +117,6 @@
   margin-bottom: var(--message-final-margin-bottom);
 }
 
-
 .chatMessageError {
   padding: 20px;
   border-radius: 8px;
@@ -136,7 +132,7 @@
 }
 
 .chatMessageErrorContent {
-  font-family: 'Segoe UI';
+  font-family: "Segoe UI";
   font-style: normal;
   font-weight: 400;
   font-size: 14px;
@@ -331,7 +327,6 @@ a {
 }
 
 @media (max-width: 480px) {
-
   .newChatIcon {
     left: 0px;
   }
