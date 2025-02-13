@@ -1,9 +1,7 @@
 {
   "arrowParens": "always",
-  "bracketSpacing": true,
-  "endOfLine": "auto",
-  "printWidth": 120,
-  "quoteProps": "as-needed",
+  "endOfLine": "lf",
+  "printWidth": 100,
   "tabWidth": 2,
   "trailingComma": "es5",
   "useTabs": false
