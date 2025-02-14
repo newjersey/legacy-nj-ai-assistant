@@ -64,8 +64,8 @@ describe("Test the conversationApi function", () => {
     ["gif", ACCEPTED_FILE_TYPES.GIF, "image_url"],
     ["bmp", ACCEPTED_FILE_TYPES.BMP, "image_url"],
     ["tiff", ACCEPTED_FILE_TYPES.TIFF, "image_url"],
-    ["docx", ACCEPTED_FILE_TYPES.DOCX, "CSV format"],
-    ["csv", ACCEPTED_FILE_TYPES.CSV, "Use the following document in your responses"],
+    ["docx", ACCEPTED_FILE_TYPES.DOCX, "Use the following document in your responses"],
+    ["csv", ACCEPTED_FILE_TYPES.CSV, "CSV format"],
     ["pdf", ACCEPTED_FILE_TYPES.PDF, "Use the following document in your responses"],
   ])(
     "formats content correctly when a file of type .%s is uploaded",
