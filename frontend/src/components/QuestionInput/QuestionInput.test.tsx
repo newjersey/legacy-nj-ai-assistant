@@ -8,10 +8,10 @@ import { ACCEPTED_FILE_TYPES } from "../../custom/fileUploadUtils";
 import { QuestionInput } from "./QuestionInput";
 expect.extend(toHaveNoViolations);
 
-async function uploadFile(file: File) {
-  const fileInput = screen.getByLabelText("Upload file");
+async function uploadFiles(uploadedFiles: File[]) {
+  const fileInput = screen.getByLabelText("Upload files");
 
-  await fireEvent.change(fileInput, { target: { files: [file] } });
+  await fireEvent.change(fileInput, { target: { files: uploadedFiles } });
 }
 
 function inputChatMessage(message?: string) {
@@ -68,7 +68,7 @@ describe("Test uploading files", () => {
       );
 
       await act(async () => {
-        uploadFile(uploadedFile);
+        uploadFiles([uploadedFile]);
         inputChatMessage();
         submitChatMessage();
       });
@@ -91,7 +91,7 @@ describe("Test uploading files", () => {
     );
 
     await act(async () => {
-      uploadFile(uploadedFile);
+      uploadFiles([uploadedFile]);
       inputChatMessage();
       submitChatMessage();
     });
@@ -125,10 +125,10 @@ describe("Test uploading files", () => {
       );
 
       await act(async () => {
-        uploadFile(uploadedFile);
+        uploadFiles([uploadedFile]);
       });
 
-      const inputError = screen.queryByText(/File size of image attachments cannot exceed 10 MB/i);
+      const inputError = screen.queryByText(/exceeds 10MB and cannot be uploaded/i);
 
       expect(inputError).toBeInTheDocument();
 
@@ -156,12 +156,10 @@ describe("Test uploading files", () => {
       );
 
       await act(async () => {
-        uploadFile(uploadedFile);
+        uploadFiles([uploadedFile]);
       });
 
-      const inputError = screen.queryByText(
-        /File size of non-image attachments cannot exceed 50 MB/i
-      );
+      const inputError = screen.queryByText(/exceeds 50MB and cannot be uploaded/i);
 
       expect(inputError).toBeInTheDocument();
 
@@ -189,13 +187,38 @@ describe("Test file upload previews", () => {
     );
 
     await act(async () => {
-      uploadFile(uploadedFile);
+      uploadFiles([uploadedFile]);
     });
 
     const fileUploadPreview = screen.getByTestId(`filePreview-${uploadedFile.name}`);
     expect(fileUploadPreview).toBeInTheDocument();
 
     expect(await axe(container)).toHaveNoViolations();
+  });
+
+  it("displays multiple file upload previews when multiple files are uploaded", async () => {
+    const uploadedFileOne = createMockFile("jpg", ACCEPTED_FILE_TYPES.JPEG);
+    const uploadedFileTwo = createMockFile("png", ACCEPTED_FILE_TYPES.JPEG);
+
+    const { container } = render(
+      <QuestionInput
+        onSend={() => {}}
+        disabled={false}
+        placeholder={"placeholder"}
+        conversationId={undefined}
+        clearOnSend={false}
+      />
+    );
+
+    await act(async () => {
+      uploadFiles([uploadedFileOne, uploadedFileTwo]);
+    });
+
+    const fileUploadPreviewOne = screen.getByTestId(`filePreview-${uploadedFileOne.name}`);
+    expect(fileUploadPreviewOne).toBeInTheDocument();
+
+    const fileUploadPreviewTwo = screen.getByTestId(`filePreview-${uploadedFileTwo.name}`);
+    expect(fileUploadPreviewTwo).toBeInTheDocument();
   });
 
   it("removes the file upload preview when the close button is clicked", async () => {
@@ -212,7 +235,7 @@ describe("Test file upload previews", () => {
     );
 
     await act(async () => {
-      uploadFile(uploadedFile);
+      uploadFiles([uploadedFile]);
     });
 
     const fileUploadPreview = screen.getByTestId(`filePreview-${uploadedFile.name}`);
@@ -227,6 +250,8 @@ describe("Test file upload previews", () => {
 
     expect(await axe(container)).toHaveNoViolations();
   });
+
+  it("removes the appropriate file upload preview when one of many previews is closed", async () => {});
 
   it("shows a file upload preview with a correctly abbreviated name when a file with a very long name is uploaded", async () => {
     const expectedFilename = "veryveryv...gname.jpg";
@@ -245,7 +270,7 @@ describe("Test file upload previews", () => {
     );
 
     await act(async () => {
-      uploadFile(uploadedFile);
+      uploadFiles([uploadedFile]);
     });
 
     const fileUploadPreview = screen.queryByText(expectedFilename);
@@ -270,7 +295,7 @@ describe("Test error alerts", () => {
     );
 
     await act(async () => {
-      uploadFile(uploadedFile);
+      uploadFiles([uploadedFile]);
       inputChatMessage();
       submitChatMessage();
     });
@@ -295,7 +320,7 @@ describe("Test error alerts", () => {
     );
 
     await act(async () => {
-      uploadFile(uploadedFile);
+      uploadFiles([uploadedFile]);
       inputChatMessage();
       submitChatMessage();
     });
