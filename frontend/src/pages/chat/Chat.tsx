@@ -30,7 +30,7 @@ import {
   historyUpdate,
   ToolMessageContent,
 } from "../../api";
-import Contoso from "../../assets/Contoso.svg";
+import NjLogo from "../../assets/nj-logo.svg"
 import { Answer } from "../../components/Answer";
 import { ChatHistoryPanel } from "../../components/ChatHistory/ChatHistoryPanel";
 import { QuestionInput } from "../../components/QuestionInput";
@@ -65,7 +65,6 @@ const Chat = () => {
   const [clearingChat, setClearingChat] = useState<boolean>(false);
   const [hideErrorDialog, { toggle: toggleErrorDialog }] = useBoolean(true);
   const [errorMsg, setErrorMsg] = useState<ErrorMessage | null>();
-  const [logo, setLogo] = useState("");
 
   const errorDialogContentProps = {
     type: DialogType.close,
@@ -102,7 +101,7 @@ const Chat = () => {
       });
       toggleErrorDialog();
     }
-  }, [appStateContext?.state.isCosmosDBAvailable]);
+  }, [appStateContext?.state.isCosmosDBAvailable, isCosmosDbConfigured, appStateContext?.state.chatHistoryLoadingState, hideErrorDialog]);
 
   const handleErrorDialogClose = () => {
     toggleErrorDialog();
@@ -110,12 +109,6 @@ const Chat = () => {
       setErrorMsg(null);
     }, 500);
   };
-
-  useEffect(() => {
-    if (!appStateContext?.state.isLoading) {
-      setLogo(ui?.chat_logo || ui?.logo || Contoso);
-    }
-  }, [appStateContext?.state.isLoading]);
 
   useEffect(() => {
     setIsLoading(
@@ -750,7 +743,10 @@ const Chat = () => {
       setMessages(appStateContext.state.currentChat.messages);
       setProcessMessages(messageStatus.NotRunning);
     }
-  }, [processMessages]);
+  },
+  // disabling linting for next line, to be resolved when enabling chat history
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  [processMessages]);
 
   useEffect(() => {
     if (AUTH_ENABLED !== undefined) getUserInfoList();
@@ -889,7 +885,7 @@ const Chat = () => {
               <div className={`display-flex flex-column ${styles.chatEmptyState}`}>
                 <div className={`display-flex flex-row flex-align-center ${styles.chatHeader}`}>
                   <img
-                    src={logo}
+                    src={NjLogo}
                     className={`margin-x-1 ${styles.chatIcon}`}
                     aria-hidden="true"
                     alt="Official logo for the State of New Jersey"
@@ -906,7 +902,7 @@ const Chat = () => {
                 {messages.map((answer, index) => (
                   <>
                     {answer.role === "user" ? (
-                      <div className={`${styles.chatMessageUser}`}>
+                      <div className={`display-flex flex-column flex-align-end ${styles.chatMessageUser}`}>
                         <div className={`${styles.chatMessageUserMessage}`}>
                           {answer.uploaded_files != null &&
                             answer.uploaded_files.some(isImageFile) && (
