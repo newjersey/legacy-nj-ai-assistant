@@ -404,9 +404,9 @@ export const QuestionInput = ({
             </svg>
           </div>
         </div>
-                  <hr
-            className={`margin-bottom-0 width-full bottom-0 left-0 border-0 ${styles.questionInputBottomBorder}`}
-          />
+        <hr
+          className={`margin-bottom-0 width-full bottom-0 left-0 border-0 ${styles.questionInputBottomBorder}`}
+        />
       </div>
     </div>
   );

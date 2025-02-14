@@ -30,7 +30,7 @@ import {
   historyUpdate,
   ToolMessageContent,
 } from "../../api";
-import NjLogo from "../../assets/nj-logo.svg"
+import NjLogo from "../../assets/nj-logo.svg";
 import { Answer } from "../../components/Answer";
 import { ChatHistoryPanel } from "../../components/ChatHistory/ChatHistoryPanel";
 import { QuestionInput } from "../../components/QuestionInput";
@@ -101,7 +101,12 @@ const Chat = () => {
       });
       toggleErrorDialog();
     }
-  }, [appStateContext?.state.isCosmosDBAvailable, isCosmosDbConfigured, appStateContext?.state.chatHistoryLoadingState, hideErrorDialog]);
+  }, [
+    appStateContext?.state.isCosmosDBAvailable,
+    isCosmosDbConfigured,
+    appStateContext?.state.chatHistoryLoadingState,
+    hideErrorDialog,
+  ]);
 
   const handleErrorDialogClose = () => {
     toggleErrorDialog();
@@ -679,74 +684,79 @@ const Chat = () => {
     }
   }, [appStateContext?.state.currentChat]);
 
-  useLayoutEffect(() => {
-    const saveToDB = async (messages: ChatMessage[], id: string) => {
-      const response = await historyUpdate(messages, id);
-      return response;
-    };
+  useLayoutEffect(
+    () => {
+      const saveToDB = async (messages: ChatMessage[], id: string) => {
+        const response = await historyUpdate(messages, id);
+        return response;
+      };
 
-    if (
-      appStateContext &&
-      appStateContext.state.currentChat &&
-      processMessages === messageStatus.Done
-    ) {
-      if (appStateContext.state.isCosmosDBAvailable.cosmosDB) {
-        if (!appStateContext?.state.currentChat?.messages) {
-          console.error("Failure fetching current chat state.");
-          return;
-        }
-        const noContentError = appStateContext.state.currentChat.messages.find(
-          (m) => m.role === ERROR
-        );
+      if (
+        appStateContext &&
+        appStateContext.state.currentChat &&
+        processMessages === messageStatus.Done
+      ) {
+        if (appStateContext.state.isCosmosDBAvailable.cosmosDB) {
+          if (!appStateContext?.state.currentChat?.messages) {
+            console.error("Failure fetching current chat state.");
+            return;
+          }
+          const noContentError = appStateContext.state.currentChat.messages.find(
+            (m) => m.role === ERROR
+          );
 
-        if (!noContentError?.content.includes(NO_CONTENT_ERROR)) {
-          saveToDB(appStateContext.state.currentChat.messages, appStateContext.state.currentChat.id)
-            .then((res) => {
-              if (!res.ok) {
-                const errorMessage =
-                  "An error occurred. Answers can't be saved at this time. If the problem persists, please contact the site administrator.";
-                const errorChatMsg: ChatMessage = {
-                  id: uuid(),
-                  role: ERROR,
-                  content: errorMessage,
-                  date: new Date().toISOString(),
-                };
-
-                if (!appStateContext?.state.currentChat?.messages) {
-                  const err: Error = {
-                    ...new Error(),
-                    message: "Failure fetching current chat state.",
+          if (!noContentError?.content.includes(NO_CONTENT_ERROR)) {
+            saveToDB(
+              appStateContext.state.currentChat.messages,
+              appStateContext.state.currentChat.id
+            )
+              .then((res) => {
+                if (!res.ok) {
+                  const errorMessage =
+                    "An error occurred. Answers can't be saved at this time. If the problem persists, please contact the site administrator.";
+                  const errorChatMsg: ChatMessage = {
+                    id: uuid(),
+                    role: ERROR,
+                    content: errorMessage,
+                    date: new Date().toISOString(),
                   };
-                  throw err;
+
+                  if (!appStateContext?.state.currentChat?.messages) {
+                    const err: Error = {
+                      ...new Error(),
+                      message: "Failure fetching current chat state.",
+                    };
+                    throw err;
+                  }
+
+                  setMessages([...appStateContext.state.currentChat.messages, errorChatMsg]);
                 }
-
-                setMessages([...appStateContext.state.currentChat.messages, errorChatMsg]);
-              }
-              return res as Response;
-            })
-            .catch((err) => {
-              console.error("Error: ", err);
-              const errRes: Response = {
-                ...new Response(),
-                ok: false,
-                status: 500,
-              };
-              return errRes;
-            });
+                return res as Response;
+              })
+              .catch((err) => {
+                console.error("Error: ", err);
+                const errRes: Response = {
+                  ...new Response(),
+                  ok: false,
+                  status: 500,
+                };
+                return errRes;
+              });
+          }
         }
-      }
 
-      appStateContext?.dispatch({
-        type: "UPDATE_CHAT_HISTORY",
-        payload: appStateContext.state.currentChat,
-      });
-      setMessages(appStateContext.state.currentChat.messages);
-      setProcessMessages(messageStatus.NotRunning);
-    }
-  },
-  // disabling linting for next line, to be resolved when enabling chat history
-  // eslint-disable-next-line react-hooks/exhaustive-deps
-  [processMessages]);
+        appStateContext?.dispatch({
+          type: "UPDATE_CHAT_HISTORY",
+          payload: appStateContext.state.currentChat,
+        });
+        setMessages(appStateContext.state.currentChat.messages);
+        setProcessMessages(messageStatus.NotRunning);
+      }
+    },
+    // disabling linting for next line, to be resolved when enabling chat history
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+    [processMessages]
+  );
 
   useEffect(() => {
     if (AUTH_ENABLED !== undefined) getUserInfoList();
@@ -902,7 +912,9 @@ const Chat = () => {
                 {messages.map((answer, index) => (
                   <>
                     {answer.role === "user" ? (
-                      <div className={`display-flex flex-column flex-align-end ${styles.chatMessageUser}`}>
+                      <div
+                        className={`display-flex flex-column flex-align-end ${styles.chatMessageUser}`}
+                      >
                         <div className={`${styles.chatMessageUserMessage}`}>
                           {answer.uploaded_files != null &&
                             answer.uploaded_files.some(isImageFile) && (
