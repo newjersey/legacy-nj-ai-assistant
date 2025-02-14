@@ -3,6 +3,7 @@ import { axe, toHaveNoViolations } from "jest-axe";
 
 import "@testing-library/jest-dom";
 
+import { createMockFile } from "../../test/factories";
 import { ACCEPTED_FILE_TYPES } from "../../custom/fileUploadUtils";
 
 import { QuestionInput } from "./QuestionInput";
@@ -28,15 +29,15 @@ function submitChatMessage() {
   fireEvent.click(submitButton);
 }
 
-const createMockFile = (extension: string, fileType: string, fileSizeInMb?: number): File => {
-  const blob = new Blob(["hello"], { type: fileType });
-  const file = new File([blob], `default.${extension}`, { type: fileType });
-  if (fileSizeInMb) {
-    Object.defineProperty(file, "size", { value: 1024 * 1024 * fileSizeInMb });
-  }
+// const createMockFile = (extension: string, fileType: string, fileSizeInMb?: number): File => {
+//   const blob = new Blob(["hello"], { type: fileType });
+//   const file = new File([blob], `default.${extension}`, { type: fileType });
+//   if (fileSizeInMb) {
+//     Object.defineProperty(file, "size", { value: 1024 * 1024 * fileSizeInMb });
+//   }
 
-  return file;
-};
+//   return file;
+// };
 
 describe("Test uploading files", () => {
   afterEach(() => {
@@ -198,7 +199,7 @@ describe("Test file upload previews", () => {
 
   it("displays multiple file upload previews when multiple files are uploaded", async () => {
     const uploadedFileOne = createMockFile("jpg", ACCEPTED_FILE_TYPES.JPEG);
-    const uploadedFileTwo = createMockFile("png", ACCEPTED_FILE_TYPES.JPEG);
+    const uploadedFileTwo = createMockFile("png", ACCEPTED_FILE_TYPES.PNG);
 
     const { container } = render(
       <QuestionInput
@@ -251,13 +252,9 @@ describe("Test file upload previews", () => {
     expect(await axe(container)).toHaveNoViolations();
   });
 
-  it("removes the appropriate file upload preview when one of many previews is closed", async () => {});
-
-  it("shows a file upload preview with a correctly abbreviated name when a file with a very long name is uploaded", async () => {
-    const expectedFilename = "veryveryv...gname.jpg";
-
-    const uploadedFile = createMockFile("jpg", ACCEPTED_FILE_TYPES.JPEG);
-    Object.defineProperty(uploadedFile, "name", { value: expectedFilename });
+  it("removes the appropriate file upload preview when one of many previews is closed", async () => {
+    const uploadedFileOne = createMockFile("jpg", ACCEPTED_FILE_TYPES.JPEG);
+    const uploadedFileTwo = createMockFile("png", ACCEPTED_FILE_TYPES.PNG);
 
     const { container } = render(
       <QuestionInput
@@ -270,11 +267,25 @@ describe("Test file upload previews", () => {
     );
 
     await act(async () => {
-      uploadFiles([uploadedFile]);
+      uploadFiles([uploadedFileOne, uploadedFileTwo]);
     });
 
-    const fileUploadPreview = screen.queryByText(expectedFilename);
-    expect(fileUploadPreview).toBeInTheDocument();
+    const fileUploadPreviewOne = screen.getByTestId(`filePreview-${uploadedFileOne.name}`);
+    expect(fileUploadPreviewOne).toBeInTheDocument();
+
+    const fileUploadPreviewTwo = screen.getByTestId(`filePreview-${uploadedFileTwo.name}`);
+    expect(fileUploadPreviewTwo).toBeInTheDocument();
+
+    const fileUploadPreviewOneCloseButton = within(fileUploadPreviewOne).getByRole("button");
+    expect(fileUploadPreviewOneCloseButton).toBeInTheDocument();
+
+    fireEvent.click(fileUploadPreviewOneCloseButton);
+
+    const fileUploadPreviewOneAfter = screen.queryByTestId(`filePreview-${uploadedFileOne.name}`);
+    expect(fileUploadPreviewOneAfter).not.toBeInTheDocument();
+
+    const fileUploadPreviewTwoAfter = screen.queryByTestId(`filePreview-${uploadedFileTwo.name}`);
+    expect(fileUploadPreviewTwoAfter).toBeInTheDocument();
 
     expect(await axe(container)).toHaveNoViolations();
   });
@@ -304,6 +315,11 @@ describe("Test error alerts", () => {
     expect(inputError).toBeInTheDocument();
 
     expect(await axe(container)).toHaveNoViolations();
+  });
+
+  it("displays multiple error alerts when there are errors uploading multiple files", async () => {
+    const uploadedFileOne = createMockFile("fakeExtensionOne", "invalid/filetype");
+    const uploadedFileTwo = createMockFile("fakeExtensionTwo", "invalid/filetype");
   });
 
   it("removes the error alert when the close button is clicked", async () => {
