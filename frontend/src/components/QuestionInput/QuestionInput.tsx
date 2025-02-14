@@ -319,11 +319,12 @@ export const QuestionInput = ({
 
       const validFilesBySize = filterUploadedFilesBySize(validFilesByFiletype);
 
-      const filesWithIds = validFilesBySize.map((file): SelectedFile => {
-        return {
-          ...file,
-          fileId: uuidv4(),
-        };
+      const filesWithIds = validFilesBySize.map((file) => {
+        const fileWithId = file as SelectedFile;
+
+        fileWithId.fileId = uuidv4();
+
+        return fileWithId;
       });
 
       const selectedFilesToSet = [...selectedFiles, ...filesWithIds];
