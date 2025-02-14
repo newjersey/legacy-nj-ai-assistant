@@ -326,6 +326,7 @@ export const historyRename = async (convId: string, title: string): Promise<Resp
 
 export const historyEnsure = async (): Promise<CosmosDBHealth> => {
   // Hard-coded response to avoid extra API call and 404 errors
+  // See when enabling chat history: https://github.com/microsoft/sample-app-aoai-chatGPT/blob/bbf4197c401c88339a262fa966a1829bd4e93a0a/frontend/src/api/api.ts#L274
   return {
     cosmosDB: false,
     status: CosmosDBStatus.NotConfigured,
