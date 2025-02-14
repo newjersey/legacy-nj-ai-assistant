@@ -16,6 +16,10 @@ export interface UploadedFile {
   extension: string;
 }
 
+export interface SelectedFile extends File {
+  fileId: string;
+}
+
 export const isImageFile = (file: UploadedFile): boolean => {
   return file.extension.includes("image");
 };

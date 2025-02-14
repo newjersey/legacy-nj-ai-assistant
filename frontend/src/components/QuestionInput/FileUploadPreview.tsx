@@ -1,14 +1,14 @@
 import icons from "@newjersey/njwds/dist/img/sprite.svg";
-import { v4 as uuidv4 } from "uuid";
 
 import styles from "./QuestionInput.module.css";
 
 interface FileUploadPreviewProps {
   onClose: (id: string) => void;
+  fileId: string;
   fileName: string;
 }
 
-export const FileUploadPreview = ({ onClose, fileName }: FileUploadPreviewProps) => {
+export const FileUploadPreview = ({ onClose, fileId, fileName }: FileUploadPreviewProps) => {
   const formatFileName = (fileName: string) => {
     if (fileName.length < 20) {
       return fileName;
@@ -16,8 +16,6 @@ export const FileUploadPreview = ({ onClose, fileName }: FileUploadPreviewProps)
 
     return `${fileName.substring(0, 9)}...${fileName.substring(fileName.length - 9)}`;
   };
-
-  const fileId = uuidv4();
 
   return (
     <div

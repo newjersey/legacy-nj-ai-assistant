@@ -2,9 +2,15 @@ import { useRef, useState } from "react";
 import pdfToText from "react-pdftotext";
 import icons from "@newjersey/njwds/dist/img/sprite.svg";
 import { extractRawText } from "mammoth";
+import { v4 as uuidv4 } from "uuid";
 
 import { Alert } from "../../custom/alertUtils";
-import { ACCEPTED_FILE_TYPES, isImageFile, UploadedFile } from "../../custom/fileUploadUtils";
+import {
+  ACCEPTED_FILE_TYPES,
+  isImageFile,
+  SelectedFile,
+  UploadedFile,
+} from "../../custom/fileUploadUtils";
 import { logEvent } from "../../custom/logEvent";
 
 import { AlertContainer } from "./AlertContainer";
@@ -37,7 +43,7 @@ export const QuestionInput = ({
   const [question, setQuestion] = useState<string>("");
   const fileInputRef = useRef<HTMLInputElement | null>(null);
 
-  const [selectedFiles, setSelectedFiles] = useState<File[]>([]);
+  const [selectedFiles, setSelectedFiles] = useState<SelectedFile[]>([]);
   const [inputErrors, setInputErrors] = useState<Alert[]>([]);
 
   const filterUploadedFilesByFiletype = (files: FileList): File[] => {
@@ -313,7 +319,14 @@ export const QuestionInput = ({
 
       const validFilesBySize = filterUploadedFilesBySize(validFilesByFiletype);
 
-      const selectedFilesToSet = [...selectedFiles, ...validFilesBySize];
+      const filesWithIds = validFilesBySize.map((file): SelectedFile => {
+        return {
+          ...file,
+          fileId: uuidv4(),
+        };
+      });
+
+      const selectedFilesToSet = [...selectedFiles, ...filesWithIds];
 
       if (selectedFilesToSet.length > MAX_UPLOADED_FILE_COUNT) {
         setSelectedFiles(selectedFilesToSet.slice(0, MAX_UPLOADED_FILE_COUNT));
@@ -326,16 +339,13 @@ export const QuestionInput = ({
           },
         ]);
       } else {
-        setSelectedFiles([...selectedFiles, ...validFilesBySize]);
+        setSelectedFiles([...selectedFiles, ...filesWithIds]);
       }
     }
   };
 
   const closePreview = (idToClose: string): void => {
-    // setSelectedFiles(selectedFiles => selectedFiles.filter(file => {
-    // }
-    //   // file.id !== idToClose)
-    // )
+    setSelectedFiles((selectedFiles) => selectedFiles.filter((file) => file.fileId !== idToClose));
   };
 
   const closeError = (idToClose: string): void => {

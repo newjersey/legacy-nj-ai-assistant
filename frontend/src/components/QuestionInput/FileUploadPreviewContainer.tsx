@@ -1,10 +1,12 @@
+import { SelectedFile } from "../../custom/fileUploadUtils";
+
 import { FileUploadPreview } from "./FileUploadPreview";
 
 import styles from "./QuestionInput.module.css";
 
 interface FileUploadPreviewContainerProps {
   onClose: (id: string) => void;
-  files: File[];
+  files: SelectedFile[];
 }
 
 export const FileUploadPreviewContainer = ({ onClose, files }: FileUploadPreviewContainerProps) => {
@@ -13,7 +15,7 @@ export const FileUploadPreviewContainer = ({ onClose, files }: FileUploadPreview
       className={`display-flex flex-wrap margin-x-2 margin-bottom-05 ${styles.fileUploadPreviewsContainer}`}
     >
       {files.map((file) => (
-        <FileUploadPreview onClose={onClose} fileName={file.name} />
+        <FileUploadPreview onClose={onClose} fileId={file.fileId} fileName={file.name} />
       ))}
     </div>
   );
