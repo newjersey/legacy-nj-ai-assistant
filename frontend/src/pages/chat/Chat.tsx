@@ -930,7 +930,7 @@ const Chat = () => {
                                 ))}
                               </div>
                             )}
-                          <div className={styles.userMessageTextContent}>{answer.content}</div>
+                          <div className="display-flex flex-row flex-align-end flex-justify-end">{answer.content}</div>
                           {answer.uploaded_files != null && answer.uploaded_files.length > 0 && (
                             <div className={`${styles.userAttachmentDisclaimer}`}>
                               {getUserAttachmentDisclaimerText(answer.uploaded_files)}

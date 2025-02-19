@@ -361,12 +361,10 @@ a {
   max-width: 45%;
 }
 
-.userMessageTextContent {
-}
-
 .userAttachmentDisclaimer {
   font-size: 12px;
   color: #707070;
   flex-basis: 100%;
   margin-top: 10px;
+  text-align: right;
 }
