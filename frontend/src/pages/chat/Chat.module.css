@@ -357,8 +357,12 @@ a {
 }
 
 .chatMessageImageAttachmentPreview {
+  object-fit: cover;
   flex-basis: 100%;
-  max-width: 45%;
+}
+
+img.imageAttachment {
+  object-fit: cover;
 }
 
 .userAttachmentDisclaimer {

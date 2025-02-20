@@ -1,4 +1,4 @@
-import { act, fireEvent, render, screen, within, waitFor } from "@testing-library/react";
+import { act, fireEvent, render, screen, waitFor, within } from "@testing-library/react";
 import { axe, toHaveNoViolations } from "jest-axe";
 
 import "@testing-library/jest-dom";
@@ -531,7 +531,7 @@ describe("Test error alerts", () => {
   });
 
   it("displays the appropriate input error if more than 10 files are uploaded", async () => {
-    const mockFilesToUpload = Array.from({ length: 15 }, (_, i) => {
+    const mockFilesToUpload = Array.from({ length: 15 }, (_, _i) => {
       return createMockFile("png", ACCEPTED_FILE_TYPES.PNG);
     });
 

@@ -35,7 +35,7 @@ import { Answer } from "../../components/Answer";
 import { ChatHistoryPanel } from "../../components/ChatHistory/ChatHistoryPanel";
 import { QuestionInput } from "../../components/QuestionInput";
 import { XSSAllowTags } from "../../constants/sanatizeAllowables";
-import { isImageFile, UploadedFile } from "../../custom/fileUploadUtils";
+import { isImageFile, truncateFilename, UploadedFile } from "../../custom/fileUploadUtils";
 import { logEvent } from "../../custom/logEvent";
 import { AppStateContext } from "../../state/AppProvider";
 
@@ -807,10 +807,13 @@ const Chat = () => {
         }
       });
 
-      const referencedFilenamesString =
-        referencedFilenames.slice(0, -1).join(", ") + " and " + referencedFilenames.slice(-1);
+      const referencedFilenamesString = referencedFilenames
+        .map((fileName) => {
+          return truncateFilename(fileName);
+        })
+        .join(", ");
 
-      disclaimer = `${referencedFilenamesString} are being referenced`;
+      disclaimer = `Files referenced: ${referencedFilenamesString}`;
     }
 
     return disclaimer;
@@ -930,7 +933,9 @@ const Chat = () => {
                                 ))}
                               </div>
                             )}
-                          <div className="display-flex flex-row flex-align-end flex-justify-end">{answer.content}</div>
+                          <div className="display-flex flex-row flex-align-end flex-justify-end">
+                            {answer.content}
+                          </div>
                           {answer.uploaded_files != null && answer.uploaded_files.length > 0 && (
                             <div className={`${styles.userAttachmentDisclaimer}`}>
                               {getUserAttachmentDisclaimerText(answer.uploaded_files)}
