@@ -47,7 +47,7 @@ const enum messageStatus {
   Done = "Done",
 }
 
-const Chat = () => {
+export const Chat = () => {
   const appStateContext = useContext(AppStateContext);
   const ui = appStateContext?.state.frontendSettings?.ui;
   const AUTH_ENABLED = appStateContext?.state.frontendSettings?.auth_enabled;
@@ -1061,10 +1061,10 @@ const Chat = () => {
                   clearOnSend
                   placeholder="Type a new question..."
                   disabled={isLoading}
-                  onSend={(question, id, uploadedFile) => {
+                  onSend={(question, id, uploadedFiles) => {
                     appStateContext?.state.isCosmosDBAvailable?.cosmosDB
                       ? makeApiRequestWithCosmosDB(question, id)
-                      : makeApiRequestWithoutCosmosDB(question, id, uploadedFile);
+                      : makeApiRequestWithoutCosmosDB(question, id, uploadedFiles);
                   }}
                   conversationId={
                     appStateContext?.state.currentChat?.id
@@ -1206,5 +1206,3 @@ const Chat = () => {
     </div>
   );
 };
-
-export default Chat;
