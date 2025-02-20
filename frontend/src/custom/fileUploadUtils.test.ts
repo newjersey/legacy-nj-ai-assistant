@@ -1,8 +1,8 @@
 import {
   ACCEPTED_FILE_TYPES,
-  UploadedFile,
   isImageFile,
   truncateFilename,
+  UploadedFile,
 } from "./fileUploadUtils";
 
 describe("Test the truncateFilename function", () => {

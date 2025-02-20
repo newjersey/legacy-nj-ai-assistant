@@ -8,8 +8,8 @@ import { Alert } from "../../custom/alertUtils";
 import {
   ACCEPTED_FILE_TYPES,
   isImageFile,
-  truncateFilename,
   SelectedFile,
+  truncateFilename,
   UploadedFile,
 } from "../../custom/fileUploadUtils";
 import { logEvent } from "../../custom/logEvent";

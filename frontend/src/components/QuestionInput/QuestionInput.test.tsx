@@ -3,8 +3,8 @@ import { axe, toHaveNoViolations } from "jest-axe";
 
 import "@testing-library/jest-dom";
 
-import { createMockFile } from "../../test/factories";
 import { ACCEPTED_FILE_TYPES } from "../../custom/fileUploadUtils";
+import { createMockFile } from "../../test/factories";
 
 import { QuestionInput } from "./QuestionInput";
 expect.extend(toHaveNoViolations);
