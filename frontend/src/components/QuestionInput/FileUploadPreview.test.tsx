@@ -9,11 +9,12 @@ expect.extend(toHaveNoViolations);
 describe("Test the FileUploadPreview component", () => {
   it("correctly renders a file upload preview", async () => {
     const fileName = "fileName.jpg";
+    const fileId = "fileId";
     const { container } = render(
-      <FileUploadPreview onClose={() => {}} fileId={"fileId"} fileName={fileName} />
+      <FileUploadPreview onClose={() => {}} fileId={fileId} fileName={fileName} />
     );
 
-    const fileUploadPreview = screen.getByTestId(`filePreview-${fileName}`);
+    const fileUploadPreview = screen.getByTestId(`filePreview-${fileId}`);
     expect(fileUploadPreview).toBeInTheDocument();
 
     const fileUploadPreviewTitle = within(fileUploadPreview).getByText(fileName);

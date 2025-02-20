@@ -29,7 +29,7 @@ describe("Test the FileUploadPreview component", () => {
       <FileUploadPreviewContainer onClose={() => {}} files={mockFilePreviews} />
     );
 
-    const fileUploadPreview = screen.getByTestId(`filePreview-${mockFilePreviews[0].name}`);
+    const fileUploadPreview = screen.getByTestId(`filePreview-${mockFilePreviews[0].fileId}`);
     expect(fileUploadPreview).toBeInTheDocument();
 
     const fileUploadPreviewTitle = within(fileUploadPreview).getByText(mockFilePreviews[0].name);
@@ -46,7 +46,7 @@ describe("Test the FileUploadPreview component", () => {
     );
 
     mockFilePreviews.forEach((file) => {
-      const fileUploadPreview = screen.getByTestId(`filePreview-${file.name}`);
+      const fileUploadPreview = screen.getByTestId(`filePreview-${file.fileId}`);
       expect(fileUploadPreview).toBeInTheDocument();
 
       const fileUploadPreviewTitle = within(fileUploadPreview).getByText(file.name);
