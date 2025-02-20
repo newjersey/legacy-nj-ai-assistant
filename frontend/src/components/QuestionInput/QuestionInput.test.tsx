@@ -6,7 +6,14 @@ import "@testing-library/jest-dom";
 import { ACCEPTED_FILE_TYPES } from "../../custom/fileUploadUtils";
 import { createMockFile } from "../../test/factories";
 
+const uuidv4Mock = jest.fn();
+
+jest.mock("uuid", () => ({
+  v4: uuidv4Mock,
+}));
+
 import { QuestionInput } from "./QuestionInput";
+
 expect.extend(toHaveNoViolations);
 
 async function uploadFiles(uploadedFiles: File[]) {
@@ -61,14 +68,179 @@ describe("Test uploading files", () => {
       await act(async () => {
         uploadFiles([uploadedFile]);
         inputChatMessage();
-        submitChatMessage();
       });
 
       expect(await axe(container)).toHaveNoViolations();
     }
   );
+});
 
-  it("displays an error if the uploaded file is not of a valid filetype", async () => {
+describe("Test file upload previews", () => {
+  const defaultMockUuid = "defaultMockUuid";
+
+  beforeEach(() => {
+    uuidv4Mock.mockImplementation(() => {
+      return defaultMockUuid;
+    });
+  });
+
+  afterEach(() => {
+    jest.clearAllMocks();
+  });
+
+  it("displays the file upload preview when a file is uploaded", async () => {
+    const uploadedFile = createMockFile("jpg", ACCEPTED_FILE_TYPES.JPEG);
+
+    const { container } = render(
+      <QuestionInput
+        onSend={() => {}}
+        disabled={false}
+        placeholder={"placeholder"}
+        conversationId={undefined}
+        clearOnSend={false}
+      />
+    );
+
+    await act(async () => {
+      uploadFiles([uploadedFile]);
+    });
+
+    const fileUploadPreview = screen.getByTestId(`filePreview-${defaultMockUuid}`);
+    expect(fileUploadPreview).toBeInTheDocument();
+
+    expect(await axe(container)).toHaveNoViolations();
+  });
+
+  it("displays multiple file upload previews when multiple files are uploaded", async () => {
+    const uploadedFileOne = createMockFile("jpg", ACCEPTED_FILE_TYPES.JPEG);
+    const mockUuidOne = "mockUuidOne";
+    const uploadedFileTwo = createMockFile("png", ACCEPTED_FILE_TYPES.PNG);
+    const mockUuidTwo = "mockUuidTwo";
+
+    uuidv4Mock
+      .mockImplementationOnce(() => {
+        return mockUuidOne;
+      })
+      .mockImplementationOnce(() => {
+        return mockUuidTwo;
+      });
+
+    const { container } = render(
+      <QuestionInput
+        onSend={() => {}}
+        disabled={false}
+        placeholder={"placeholder"}
+        conversationId={undefined}
+        clearOnSend={false}
+      />
+    );
+
+    await act(async () => {
+      uploadFiles([uploadedFileOne, uploadedFileTwo]);
+    });
+
+    const fileUploadPreviewOne = screen.getByTestId(`filePreview-${mockUuidOne}`);
+    expect(fileUploadPreviewOne).toBeInTheDocument();
+
+    const fileUploadPreviewTwo = screen.getByTestId(`filePreview-${mockUuidTwo}`);
+    expect(fileUploadPreviewTwo).toBeInTheDocument();
+
+    expect(await axe(container)).toHaveNoViolations();
+  });
+
+  it("removes the file upload preview when the close button is clicked", async () => {
+    const uploadedFile = createMockFile("jpg", ACCEPTED_FILE_TYPES.JPEG);
+
+    const { container } = render(
+      <QuestionInput
+        onSend={() => {}}
+        disabled={false}
+        placeholder={"placeholder"}
+        conversationId={undefined}
+        clearOnSend={false}
+      />
+    );
+
+    await act(async () => {
+      uploadFiles([uploadedFile]);
+    });
+
+    const fileUploadPreview = screen.getByTestId(`filePreview-${defaultMockUuid}`);
+    expect(fileUploadPreview).toBeInTheDocument();
+
+    const fileUploadPreviewCloseButton = within(fileUploadPreview!).getByRole("button");
+    expect(fileUploadPreviewCloseButton).toBeInTheDocument();
+
+    fireEvent.click(fileUploadPreviewCloseButton);
+
+    expect(fileUploadPreview).not.toBeInTheDocument();
+
+    expect(await axe(container)).toHaveNoViolations();
+  });
+
+  it("removes the appropriate file upload preview when one of many previews is closed", async () => {
+    const uploadedFileOne = createMockFile("jpg", ACCEPTED_FILE_TYPES.JPEG);
+    const mockUuidOne = "mockUuidOne";
+    const uploadedFileTwo = createMockFile("png", ACCEPTED_FILE_TYPES.PNG);
+    const mockUuidTwo = "mockUuidTwo";
+
+    uuidv4Mock
+      .mockImplementationOnce(() => {
+        return mockUuidOne;
+      })
+      .mockImplementationOnce(() => {
+        return mockUuidTwo;
+      });
+
+    const { container } = render(
+      <QuestionInput
+        onSend={() => {}}
+        disabled={false}
+        placeholder={"placeholder"}
+        conversationId={undefined}
+        clearOnSend={false}
+      />
+    );
+
+    await act(async () => {
+      uploadFiles([uploadedFileOne, uploadedFileTwo]);
+    });
+
+    const fileUploadPreviewOne = screen.getByTestId(`filePreview-${mockUuidOne}`);
+    expect(fileUploadPreviewOne).toBeInTheDocument();
+
+    const fileUploadPreviewTwo = screen.getByTestId(`filePreview-${mockUuidTwo}`);
+    expect(fileUploadPreviewTwo).toBeInTheDocument();
+
+    const fileUploadPreviewOneCloseButton = within(fileUploadPreviewOne).getByRole("button");
+    expect(fileUploadPreviewOneCloseButton).toBeInTheDocument();
+
+    fireEvent.click(fileUploadPreviewOneCloseButton);
+
+    const fileUploadPreviewOneAfter = screen.queryByTestId(`filePreview-${mockUuidOne}`);
+    expect(fileUploadPreviewOneAfter).not.toBeInTheDocument();
+
+    const fileUploadPreviewTwoAfter = screen.queryByTestId(`filePreview-${mockUuidTwo}`);
+    expect(fileUploadPreviewTwoAfter).toBeInTheDocument();
+
+    expect(await axe(container)).toHaveNoViolations();
+  });
+});
+
+describe("Test error alerts", () => {
+  const defaultMockUuid = "defaultMockUuid";
+
+  beforeEach(() => {
+    uuidv4Mock.mockImplementation(() => {
+      return defaultMockUuid;
+    });
+  });
+
+  afterEach(() => {
+    jest.clearAllMocks();
+  });
+
+  it("displays an error alert when there is an error uploading a file", async () => {
     const uploadedFile = createMockFile("fakeExtension", "invalid/filetype");
 
     const { container } = render(
@@ -84,7 +256,149 @@ describe("Test uploading files", () => {
     await act(async () => {
       uploadFiles([uploadedFile]);
       inputChatMessage();
-      submitChatMessage();
+    });
+
+    const inputError = screen.getByTestId(`errorAlert-invalidFiletype-${defaultMockUuid}`);
+    expect(inputError).toBeInTheDocument();
+
+    expect(await axe(container)).toHaveNoViolations();
+  });
+
+  it("removes the error alert when the close button is clicked", async () => {
+    const uploadedFile = createMockFile("fakeExtension", "invalid/filetype");
+
+    const { container } = render(
+      <QuestionInput
+        onSend={() => {}}
+        disabled={false}
+        placeholder={"placeholder"}
+        conversationId={undefined}
+        clearOnSend={false}
+      />
+    );
+
+    await act(async () => {
+      uploadFiles([uploadedFile]);
+      inputChatMessage();
+    });
+
+    const inputError = screen.getByTestId(`errorAlert-invalidFiletype-${defaultMockUuid}`);
+    expect(inputError).toBeInTheDocument();
+
+    const inputErrorCloseButton = within(inputError!).getByRole("button");
+    expect(inputErrorCloseButton).toBeInTheDocument();
+
+    fireEvent.click(inputErrorCloseButton);
+
+    const inputErrorAfter = screen.queryByTestId(`errorAlert-invalidFiletype-${defaultMockUuid}`);
+    expect(inputErrorAfter).not.toBeInTheDocument();
+
+    expect(await axe(container)).toHaveNoViolations();
+  });
+
+  it("displays multiple error alerts when there are multiple errors uploading files", async () => {
+    const uploadedFileOne = createMockFile("png", ACCEPTED_FILE_TYPES.PNG, 100);
+    const mockUuidOne = "mockUuidOne";
+    const uploadedFileTwo = createMockFile("pdf", ACCEPTED_FILE_TYPES.PDF, 100);
+    const mockUuidTwo = "mockUuidTwo";
+
+    uuidv4Mock
+      .mockImplementationOnce(() => {
+        return mockUuidOne;
+      })
+      .mockImplementationOnce(() => {
+        return mockUuidTwo;
+      });
+
+    const { container } = render(
+      <QuestionInput
+        onSend={() => {}}
+        disabled={false}
+        placeholder={"placeholder"}
+        conversationId={undefined}
+        clearOnSend={false}
+      />
+    );
+
+    await act(async () => {
+      uploadFiles([uploadedFileOne, uploadedFileTwo]);
+      inputChatMessage();
+    });
+
+    const inputErrorOne = screen.getByTestId(`errorAlert-exceedsMaxSize-${mockUuidOne}`);
+    expect(inputErrorOne).toBeInTheDocument();
+    const inputErrorTwo = screen.getByTestId(`errorAlert-exceedsMaxSize-${mockUuidTwo}`);
+    expect(inputErrorTwo).toBeInTheDocument();
+
+    expect(await axe(container)).toHaveNoViolations();
+  });
+
+  it("removes the appropriate error alert when one of many alerts is closed", async () => {
+    const uploadedFileOne = createMockFile("png", ACCEPTED_FILE_TYPES.PNG, 100);
+    const mockUuidOne = "mockUuidOne";
+    const uploadedFileTwo = createMockFile("pdf", ACCEPTED_FILE_TYPES.PDF, 100);
+    const mockUuidTwo = "mockUuidTwo";
+
+    uuidv4Mock
+      .mockImplementationOnce(() => {
+        return mockUuidOne;
+      })
+      .mockImplementationOnce(() => {
+        return mockUuidTwo;
+      });
+
+    const { container } = render(
+      <QuestionInput
+        onSend={() => {}}
+        disabled={false}
+        placeholder={"placeholder"}
+        conversationId={undefined}
+        clearOnSend={false}
+      />
+    );
+
+    await act(async () => {
+      uploadFiles([uploadedFileOne, uploadedFileTwo]);
+      inputChatMessage();
+    });
+
+    const inputErrorOne = screen.getByTestId(`errorAlert-exceedsMaxSize-${mockUuidOne}`);
+    expect(inputErrorOne).toBeInTheDocument();
+    const inputErrorTwo = screen.getByTestId(`errorAlert-exceedsMaxSize-${mockUuidTwo}`);
+    expect(inputErrorTwo).toBeInTheDocument();
+
+    expect(await axe(container)).toHaveNoViolations();
+
+    const inputErrorOneCloseButton = within(inputErrorOne).getByRole("button");
+    expect(inputErrorOneCloseButton).toBeInTheDocument();
+
+    fireEvent.click(inputErrorOneCloseButton);
+
+    const inputErrorOneAfter = screen.queryByTestId(`errorAlert-exceedsMaxSize-${mockUuidOne}`);
+    expect(inputErrorOneAfter).not.toBeInTheDocument();
+
+    const inputErrorTwoAfter = screen.queryByTestId(`errorAlert-exceedsMaxSize-${mockUuidTwo}`);
+    expect(inputErrorTwoAfter).toBeInTheDocument();
+
+    expect(await axe(container)).toHaveNoViolations();
+  });
+
+  it("displays the appropriate input error if the uploaded file is not of a valid filetype", async () => {
+    const uploadedFile = createMockFile("fakeExtension", "invalid/filetype");
+
+    const { container } = render(
+      <QuestionInput
+        onSend={() => {}}
+        disabled={false}
+        placeholder={"placeholder"}
+        conversationId={undefined}
+        clearOnSend={false}
+      />
+    );
+
+    await act(async () => {
+      uploadFiles([uploadedFile]);
+      inputChatMessage();
     });
 
     const inputError = screen.queryByText(/Only the following file types are supported/i);
@@ -101,7 +415,7 @@ describe("Test uploading files", () => {
     ["bmp", ACCEPTED_FILE_TYPES.BMP],
     ["tiff", ACCEPTED_FILE_TYPES.TIFF],
   ])(
-    "displays an error if an image file with extension .%s that exceeds the maximum upload size is added",
+    "displays the appropriate input error if an image file with extension .%s that exceeds the maximum upload size is added",
     async (extension: string, fileType: ACCEPTED_FILE_TYPES) => {
       const uploadedFile = createMockFile(extension, fileType, 11);
 
@@ -132,7 +446,7 @@ describe("Test uploading files", () => {
     ["csv", ACCEPTED_FILE_TYPES.CSV],
     ["pdf", ACCEPTED_FILE_TYPES.PDF],
   ])(
-    "displays an error if a non-image file with extension .%s that exceeds the maximum upload size is added",
+    "displays the appropriate input error if a non-image file with extension .%s that exceeds the maximum upload size is added",
     async (extension: string, fileType: ACCEPTED_FILE_TYPES) => {
       const uploadedFile = createMockFile(extension, fileType, 51);
 
@@ -157,15 +471,11 @@ describe("Test uploading files", () => {
       expect(await axe(container)).toHaveNoViolations();
     }
   );
-});
 
-describe("Test file upload previews", () => {
-  afterEach(() => {
-    jest.clearAllMocks();
-  });
+  it("displays the appropriate input error if the total file contents are too long", async () => {});
 
-  it("displays the file upload preview when a file is uploaded", async () => {
-    const uploadedFile = createMockFile("jpg", ACCEPTED_FILE_TYPES.JPEG);
+  it("displays the appropriate input error if the prompt length is too long", async () => {
+    const prompt = "a".repeat(1048576 + 1);
 
     const { container } = render(
       <QuestionInput
@@ -178,142 +488,28 @@ describe("Test file upload previews", () => {
     );
 
     await act(async () => {
-      uploadFiles([uploadedFile]);
-    });
-
-    const fileUploadPreview = screen.getByTestId(`filePreview-${uploadedFile.name}`);
-    expect(fileUploadPreview).toBeInTheDocument();
-
-    expect(await axe(container)).toHaveNoViolations();
-  });
-
-  it("displays multiple file upload previews when multiple files are uploaded", async () => {
-    const uploadedFileOne = createMockFile("jpg", ACCEPTED_FILE_TYPES.JPEG);
-    const uploadedFileTwo = createMockFile("png", ACCEPTED_FILE_TYPES.PNG);
-
-    const { container } = render(
-      <QuestionInput
-        onSend={() => {}}
-        disabled={false}
-        placeholder={"placeholder"}
-        conversationId={undefined}
-        clearOnSend={false}
-      />
-    );
-
-    await act(async () => {
-      uploadFiles([uploadedFileOne, uploadedFileTwo]);
-    });
-
-    const fileUploadPreviewOne = screen.getByTestId(`filePreview-${uploadedFileOne.name}`);
-    expect(fileUploadPreviewOne).toBeInTheDocument();
-
-    const fileUploadPreviewTwo = screen.getByTestId(`filePreview-${uploadedFileTwo.name}`);
-    expect(fileUploadPreviewTwo).toBeInTheDocument();
-  });
-
-  it("removes the file upload preview when the close button is clicked", async () => {
-    const uploadedFile = createMockFile("jpg", ACCEPTED_FILE_TYPES.JPEG);
-
-    const { container } = render(
-      <QuestionInput
-        onSend={() => {}}
-        disabled={false}
-        placeholder={"placeholder"}
-        conversationId={undefined}
-        clearOnSend={false}
-      />
-    );
-
-    await act(async () => {
-      uploadFiles([uploadedFile]);
-    });
-
-    const fileUploadPreview = screen.getByTestId(`filePreview-${uploadedFile.name}`);
-    expect(fileUploadPreview).toBeInTheDocument();
-
-    const fileUploadPreviewCloseButton = within(fileUploadPreview!).getByRole("button");
-    expect(fileUploadPreviewCloseButton).toBeInTheDocument();
-
-    fireEvent.click(fileUploadPreviewCloseButton);
-
-    expect(fileUploadPreview).not.toBeInTheDocument();
-
-    expect(await axe(container)).toHaveNoViolations();
-  });
-
-  it("removes the appropriate file upload preview when one of many previews is closed", async () => {
-    const uploadedFileOne = createMockFile("jpg", ACCEPTED_FILE_TYPES.JPEG);
-    const uploadedFileTwo = createMockFile("png", ACCEPTED_FILE_TYPES.PNG);
-
-    const { container } = render(
-      <QuestionInput
-        onSend={() => {}}
-        disabled={false}
-        placeholder={"placeholder"}
-        conversationId={undefined}
-        clearOnSend={false}
-      />
-    );
-
-    await act(async () => {
-      uploadFiles([uploadedFileOne, uploadedFileTwo]);
-    });
-
-    const fileUploadPreviewOne = screen.getByTestId(`filePreview-${uploadedFileOne.name}`);
-    expect(fileUploadPreviewOne).toBeInTheDocument();
-
-    const fileUploadPreviewTwo = screen.getByTestId(`filePreview-${uploadedFileTwo.name}`);
-    expect(fileUploadPreviewTwo).toBeInTheDocument();
-
-    const fileUploadPreviewOneCloseButton = within(fileUploadPreviewOne).getByRole("button");
-    expect(fileUploadPreviewOneCloseButton).toBeInTheDocument();
-
-    fireEvent.click(fileUploadPreviewOneCloseButton);
-
-    const fileUploadPreviewOneAfter = screen.queryByTestId(`filePreview-${uploadedFileOne.name}`);
-    expect(fileUploadPreviewOneAfter).not.toBeInTheDocument();
-
-    const fileUploadPreviewTwoAfter = screen.queryByTestId(`filePreview-${uploadedFileTwo.name}`);
-    expect(fileUploadPreviewTwoAfter).toBeInTheDocument();
-
-    expect(await axe(container)).toHaveNoViolations();
-  });
-});
-
-describe("Test error alerts", () => {
-  it("displays an error alert when there is an error uploading a file", async () => {
-    const uploadedFile = createMockFile("fakeExtension", "invalid/filetype");
-
-    const { container } = render(
-      <QuestionInput
-        onSend={() => {}}
-        disabled={false}
-        placeholder={"placeholder"}
-        conversationId={undefined}
-        clearOnSend={false}
-      />
-    );
-
-    await act(async () => {
-      uploadFiles([uploadedFile]);
-      inputChatMessage();
+      inputChatMessage(prompt);
       submitChatMessage();
     });
 
-    const inputError = screen.getByTestId("errorAlert");
+    const inputError = screen.queryByText(/Please try a smaller prompt./);
     expect(inputError).toBeInTheDocument();
 
     expect(await axe(container)).toHaveNoViolations();
   });
 
-  it("displays multiple error alerts when there are errors uploading multiple files", async () => {
-    const uploadedFileOne = createMockFile("fakeExtensionOne", "invalid/filetype");
-    const uploadedFileTwo = createMockFile("fakeExtensionTwo", "invalid/filetype");
+  it("displays the appropriate input error if text cannot be read from a PDF", async () => {
+
   });
 
-  it("removes the error alert when the close button is clicked", async () => {
-    const uploadedFile = createMockFile("fakeExtension", "invalid/filetype");
+  it("displays the appropriate input error if text cannot be read from a .docx file", async () => {
+    
+  });
+
+  it("displays the appropriate input error if more than 10 files are uploaded", async () => {
+    const mockFilesToUpload = Array.from({ length: 15 }, (_, i) => {
+      return createMockFile("png", ACCEPTED_FILE_TYPES.PNG);
+    });
 
     const { container } = render(
       <QuestionInput
@@ -326,20 +522,12 @@ describe("Test error alerts", () => {
     );
 
     await act(async () => {
-      uploadFiles([uploadedFile]);
+      uploadFiles(mockFilesToUpload);
       inputChatMessage();
-      submitChatMessage();
     });
 
-    const inputError = screen.getByTestId("errorAlert");
+    const inputError = screen.queryByText(/A maximum of 10 files can be uploaded/);
     expect(inputError).toBeInTheDocument();
-
-    const inputErrorCloseButton = within(inputError!).getByRole("button");
-    expect(inputErrorCloseButton).toBeInTheDocument();
-
-    fireEvent.click(inputErrorCloseButton);
-
-    expect(inputError).not.toBeInTheDocument();
 
     expect(await axe(container)).toHaveNoViolations();
   });

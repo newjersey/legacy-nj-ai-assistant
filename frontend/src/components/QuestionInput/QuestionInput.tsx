@@ -18,6 +18,7 @@ import { AlertContainer } from "./AlertContainer";
 import { FileUploadPreviewContainer } from "./FileUploadPreviewContainer";
 
 import styles from "./QuestionInput.module.css";
+import { throws } from "node:assert";
 
 interface Props {
   onSend: (question: string, id?: string, uploadedFiles?: UploadedFile[]) => void;
@@ -62,7 +63,7 @@ export const QuestionInput = ({
       const invalidFiletypeAlert: Alert = {
         message:
           "Only the following file types are supported: .csv, .docx, .pdf, .jpeg, .png, .gif, .bmp, .tiff. Please try a different file.",
-        id: `invalidFiletype-${Date.now()}`,
+        id: `invalidFiletype-${uuidv4()}`,
       };
       setInputErrors([...inputErrors, invalidFiletypeAlert]);
     }
@@ -77,7 +78,7 @@ export const QuestionInput = ({
         // 10MB limit for image files
         inputSizeErrors.push({
           message: `${truncateFilename(file.name)} exceeds 10MB and cannot be uploaded`,
-          id: `${file.name}-${Date.now()}`,
+          id: `exceedsMaxSize-${uuidv4()}`,
         });
 
         if (fileInputRef?.current?.value) {
@@ -94,7 +95,7 @@ export const QuestionInput = ({
         // 50MB limit for other filetypes
         inputSizeErrors.push({
           message: `${truncateFilename(file.name)} exceeds 50MB and cannot be uploaded`,
-          id: `${file.name}-${Date.now()}`,
+          id: `exceedsMaxSize-${uuidv4()}`,
         });
 
         if (fileInputRef?.current?.value) {
@@ -139,7 +140,7 @@ export const QuestionInput = ({
       if (uploadedFiles != null && getTotalFileContentLength(uploadedFiles) > MAX_INPUT_LENGTH) {
         sendInputErrors.push({
           message: `Total file contents cannot exceed ${MAX_INPUT_LENGTH} characters. Please try a smaller file.`,
-          id: `exceededFileContentCharacterLimitError-${Date.now()}`,
+          id: `exceededFileContentCharacterLimitError-${uuidv4()}`,
         });
 
         setSelectedFiles([]);
@@ -153,20 +154,17 @@ export const QuestionInput = ({
           object_lengths: uploadedFiles.map((file) => file.contents.length),
           object_sizes: uploadedFiles.map((file) => file.size),
         });
-
-        return;
       }
 
       if (!isValidLength(question)) {
         sendInputErrors.push({
           message: `Prompt cannot exceed ${MAX_INPUT_LENGTH} characters. Please try a smaller prompt.`,
-          id: `exceededPromptCharacterLimitError-${Date.now()}`,
+          id: `exceededPromptCharacterLimitError-${uuidv4()}`,
         });
 
         logEvent("submit_prompt_client_error_prompt_length", {
           input_length: question.length,
         });
-        return;
       }
 
       if (conversationId) {
@@ -210,13 +208,7 @@ export const QuestionInput = ({
         const extractedText = await pdfToText(selectedFile);
 
         if (extractedText.length === 0) {
-          setInputErrors([
-            ...inputErrors,
-            {
-              message: `Could not read text from PDF: ${truncateFilename(selectedFile.name)}. Please try uploading a different file.`,
-              id: `${selectedFile.name}-couldNotReadText-${Date.now()}`,
-            },
-          ]);
+          throw new Error();
         } else {
           uploadedFile = {
             name: selectedFile.name,
@@ -229,8 +221,8 @@ export const QuestionInput = ({
         setInputErrors([
           ...inputErrors,
           {
-            message: `Failed to upload PDF: ${truncateFilename(selectedFile.name)}. Please try uploading a different file.`,
-            id: `${selectedFile.name}-failedToUpload-${Date.now()}`,
+            message: `Could not read text from PDF: ${truncateFilename(selectedFile.name)}. Please try uploading a different file.`,
+            id: `${selectedFile.name}-failedToUpload-${uuidv4()}`,
           },
         ]);
       }
@@ -256,13 +248,7 @@ export const QuestionInput = ({
         const extractedText = (await extractRawText({ arrayBuffer })).value;
 
         if (extractedText.length === 0) {
-          setInputErrors([
-            ...inputErrors,
-            {
-              message: `Could not read text from .docx file: ${truncateFilename(selectedFile.name)}. Please try uploading a different file.`,
-              id: `${selectedFile.name}-couldNotReadText-${Date.now()}`,
-            },
-          ]);
+          throw new Error();
         } else {
           uploadedFile = {
             name: selectedFile.name,
@@ -275,7 +261,7 @@ export const QuestionInput = ({
         setInputErrors([
           ...inputErrors,
           {
-            message: `Failed to upload .docx file: ${truncateFilename(selectedFile.name)}. Please try uploading a different file.`,
+            message: `Could not read text from .docx file: ${truncateFilename(selectedFile.name)}. Please try uploading a different file.`,
             id: `${selectedFile.name}-failedToUpload-${Date.now()}`,
           },
         ]);
@@ -337,7 +323,7 @@ export const QuestionInput = ({
           ...inputErrors,
           {
             message: `A maximum of ${MAX_UPLOADED_FILE_COUNT} files can be uploaded.`,
-            id: `exceededMaxFileCount-${Date.now()}`,
+            id: `exceededMaxFileCount-${uuidv4()}`,
           },
         ]);
       } else {
