@@ -1,4 +1,4 @@
-import { act, fireEvent, render, screen, within } from "@testing-library/react";
+import { act, fireEvent, render, screen, within, waitFor } from "@testing-library/react";
 import { axe, toHaveNoViolations } from "jest-axe";
 
 import "@testing-library/jest-dom";
@@ -472,7 +472,31 @@ describe("Test error alerts", () => {
     }
   );
 
-  it("displays the appropriate input error if the total file contents are too long", async () => {});
+  it("displays the appropriate input error if the total file contents are too long", async () => {
+    const uploadedFile = createMockFile("csv", ACCEPTED_FILE_TYPES.CSV, 8, "a".repeat(1048576 + 1));
+
+    const { container } = render(
+      <QuestionInput
+        onSend={() => {}}
+        disabled={false}
+        placeholder={"placeholder"}
+        conversationId={undefined}
+        clearOnSend={false}
+      />
+    );
+
+    await act(async () => {
+      uploadFiles([uploadedFile]);
+      inputChatMessage();
+      submitChatMessage();
+    });
+
+    await waitFor(() => {
+      expect(screen.getByText(/Please try a smaller file./)).toBeInTheDocument();
+    });
+
+    expect(await axe(container)).toHaveNoViolations();
+  });
 
   it("displays the appropriate input error if the prompt length is too long", async () => {
     const prompt = "a".repeat(1048576 + 1);
@@ -498,12 +522,56 @@ describe("Test error alerts", () => {
     expect(await axe(container)).toHaveNoViolations();
   });
 
-  it("displays the appropriate input error if text cannot be read from a PDF", async () => {
+  it("displays the appropriate input error if text cannot be read from a .pdf file", async () => {
+    const uploadedPdfFile = createMockFile("pdf", ACCEPTED_FILE_TYPES.PDF, 8, "");
 
+    const { container } = render(
+      <QuestionInput
+        onSend={() => {}}
+        disabled={false}
+        placeholder={"placeholder"}
+        conversationId={undefined}
+        clearOnSend={false}
+      />
+    );
+
+    await act(async () => {
+      uploadFiles([uploadedPdfFile]);
+      inputChatMessage();
+      submitChatMessage();
+    });
+
+    await waitFor(() => {
+      expect(screen.getByText(/Could not read text from PDF:/)).toBeInTheDocument();
+    });
+
+    expect(await axe(container)).toHaveNoViolations();
   });
 
   it("displays the appropriate input error if text cannot be read from a .docx file", async () => {
-    
+    const uploadedDocxFile = createMockFile("docx", ACCEPTED_FILE_TYPES.DOCX, 8, "");
+
+    const { container } = render(
+      <QuestionInput
+        onSend={() => {}}
+        disabled={false}
+        placeholder={"placeholder"}
+        conversationId={undefined}
+        clearOnSend={false}
+      />
+    );
+
+    await act(async () => {
+      uploadFiles([uploadedDocxFile]);
+      inputChatMessage();
+      submitChatMessage();
+    });
+
+    await waitFor(() => {
+      expect(screen.getByText(/Could not read text from .docx file:/)).toBeInTheDocument();
+    });
+
+    expect(await axe(container)).toHaveNoViolations();
   });
 
   it("displays the appropriate input error if more than 10 files are uploaded", async () => {

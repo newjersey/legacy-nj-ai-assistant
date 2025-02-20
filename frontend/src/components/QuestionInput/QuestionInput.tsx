@@ -123,8 +123,6 @@ export const QuestionInput = ({
     }
 
     const send = (uploadedFiles?: UploadedFile[]) => {
-      const sendInputErrors: Alert[] = [];
-
       const getTotalFileContentLength = (uploadedFiles: UploadedFile[]) => {
         let totalFileContentLength = 0;
 
@@ -138,10 +136,13 @@ export const QuestionInput = ({
       };
 
       if (uploadedFiles != null && getTotalFileContentLength(uploadedFiles) > MAX_INPUT_LENGTH) {
-        sendInputErrors.push({
-          message: `Total file contents cannot exceed ${MAX_INPUT_LENGTH} characters. Please try a smaller file.`,
-          id: `exceededFileContentCharacterLimitError-${uuidv4()}`,
-        });
+        setInputErrors([
+          ...inputErrors,
+          {
+            message: `Total file contents cannot exceed ${MAX_INPUT_LENGTH} characters. Please try a smaller file.`,
+            id: `exceededFileContentCharacterLimitError-${uuidv4()}`,
+          },
+        ]);
 
         setSelectedFiles([]);
 
@@ -157,10 +158,13 @@ export const QuestionInput = ({
       }
 
       if (!isValidLength(question)) {
-        sendInputErrors.push({
-          message: `Prompt cannot exceed ${MAX_INPUT_LENGTH} characters. Please try a smaller prompt.`,
-          id: `exceededPromptCharacterLimitError-${uuidv4()}`,
-        });
+        setInputErrors([
+          ...inputErrors,
+          {
+            message: `Prompt cannot exceed ${MAX_INPUT_LENGTH} characters. Please try a smaller prompt.`,
+            id: `exceededPromptCharacterLimitError-${uuidv4()}`,
+          },
+        ]);
 
         logEvent("submit_prompt_client_error_prompt_length", {
           input_length: question.length,
@@ -181,8 +185,6 @@ export const QuestionInput = ({
           fileInputRef.current.value = "";
         }
       }
-
-      setInputErrors([...inputErrors, ...sendInputErrors]);
     };
 
     if (selectedFiles.length > 0) {
@@ -222,7 +224,7 @@ export const QuestionInput = ({
           ...inputErrors,
           {
             message: `Could not read text from PDF: ${truncateFilename(selectedFile.name)}. Please try uploading a different file.`,
-            id: `${selectedFile.name}-failedToUpload-${uuidv4()}`,
+            id: `${selectedFile.name}-failedToReadPdf-${uuidv4()}`,
           },
         ]);
       }
@@ -232,6 +234,7 @@ export const QuestionInput = ({
 
         reader.onload = () => {
           const result = reader.result as string;
+
           resolve({
             name: selectedFile.name,
             contents: result,
@@ -262,7 +265,7 @@ export const QuestionInput = ({
           ...inputErrors,
           {
             message: `Could not read text from .docx file: ${truncateFilename(selectedFile.name)}. Please try uploading a different file.`,
-            id: `${selectedFile.name}-failedToUpload-${Date.now()}`,
+            id: `${selectedFile.name}-failedToReadDocx-${Date.now()}`,
           },
         ]);
       }

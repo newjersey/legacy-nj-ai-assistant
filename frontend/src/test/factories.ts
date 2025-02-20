@@ -1,9 +1,10 @@
 export const createMockFile = (
   extension: string,
   fileType: string,
-  fileSizeInMb?: number
+  fileSizeInMb?: number,
+  fileContents?: string
 ): File => {
-  const blob = new Blob(["hello"], { type: fileType });
+  const blob = new Blob([fileContents ?? "hello"], { type: fileType });
   const file = new File([blob], `default.${extension}`, { type: fileType });
   if (fileSizeInMb) {
     Object.defineProperty(file, "size", { value: 1024 * 1024 * fileSizeInMb });
