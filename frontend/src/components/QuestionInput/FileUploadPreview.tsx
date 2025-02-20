@@ -1,4 +1,7 @@
 import icons from "@newjersey/njwds/dist/img/sprite.svg";
+import {
+  truncateFilename
+} from "../../custom/fileUploadUtils";
 
 import styles from "./QuestionInput.module.css";
 
@@ -9,13 +12,6 @@ interface FileUploadPreviewProps {
 }
 
 export const FileUploadPreview = ({ onClose, fileId, fileName }: FileUploadPreviewProps) => {
-  const formatFileName = (fileName: string) => {
-    if (fileName.length < 20) {
-      return fileName;
-    }
-
-    return `${fileName.substring(0, 9)}...${fileName.substring(fileName.length - 9)}`;
-  };
 
   return (
     <div
@@ -26,7 +22,7 @@ export const FileUploadPreview = ({ onClose, fileId, fileName }: FileUploadPrevi
       <svg className="usa-icon margin-right-05" aria-hidden="true" focusable="false" role="img">
         <use href={`${icons}#image`} />
       </svg>
-      <p className={`margin-top-0 font-sans-3xs`}>{formatFileName(fileName)}</p>
+      <p className={`margin-top-0 font-sans-3xs`}>{truncateFilename(fileName)}</p>
       <button
         className={`usa-button usa-button--unstyled ${styles.closeButton}`}
         aria-label="Remove file upload"

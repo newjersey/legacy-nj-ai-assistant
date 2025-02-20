@@ -8,6 +8,7 @@ import { Alert } from "../../custom/alertUtils";
 import {
   ACCEPTED_FILE_TYPES,
   isImageFile,
+  truncateFilename,
   SelectedFile,
   UploadedFile,
 } from "../../custom/fileUploadUtils";
@@ -75,7 +76,7 @@ export const QuestionInput = ({
       if (file.type.includes("image") && file.size > 10 * 1024 * 1024) {
         // 10MB limit for image files
         inputSizeErrors.push({
-          message: `${file.name} exceeds 10MB and cannot be uploaded`,
+          message: `${truncateFilename(file.name)} exceeds 10MB and cannot be uploaded`,
           id: `${file.name}-${Date.now()}`,
         });
 
@@ -92,7 +93,7 @@ export const QuestionInput = ({
       } else if (file.size > 50 * 1024 * 1024) {
         // 50MB limit for other filetypes
         inputSizeErrors.push({
-          message: `${file.name} exceeds 50MB and cannot be uploaded`,
+          message: `${truncateFilename(file.name)} exceeds 50MB and cannot be uploaded`,
           id: `${file.name}-${Date.now()}`,
         });
 
@@ -212,7 +213,7 @@ export const QuestionInput = ({
           setInputErrors([
             ...inputErrors,
             {
-              message: `Could not read text from PDF: ${selectedFile.name}. Please try uploading a different file.`,
+              message: `Could not read text from PDF: ${truncateFilename(selectedFile.name)}. Please try uploading a different file.`,
               id: `${selectedFile.name}-couldNotReadText-${Date.now()}`,
             },
           ]);
@@ -228,7 +229,7 @@ export const QuestionInput = ({
         setInputErrors([
           ...inputErrors,
           {
-            message: `Failed to upload PDF: ${selectedFile.name}. Please try uploading a different file.`,
+            message: `Failed to upload PDF: ${truncateFilename(selectedFile.name)}. Please try uploading a different file.`,
             id: `${selectedFile.name}-failedToUpload-${Date.now()}`,
           },
         ]);
@@ -258,7 +259,7 @@ export const QuestionInput = ({
           setInputErrors([
             ...inputErrors,
             {
-              message: `Could not read text from .docx file: ${selectedFile.name}. Please try uploading a different file.`,
+              message: `Could not read text from .docx file: ${truncateFilename(selectedFile.name)}. Please try uploading a different file.`,
               id: `${selectedFile.name}-couldNotReadText-${Date.now()}`,
             },
           ]);
@@ -274,7 +275,7 @@ export const QuestionInput = ({
         setInputErrors([
           ...inputErrors,
           {
-            message: `Failed to upload .docx file: ${selectedFile.name}. Please try uploading a different file.`,
+            message: `Failed to upload .docx file: ${truncateFilename(selectedFile.name)}. Please try uploading a different file.`,
             id: `${selectedFile.name}-failedToUpload-${Date.now()}`,
           },
         ]);
@@ -368,7 +369,7 @@ export const QuestionInput = ({
         ></textarea>
 
         {selectedFiles.length > 0 && (
-          <FileUploadPreviewContainer onClose={closePreview} files={selectedFiles} />
+          <FileUploadPreviewContainer onClose={closePreview} files={selectedFiles.map((file) => {return {name: file.name, fileId: file.fileId}})} />
         )}
 
         <div

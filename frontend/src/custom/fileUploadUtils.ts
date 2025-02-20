@@ -20,6 +20,19 @@ export interface SelectedFile extends File {
   fileId: string;
 }
 
+export interface FilePreview {
+  name: string;
+  fileId: string;
+}
+
 export const isImageFile = (file: UploadedFile): boolean => {
   return file.extension.includes("image");
+};
+
+export const truncateFilename = (fileName: string) => {
+  if (fileName.length < 20) {
+    return fileName;
+  }
+
+  return `${fileName.substring(0, 9)}...${fileName.substring(fileName.length - 9)}`;
 };

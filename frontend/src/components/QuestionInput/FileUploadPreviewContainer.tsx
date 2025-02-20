@@ -1,4 +1,4 @@
-import { SelectedFile } from "../../custom/fileUploadUtils";
+import { FilePreview } from "../../custom/fileUploadUtils";
 
 import { FileUploadPreview } from "./FileUploadPreview";
 
@@ -6,7 +6,7 @@ import styles from "./QuestionInput.module.css";
 
 interface FileUploadPreviewContainerProps {
   onClose: (id: string) => void;
-  files: SelectedFile[];
+  files: FilePreview[];
 }
 
 export const FileUploadPreviewContainer = ({ onClose, files }: FileUploadPreviewContainerProps) => {
