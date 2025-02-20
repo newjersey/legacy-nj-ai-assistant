@@ -216,7 +216,6 @@ describe("Test error alerts", () => {
 
     await act(async () => {
       uploadFiles([uploadedFile]);
-      inputChatMessage();
     });
 
     const inputError = screen.getByTestId(`errorAlert-invalidFiletype-${defaultMockUuid}`);
@@ -240,7 +239,6 @@ describe("Test error alerts", () => {
 
     await act(async () => {
       uploadFiles([uploadedFile]);
-      inputChatMessage();
     });
 
     const inputError = screen.getByTestId(`errorAlert-invalidFiletype-${defaultMockUuid}`);
@@ -283,7 +281,6 @@ describe("Test error alerts", () => {
 
     await act(async () => {
       uploadFiles([uploadedFileOne, uploadedFileTwo]);
-      inputChatMessage();
     });
 
     const inputErrorOne = screen.getByTestId(`errorAlert-exceedsMaxSize-${mockUuidOne}`);
@@ -320,7 +317,6 @@ describe("Test error alerts", () => {
 
     await act(async () => {
       uploadFiles([uploadedFileOne, uploadedFileTwo]);
-      inputChatMessage();
     });
 
     const inputErrorOne = screen.getByTestId(`errorAlert-exceedsMaxSize-${mockUuidOne}`);
@@ -359,7 +355,6 @@ describe("Test error alerts", () => {
 
     await act(async () => {
       uploadFiles([uploadedFile]);
-      inputChatMessage();
     });
 
     const inputError = screen.queryByText(/Only the following file types are supported/i);
@@ -552,7 +547,6 @@ describe("Test error alerts", () => {
 
     await act(async () => {
       uploadFiles(mockFilesToUpload);
-      inputChatMessage();
     });
 
     const inputError = screen.queryByText(/A maximum of 10 files can be uploaded/);
@@ -593,7 +587,6 @@ describe("Test uploading files", () => {
 
       await act(async () => {
         uploadFiles([uploadedFile]);
-        inputChatMessage();
       });
 
       expect(await axe(container)).toHaveNoViolations();
@@ -601,10 +594,18 @@ describe("Test uploading files", () => {
   );
 
   it("will display an error but upload other files if one file uploaded in a batch causes errors", async () => {
-    const invalidUploadedFile = createMockFile("fakeExtension", "invalid/filetype");
+    const invalidUploadedFile = createMockFile("png", ACCEPTED_FILE_TYPES.PNG, 100);
     const mockInvalidFileUuid = "invalidFileUuid";
     const validUploadedFile = createMockFile("png", ACCEPTED_FILE_TYPES.PNG);
     const mockValidFileUuid = "validFileUuid";
+
+    uuidv4Mock
+      .mockImplementationOnce(() => {
+        return mockInvalidFileUuid;
+      })
+      .mockImplementationOnce(() => {
+        return mockValidFileUuid;
+      });
 
     const { container } = render(
       <QuestionInput
@@ -618,10 +619,9 @@ describe("Test uploading files", () => {
 
     await act(async () => {
       uploadFiles([invalidUploadedFile, validUploadedFile]);
-      inputChatMessage();
     });
 
-    const inputError = screen.getByTestId(`errorAlert-invalidFiletype-${mockInvalidFileUuid}`);
+    const inputError = screen.getByTestId(`errorAlert-exceedsMaxSize-${mockInvalidFileUuid}`);
     expect(inputError).toBeInTheDocument();
 
     const validFileUploadPreview = screen.getByTestId(`filePreview-${mockValidFileUuid}`);
