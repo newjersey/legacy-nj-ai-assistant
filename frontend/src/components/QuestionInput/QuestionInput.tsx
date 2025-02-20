@@ -2,7 +2,6 @@ import { useRef, useState } from "react";
 import pdfToText from "react-pdftotext";
 import icons from "@newjersey/njwds/dist/img/sprite.svg";
 import { extractRawText } from "mammoth";
-import { throws } from "node:assert";
 import { v4 as uuidv4 } from "uuid";
 
 import { Alert } from "../../custom/alertUtils";
