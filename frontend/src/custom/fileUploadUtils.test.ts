@@ -7,22 +7,22 @@ import {
 
 describe("Test the truncateFilename function", () => {
   it("correctly truncates file names that are over 20 characters long", () => {
-    const fileName = "veryveryverylongname.jpg"
-    const expectedTruncatedFileName = "veryveryv...gname.jpg"
+    const fileName = "veryveryverylongname.jpg";
+    const expectedTruncatedFileName = "veryveryv...gname.jpg";
 
     const result = truncateFilename(fileName);
 
     expect(result).toEqual(expectedTruncatedFileName);
-  })
+  });
 
-    it("does not truncate file names that are under 20 characters long", () => {
+  it("does not truncate file names that are under 20 characters long", () => {
     const fileName = "shortname.jpg";
     const expectedTruncatedFileName = fileName;
 
     const result = truncateFilename(fileName);
 
     expect(result).toEqual(expectedTruncatedFileName);
-    });
+  });
 });
 
 describe("Test the isImageFile function", () => {

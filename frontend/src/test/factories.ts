@@ -1,5 +1,3 @@
-import { SelectedFile } from "../custom/fileUploadUtils";
-
 export const createMockFile = (
   extension: string,
   fileType: string,
@@ -12,8 +10,4 @@ export const createMockFile = (
   }
 
   return file;
-};
-
-export const createMockSelectedFiles = (files: File): SelectedFile => {
-  return files.map();
 };

@@ -1,7 +1,5 @@
 import icons from "@newjersey/njwds/dist/img/sprite.svg";
-import {
-  truncateFilename
-} from "../../custom/fileUploadUtils";
+import { truncateFilename } from "../../custom/fileUploadUtils";
 
 import styles from "./QuestionInput.module.css";
 
@@ -12,7 +10,6 @@ interface FileUploadPreviewProps {
 }
 
 export const FileUploadPreview = ({ onClose, fileId, fileName }: FileUploadPreviewProps) => {
-
   return (
     <div
       className={`text-black flex-align-center padding-x-1 margin-right-105 margin-bottom-105 height-5 ${styles.fileUploadPreview}`}

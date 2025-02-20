@@ -369,7 +369,12 @@ export const QuestionInput = ({
         ></textarea>
 
         {selectedFiles.length > 0 && (
-          <FileUploadPreviewContainer onClose={closePreview} files={selectedFiles.map((file) => {return {name: file.name, fileId: file.fileId}})} />
+          <FileUploadPreviewContainer
+            onClose={closePreview}
+            files={selectedFiles.map((file) => {
+              return { name: file.name, fileId: file.fileId };
+            })}
+          />
         )}
 
         <div
