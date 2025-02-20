@@ -13,7 +13,7 @@ export const AlertBanner = ({ onClose, alert }: AlertBannerProps) => {
   return (
     <div
       className={`usa-alert usa-alert--error usa-alert--slim margin-top-0 line-height-sans-5 width-full padding-y-0 position-relative display-flex flex-justify ${styles.errorAlert}`}
-      data-testId="errorAlert"
+      data-testId={`errorAlert-${alert.id}`}
     >
       <div className="usa-alert__body">
         <p className="usa-alert__text maxw-none" id={alert.id}>
