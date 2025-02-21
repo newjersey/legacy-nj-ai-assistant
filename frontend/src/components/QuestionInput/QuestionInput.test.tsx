@@ -37,7 +37,7 @@ function clickSubmitButton() {
 }
 
 describe("Test the QuestionInput component", () => {
-  it("correctly renders the QuestionInput component without any accessibility errors", async () => {
+  it("correctly renders the QuestionInput component without any axe violations", async () => {
     const { container } = render(
       <QuestionInput
         onSend={() => {}}
@@ -741,8 +741,6 @@ describe("Test sending input", () => {
         clearOnSend={false}
       />
     );
-
-    const textArea = screen.getByLabelText("Type a question");
 
     await act(async () => {
       inputChatMessage(expectedText);

@@ -1,7 +1,7 @@
 import { useContext, useEffect, useLayoutEffect, useRef, useState } from "react";
 import ReactMarkdown from "react-markdown";
 import { Prism as SyntaxHighlighter } from "react-syntax-highlighter";
-import { nord } from "react-syntax-highlighter/dist/esm/styles/prism";
+import { nord } from "react-syntax-highlighter/dist/cjs/styles/prism";
 import uuid from "react-uuid";
 import { CommandBarButton, Dialog, DialogType, IconButton, Stack } from "@fluentui/react";
 import { useBoolean } from "@fluentui/react-hooks";

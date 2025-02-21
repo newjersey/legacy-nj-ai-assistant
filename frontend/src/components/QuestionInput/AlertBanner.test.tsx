@@ -1,4 +1,4 @@
-import { render, screen, within, fireEvent, act } from "@testing-library/react";
+import { act, fireEvent, render, screen, within } from "@testing-library/react";
 import { axe, toHaveNoViolations } from "jest-axe";
 
 import "@testing-library/jest-dom";
@@ -37,9 +37,7 @@ describe("Test the onClose function", () => {
       id: "alertId",
     };
 
-    const { container } = render(
-      <AlertBanner onClose={mockOnClose} alert={alert} />
-    );
+    const { container } = render(<AlertBanner onClose={mockOnClose} alert={alert} />);
 
     const alertBanner = screen.getByTestId(`errorAlert-${alert.id}`);
     expect(alertBanner).toBeInTheDocument();
@@ -51,7 +49,7 @@ describe("Test the onClose function", () => {
       fireEvent.click(alertCloseButton);
     });
 
-    expect(mockOnClose).toHaveBeenCalledWith(alert.id)
+    expect(mockOnClose).toHaveBeenCalledWith(alert.id);
 
     expect(await axe(container)).toHaveNoViolations();
   });

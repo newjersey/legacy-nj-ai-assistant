@@ -1,4 +1,4 @@
-import { render, screen, within, fireEvent, act } from "@testing-library/react";
+import { act, fireEvent, render, screen, within } from "@testing-library/react";
 import { axe, toHaveNoViolations } from "jest-axe";
 
 import "@testing-library/jest-dom";
@@ -62,7 +62,7 @@ describe("Test the onClose function", () => {
       fireEvent.click(fileUploadPreviewCloseButton);
     });
 
-    expect(mockOnClose).toHaveBeenCalledWith(fileId)
+    expect(mockOnClose).toHaveBeenCalledWith(fileId);
 
     expect(await axe(container)).toHaveNoViolations();
   });

@@ -7,7 +7,7 @@
     "dev": "vite",
     "build": "tsc && vite build --mode development",
     "watch": "tsc && vite build --watch",
-    "test": "jest src",
+    "test": "jest",
     "lint": "npx eslint src",
     "lint:fix": "npx eslint --fix",
     "prettier": "npx prettier src --check",
