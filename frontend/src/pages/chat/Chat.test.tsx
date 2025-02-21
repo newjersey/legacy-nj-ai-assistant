@@ -5,7 +5,7 @@ import "@testing-library/jest-dom";
 
 import * as api from "../../api";
 import { createMockFile } from "../../test/factories";
-import { ACCEPTED_FILE_TYPES, UploadedFile } from "../../utils/fileUploadUtils";
+import { ACCEPTED_FILE_TYPES } from "../../utils/fileUploadUtils";
 
 import { Chat } from "./Chat";
 jest.mock("../../api");
