@@ -1,5 +1,5 @@
 import { ConversationRequest } from "../api/models";
-import { ACCEPTED_FILE_TYPES, UploadedFile } from "../custom/fileUploadUtils";
+import { ACCEPTED_FILE_TYPES, UploadedFile } from "../utils/fileUploadUtils";
 
 import { conversationApi } from "./api";
 
@@ -47,7 +47,7 @@ describe("Test the conversationApi function", () => {
     jest.resetAllMocks();
   });
 
-  it("formats content correctly when there is no uploaded file", async () => {
+  it("formats content and calls the /conversation endpoint correctly when there is no uploaded file", async () => {
     const conversationRequest = createConversationRequestWithUploadedFile();
 
     await conversationApi(conversationRequest, defaultAbortSignal, null);
@@ -68,7 +68,7 @@ describe("Test the conversationApi function", () => {
     ["csv", ACCEPTED_FILE_TYPES.CSV, "CSV format"],
     ["pdf", ACCEPTED_FILE_TYPES.PDF, "Use the following document in your responses"],
   ])(
-    "formats content correctly when a file of type .%s is uploaded",
+    "formats content and calls the /conversation endpoint correctly when a file of type .%s is uploaded",
     async (extension: string, fileType: ACCEPTED_FILE_TYPES, expectedString: string) => {
       const uploadedFile: UploadedFile = {
         ...defaultUploadedFile,
@@ -84,4 +84,28 @@ describe("Test the conversationApi function", () => {
       });
     }
   );
+
+  it("formats content and calls the /conversation endpoint correctly when there are multiple uploaded files", async () => {
+    const uploadedFiles: UploadedFile[] = [
+      { ...defaultUploadedFile, extension: ACCEPTED_FILE_TYPES.JPEG },
+      { ...defaultUploadedFile, extension: ACCEPTED_FILE_TYPES.PNG },
+      { ...defaultUploadedFile, extension: ACCEPTED_FILE_TYPES.GIF },
+      { ...defaultUploadedFile, extension: ACCEPTED_FILE_TYPES.BMP },
+      { ...defaultUploadedFile, extension: ACCEPTED_FILE_TYPES.TIFF },
+      { ...defaultUploadedFile, extension: ACCEPTED_FILE_TYPES.DOCX },
+      { ...defaultUploadedFile, extension: ACCEPTED_FILE_TYPES.CSV },
+      { ...defaultUploadedFile, extension: ACCEPTED_FILE_TYPES.PDF },
+    ];
+
+    const conversationRequest = createConversationRequestWithUploadedFile(uploadedFiles);
+
+    await conversationApi(conversationRequest, defaultAbortSignal, null);
+
+    expect(fetch).toHaveBeenCalledWith("/conversation", {
+      ...defaultFetchRequest,
+      body: expect.stringMatching(
+        /image_url.*image_url.*image_url.*image_url.*image_url.*Use the following document in your responses.*CSV format.*Use the following document in your responses/
+      ),
+    });
+  });
 });
