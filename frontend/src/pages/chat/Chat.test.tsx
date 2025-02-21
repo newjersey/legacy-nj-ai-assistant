@@ -1,4 +1,4 @@
-import { act, fireEvent, render, screen, waitFor, within } from "@testing-library/react";
+import { act, fireEvent, render, screen, waitFor } from "@testing-library/react";
 import { axe, toHaveNoViolations } from "jest-axe";
 
 import "@testing-library/jest-dom";
@@ -125,7 +125,47 @@ describe("Test the user attachment disclaimer text", () => {
 });
 
 describe("Test uploaded image previews", () => {
-  it("Displays previews of images being referenced within the user message bubble", () => {});
+  it("Displays previews of images being referenced within the user message bubble", async () => {
+    const uploadedFileOne = createMockFile("jpg", ACCEPTED_FILE_TYPES.JPEG);
+    const uploadedFileTwo = createMockFile("png", ACCEPTED_FILE_TYPES.PNG);
+    const uploadedFileThree = createMockFile("gif", ACCEPTED_FILE_TYPES.GIF);
 
-  it("Displays previews of only images being referenced when both image and non-image files are referenced within a conversation", () => {});
+    const { container } = render(<Chat />);
+
+    await act(async () => {
+      inputChatMessage();
+      uploadFiles([uploadedFileOne, uploadedFileTwo, uploadedFileThree]);
+      clickSubmitButton();
+    });
+
+    await waitFor(() => {
+      expect(screen.queryByAltText(`${uploadedFileOne.name}`)).toBeInTheDocument();
+      expect(screen.queryByAltText(`${uploadedFileTwo.name}`)).toBeInTheDocument();
+      expect(screen.queryByAltText(`${uploadedFileThree.name}`)).toBeInTheDocument();
+    });
+
+    expect(await axe(container)).toHaveNoViolations();
+  });
+
+  it("Displays previews of only images being referenced when both image and non-image files are referenced within a conversation", async () => {
+    const uploadedFileOne = createMockFile("jpg", ACCEPTED_FILE_TYPES.JPEG);
+    const uploadedFileTwo = createMockFile("csv", ACCEPTED_FILE_TYPES.CSV);
+    const uploadedFileThree = createMockFile("gif", ACCEPTED_FILE_TYPES.GIF);
+
+    const { container } = render(<Chat />);
+
+    await act(async () => {
+      inputChatMessage();
+      uploadFiles([uploadedFileOne, uploadedFileTwo, uploadedFileThree]);
+      clickSubmitButton();
+    });
+
+    await waitFor(() => {
+      expect(screen.queryByAltText(`${uploadedFileOne.name}`)).toBeInTheDocument();
+      expect(screen.queryByAltText(`${uploadedFileTwo.name}`)).not.toBeInTheDocument();
+      expect(screen.queryByAltText(`${uploadedFileThree.name}`)).toBeInTheDocument();
+    });
+
+    expect(await axe(container)).toHaveNoViolations();
+  });
 });
