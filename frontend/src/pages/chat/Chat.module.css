@@ -12,6 +12,13 @@
   --message-margin-bottom: 20px;
   --message-final-margin-bottom: 28px;
 
+  --radial-gradient-blue: radial-gradient(
+    109.81% 107.82% at 100.1% 90.19%,
+    #0f6cbd 33.63%,
+    #2d87c3 70.31%,
+    #8dddd8 100%
+  );
+
   flex: 1;
   min-height: 25rem;
 }
@@ -157,12 +164,7 @@
 }
 
 #chatHistoryButton {
-  background: radial-gradient(
-    109.81% 107.82% at 100.1% 90.19%,
-    #0f6cbd 33.63%,
-    #2d87c3 70.31%,
-    #8dddd8 100%
-  );
+  background: var(--radial-gradient-blue);
   box-sizing: border-box;
 }
 
@@ -183,6 +185,7 @@
   left: 7px;
   top: 66px;
   color: #ffffff;
+  background: var(--radial-gradient-blue);
   border-radius: 4px;
   z-index: 1;
 }

@@ -4,15 +4,15 @@ import icons from "@newjersey/njwds/dist/img/sprite.svg";
 import { extractRawText } from "mammoth";
 import { v4 as uuidv4 } from "uuid";
 
-import { Alert } from "../../custom/alertUtils";
+import { Alert } from "../../utils/alertUtils";
 import {
   ACCEPTED_FILE_TYPES,
   isImageFile,
   SelectedFile,
   truncateFilename,
   UploadedFile,
-} from "../../custom/fileUploadUtils";
-import { logEvent } from "../../custom/logEvent";
+} from "../../utils/fileUploadUtils";
+import { logEvent } from "../../utils/logEvent";
 
 import { AlertContainer } from "./AlertContainer";
 import { FileUploadPreviewContainer } from "./FileUploadPreviewContainer";

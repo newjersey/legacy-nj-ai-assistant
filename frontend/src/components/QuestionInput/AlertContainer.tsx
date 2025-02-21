@@ -1,4 +1,4 @@
-import { Alert } from "../../custom/alertUtils";
+import { Alert } from "../../utils/alertUtils";
 
 import { AlertBanner } from "./AlertBanner";
 

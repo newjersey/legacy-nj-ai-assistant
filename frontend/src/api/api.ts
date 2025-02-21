@@ -1,5 +1,5 @@
 import { chatHistorySampleData } from "../constants/chatHistory";
-import { ACCEPTED_FILE_TYPES, isImageFile, UploadedFile } from "../custom/fileUploadUtils";
+import { ACCEPTED_FILE_TYPES, isImageFile, UploadedFile } from "../utils/fileUploadUtils";
 
 import {
   ChatMessage,
@@ -10,11 +10,11 @@ import {
   UserInfo,
 } from "./models";
 
-export async function conversationApi(
+export const conversationApi = async (
   options: ConversationRequest,
   abortSignal: AbortSignal,
   conversationIdHeader: string | null | undefined
-): Promise<Response> {
+): Promise<Response> => {
   const formatContent = (message: any) => {
     const uploadedFiles = message.uploaded_files as UploadedFile[] | undefined | null;
 
@@ -67,7 +67,7 @@ export async function conversationApi(
   });
 
   return response;
-}
+};
 
 export async function getUserInfo(): Promise<UserInfo[]> {
   const response = await fetch("/.auth/me");

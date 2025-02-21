@@ -3,7 +3,7 @@ import { axe, toHaveNoViolations } from "jest-axe";
 
 import "@testing-library/jest-dom";
 
-import { FilePreview } from "../../custom/fileUploadUtils";
+import { FilePreview } from "../../utils/fileUploadUtils";
 
 import { FileUploadPreviewContainer } from "./FileUploadPreviewContainer";
 expect.extend(toHaveNoViolations);

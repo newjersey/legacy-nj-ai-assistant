@@ -1,6 +1,6 @@
 import icons from "@newjersey/njwds/dist/img/sprite.svg";
 
-import { Alert } from "../../custom/alertUtils";
+import { Alert } from "../../utils/alertUtils";
 
 import styles from "./QuestionInput.module.css";
 

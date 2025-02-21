@@ -1,4 +1,4 @@
-import { FilePreview } from "../../custom/fileUploadUtils";
+import { FilePreview } from "../../utils/fileUploadUtils";
 
 import { FileUploadPreview } from "./FileUploadPreview";
 
@@ -15,7 +15,14 @@ export const FileUploadPreviewContainer = ({ onClose, files }: FileUploadPreview
       className={`display-flex flex-wrap margin-x-2 margin-bottom-05 ${styles.fileUploadPreviewsContainer}`}
     >
       {files.map((file) => (
-        <FileUploadPreview onClose={onClose} fileId={file.fileId} fileName={file.name} />
+        <div key={file.fileId}>
+          <FileUploadPreview
+            onClose={onClose}
+            fileId={file.fileId}
+            fileName={file.name}
+            key={file.fileId}
+          />
+        </div>
       ))}
     </div>
   );

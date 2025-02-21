@@ -3,7 +3,7 @@ import { axe, toHaveNoViolations } from "jest-axe";
 
 import "@testing-library/jest-dom";
 
-import { Alert } from "../../custom/alertUtils";
+import { Alert } from "../../utils/alertUtils";
 
 import { AlertContainer } from "./AlertContainer";
 expect.extend(toHaveNoViolations);

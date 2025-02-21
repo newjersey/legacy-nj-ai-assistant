@@ -2,7 +2,7 @@ import { useContext, useEffect, useLayoutEffect, useRef, useState } from "react"
 import ReactMarkdown from "react-markdown";
 import { Prism as SyntaxHighlighter } from "react-syntax-highlighter";
 import { nord } from "react-syntax-highlighter/dist/cjs/styles/prism";
-import uuid from "react-uuid";
+import { v4 as uuidv4 } from "uuid";
 import { CommandBarButton, Dialog, DialogType, IconButton, Stack } from "@fluentui/react";
 import { useBoolean } from "@fluentui/react-hooks";
 import { ErrorCircleRegular, ShieldLockRegular, SquareRegular } from "@fluentui/react-icons";
@@ -35,8 +35,9 @@ import { Answer } from "../../components/Answer";
 import { ChatHistoryPanel } from "../../components/ChatHistory/ChatHistoryPanel";
 import { QuestionInput } from "../../components/QuestionInput";
 import { XSSAllowTags } from "../../constants/sanatizeAllowables";
-import { isImageFile, truncateFilename, UploadedFile } from "../../custom/fileUploadUtils";
-import { logEvent } from "../../custom/logEvent";
+import { DEFAULT_CHAT_TITLE, DEFAULT_CHAT_DESCRIPTION } from "../../constants/defaultAppState";
+import { isImageFile, truncateFilename, UploadedFile } from "../../utils/fileUploadUtils";
+import { logEvent } from "../../utils/logEvent";
 import { AppStateContext } from "../../state/AppProvider";
 
 import styles from "./Chat.module.css";
@@ -155,7 +156,7 @@ export const Chat = () => {
 
       if (resultMessage.context) {
         toolMessage = {
-          id: uuid(),
+          id: uuidv4(),
           role: TOOL,
           content: resultMessage.context,
           date: new Date().toISOString(),
@@ -187,7 +188,7 @@ export const Chat = () => {
     abortFuncs.current.unshift(abortController);
 
     const userMessage: ChatMessage = {
-      id: uuid(),
+      id: uuidv4(),
       role: "user",
       content: question,
       date: new Date().toISOString(),
@@ -197,7 +198,7 @@ export const Chat = () => {
     let conversation: Conversation | null | undefined;
     if (!conversationId) {
       conversation = {
-        id: conversationId ?? uuid(),
+        id: conversationId ?? uuidv4(),
         title: question,
         messages: [userMessage],
         date: new Date().toISOString(),
@@ -300,7 +301,7 @@ export const Chat = () => {
         errorMessage = parseErrorMessage(errorMessage);
 
         const errorChatMsg: ChatMessage = {
-          id: uuid(),
+          id: uuidv4(),
           role: ERROR,
           content: errorMessage,
           date: new Date().toISOString(),
@@ -336,7 +337,7 @@ export const Chat = () => {
     abortFuncs.current.unshift(abortController);
 
     const userMessage: ChatMessage = {
-      id: uuid(),
+      id: uuidv4(),
       role: "user",
       content: question,
       date: new Date().toISOString(),
@@ -381,7 +382,7 @@ export const Chat = () => {
             ? errorResponseMessage
             : parseErrorMessage(responseJson.error);
         const errorChatMsg: ChatMessage = {
-          id: uuid(),
+          id: uuidv4(),
           role: ERROR,
           content: `There was an error generating a response. Chat history can't be saved at this time. ${errorResponseMessage}`,
           date: new Date().toISOString(),
@@ -511,7 +512,7 @@ export const Chat = () => {
         errorMessage = parseErrorMessage(errorMessage);
 
         const errorChatMsg: ChatMessage = {
-          id: uuid(),
+          id: uuidv4(),
           role: ERROR,
           content: errorMessage,
           date: new Date().toISOString(),
@@ -533,7 +534,7 @@ export const Chat = () => {
           if (!result.history_metadata) {
             console.error("Error retrieving data.", result);
             const errorChatMsg: ChatMessage = {
-              id: uuid(),
+              id: uuidv4(),
               role: ERROR,
               content: errorMessage,
               date: new Date().toISOString(),
@@ -715,7 +716,7 @@ export const Chat = () => {
                   const errorMessage =
                     "An error occurred. Answers can't be saved at this time. If the problem persists, please contact the site administrator.";
                   const errorChatMsg: ChatMessage = {
-                    id: uuid(),
+                    id: uuidv4(),
                     role: ERROR,
                     content: errorMessage,
                     date: new Date().toISOString(),
@@ -797,7 +798,7 @@ export const Chat = () => {
     let disclaimer = "";
 
     if (uploadedFiles.length === 1 && uploadedFiles[0].contents != null) {
-      disclaimer = `${uploadedFiles[0].name} is being referenced`;
+      disclaimer = `${truncateFilename(uploadedFiles[0].name)} is being referenced`;
     } else if (uploadedFiles.length > 1) {
       const referencedFilenames: string[] = [];
 
@@ -903,17 +904,21 @@ export const Chat = () => {
                     aria-hidden="true"
                     alt="Official logo for the State of New Jersey"
                   />
-                  <h1 className={`margin-x-1 ${styles.chatEmptyStateTitle}`}>{ui?.chat_title}</h1>
+                  <h1 className={`margin-x-1 ${styles.chatEmptyStateTitle}`}>
+                    {ui?.chat_title ?? DEFAULT_CHAT_TITLE}
+                  </h1>
                 </div>
                 <h2
                   className={styles.chatEmptyStateSubtitle}
-                  dangerouslySetInnerHTML={{ __html: ui?.chat_description ?? "" }}
+                  dangerouslySetInnerHTML={{
+                    __html: ui?.chat_description ?? DEFAULT_CHAT_DESCRIPTION,
+                  }}
                 ></h2>
               </div>
             ) : (
               <div className={styles.chatMessageStream} role="log">
                 {messages.map((answer, index) => (
-                  <>
+                  <div key={answer.id}>
                     {answer.role === "user" ? (
                       <div
                         className={`display-flex flex-column flex-align-end ${styles.chatMessageUser}`}
@@ -927,8 +932,9 @@ export const Chat = () => {
                                 {getUploadedImageFiles(answer.uploaded_files).map((file) => (
                                   <div
                                     className={`margin-left-205 ${styles.chatMessageImageAttachmentPreview}`}
+                                    key={file.name}
                                   >
-                                    <img height="auto" src={file.contents} alt={file.name}></img>
+                                    <img height="auto" src={file.contents} alt={file.name} role="img"></img>
                                   </div>
                                 ))}
                               </div>
@@ -970,7 +976,7 @@ export const Chat = () => {
                         <span className={styles.chatMessageErrorContent}>{answer.content}</span>
                       </div>
                     ) : null}
-                  </>
+                  </div>
                 ))}
                 {showLoadingMessage && (
                   <>
@@ -1010,30 +1016,16 @@ export const Chat = () => {
               <div className="display-flex width-full">
                 <Stack className="flex-justify-end margin-bottom-5">
                   {isCosmosDbConfigured() && (
-                    <CommandBarButton
+                    <button
                       role="button"
-                      styles={{
-                        icon: {
-                          color: "#FFFFFF",
-                        },
-                        iconDisabled: {
-                          color: "#BDBDBD !important",
-                        },
-                        root: {
-                          color: "#FFFFFF",
-                          background:
-                            "radial-gradient(109.81% 107.82% at 100.1% 90.19%, #0F6CBD 33.63%, #2D87C3 70.31%, #8DDDD8 100%)",
-                        },
-                        rootDisabled: {
-                          background: "#F0F0F0",
-                        },
-                      }}
                       className={styles.newChatIcon}
-                      iconProps={{ iconName: "Add" }}
                       onClick={newChat}
-                      disabled={disabledButton()}
                       aria-label="start a new chat button"
-                    />
+                    >
+                      <svg className="usa-icon" aria-hidden="true" focusable="false" role="img">
+                        <use href={`${icons}#add`} />
+                      </svg>
+                    </button>
                   )}
                   <button
                     className={`usa-button width-7 display-flex flex-row flex-justify-center flex-align-center ${additionalClearChatStyles}`}

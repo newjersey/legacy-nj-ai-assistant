@@ -3,7 +3,7 @@ import { axe, toHaveNoViolations } from "jest-axe";
 
 import "@testing-library/jest-dom";
 
-import { ACCEPTED_FILE_TYPES, UploadedFile } from "../../custom/fileUploadUtils";
+import { ACCEPTED_FILE_TYPES, UploadedFile } from "../../utils/fileUploadUtils";
 import { createMockFile } from "../../test/factories";
 
 const uuidv4Mock = jest.fn();

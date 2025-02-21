@@ -1,6 +1,6 @@
 import icons from "@newjersey/njwds/dist/img/sprite.svg";
 
-import { truncateFilename } from "../../custom/fileUploadUtils";
+import { truncateFilename } from "../../utils/fileUploadUtils";
 
 import styles from "./QuestionInput.module.css";
 
