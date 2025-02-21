@@ -923,18 +923,19 @@ export const Chat = () => {
                       <div
                         className={`display-flex flex-column flex-align-end ${styles.chatMessageUser}`}
                       >
-                        <div className={`${styles.chatMessageUserMessage}`}>
+                        <div className={`display-flex flex-column flex-align-end ${styles.chatMessageUserMessage}`}>
                           {answer.uploaded_files != null &&
                             answer.uploaded_files.some(isImageFile) && (
                               <div
-                                className={`display-flex flex-row width-full flex-align-end flex-justify-end ${styles.chatMessageImageAttachmentPreviewContainer}`}
+                                className={`display-flex flex-row flex-wrap flex-align-end flex-justify-end ${styles.chatMessageImageAttachmentPreviewContainer}`}
                               >
                                 {getUploadedImageFiles(answer.uploaded_files).map((file) => (
                                   <div
-                                    className={`margin-left-205 ${styles.chatMessageImageAttachmentPreview}`}
+                                    className={"margin-bottom-1"}
                                     key={file.name}
                                   >
                                     <img
+                                      className={styles.previewImage}
                                       height="auto"
                                       src={file.contents}
                                       alt={file.name}

@@ -9,7 +9,12 @@
   --padding-to-make-chat-max-width: calc((100% - var(--chat-max-width)) / 2);
   --padding-chat-x: max(var(--padding-x-min), var(--padding-to-make-chat-max-width));
 
-  --message-margin-bottom: 20px;
+  --image-preview-dimensions: 150px;
+  --image-preview-margin-x: 0.25rem;
+  --image-preview-container-max-width: calc(
+      (var(--image-preview-dimension) * 5) + (var(--image-preview-margin-x) * 10)
+    )
+    --message-margin-bottom: 20px;
   --message-final-margin-bottom: 28px;
 
   --radial-gradient-blue: radial-gradient(
@@ -114,7 +119,7 @@
   flex-grow: 0;
   white-space: pre-wrap;
   word-wrap: break-word;
-  max-width: 80%;
+  max-width: 85%;
   /* flex-wrap: wrap; */
 }
 
@@ -357,14 +362,14 @@ a {
 
 .chatMessageImageAttachmentPreviewContainer {
   flex-direction: row;
+  max-width: var(--image-preview-container-max-width);
 }
 
-.chatMessageImageAttachmentPreview {
-  object-fit: cover;
-  flex-basis: 100%;
-}
-
-img.imageAttachment {
+img.previewImage {
+  width: var(--image-preview-dimensions);
+  height: var(--image-preview-dimensions);
+  margin-right: var(--image-preview-margin-x);
+  margin-left: var(--image-preview-margin-x);
   object-fit: cover;
 }
 
