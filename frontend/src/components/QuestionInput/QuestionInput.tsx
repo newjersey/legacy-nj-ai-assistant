@@ -116,24 +116,32 @@ export const QuestionInput = ({
     return validFiles;
   };
 
+  const getTotalFileContentLength = (uploadedFiles: UploadedFile[]) => {
+    let totalFileContentLength = 0;
+
+    uploadedFiles.forEach((file) => {
+      if (!isImageFile(file)) {
+        totalFileContentLength += file.contents.length;
+      }
+    });
+
+    return totalFileContentLength;
+  };
+
   const sendQuestion = async () => {
     if (disabled || !question.trim()) {
       return;
     }
 
-    const send = (uploadedFiles?: UploadedFile[]) => {
-      const getTotalFileContentLength = (uploadedFiles: UploadedFile[]) => {
-        let totalFileContentLength = 0;
+    const uploadedFiles = await Promise.all(
+      selectedFiles.map(async (selectedFile): Promise<UploadedFile> => {
+        const uploadedFile = await extractDataFromFile(selectedFile);
 
-        uploadedFiles.forEach((file) => {
-          if (!isImageFile(file)) {
-            totalFileContentLength += file.contents.length;
-          }
-        });
+        return uploadedFile;
+      })
+    );
 
-        return totalFileContentLength;
-      };
-
+    if (uploadedFiles.length > 0) {
       if (uploadedFiles != null && getTotalFileContentLength(uploadedFiles) > MAX_INPUT_LENGTH) {
         setInputErrors([
           ...inputErrors,
@@ -154,50 +162,36 @@ export const QuestionInput = ({
           object_lengths: uploadedFiles.map((file) => file.contents.length),
           object_sizes: uploadedFiles.map((file) => file.size),
         });
+
+        return;
       }
+    }
 
-      if (!isValidLength(question)) {
-        setInputErrors([
-          ...inputErrors,
-          {
-            message: `Prompt cannot exceed ${MAX_INPUT_LENGTH} characters. Please try a smaller prompt.`,
-            id: `exceededPromptCharacterLimitError-${uuidv4()}`,
-          },
-        ]);
+    if (!isValidLength(question)) {
+      setInputErrors([
+        ...inputErrors,
+        {
+          message: `Prompt cannot exceed ${MAX_INPUT_LENGTH} characters. Please try a smaller prompt.`,
+          id: `exceededPromptCharacterLimitError-${uuidv4()}`,
+        },
+      ]);
 
-        logEvent("submit_prompt_client_error_prompt_length", {
-          input_length: question.length,
-        });
+      logEvent("submit_prompt_client_error_prompt_length", {
+        input_length: question.length,
+      });
+
+      return;
+    }
+
+    onSend(question, conversationId, uploadedFiles);
+
+    if (clearOnSend) {
+      setQuestion("");
+      setSelectedFiles([]);
+      setInputErrors([]);
+      if (fileInputRef?.current?.value) {
+        fileInputRef.current.value = "";
       }
-
-      if (conversationId) {
-        onSend(question, conversationId, uploadedFiles);
-      } else {
-        onSend(question, undefined, uploadedFiles);
-      }
-
-      if (clearOnSend) {
-        setQuestion("");
-        setSelectedFiles([]);
-        setInputErrors([]);
-        if (fileInputRef?.current?.value) {
-          fileInputRef.current.value = "";
-        }
-      }
-    };
-
-    if (selectedFiles.length > 0) {
-      const uploadedFiles: UploadedFile[] = await Promise.all(
-        selectedFiles.map(async (selectedFile): Promise<UploadedFile> => {
-          const uploadedFile = await extractDataFromFile(selectedFile);
-
-          return uploadedFile;
-        })
-      );
-
-      send(uploadedFiles);
-    } else {
-      send();
     }
   };
 

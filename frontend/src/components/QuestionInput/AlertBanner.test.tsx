@@ -1,4 +1,4 @@
-import { render, screen, within } from "@testing-library/react";
+import { render, screen, within, fireEvent, act } from "@testing-library/react";
 import { axe, toHaveNoViolations } from "jest-axe";
 
 import "@testing-library/jest-dom";
@@ -24,6 +24,34 @@ describe("Test the AlertBanner component", () => {
 
     const alertCloseButton = within(alertBanner).getByRole("button");
     expect(alertCloseButton).toBeInTheDocument();
+
+    expect(await axe(container)).toHaveNoViolations();
+  });
+});
+
+describe("Test the onClose function", () => {
+  it("calls the onClose function with the file upload preview ID when the close button is clicked", async () => {
+    const mockOnClose = jest.fn();
+    const alert: Alert = {
+      message: "alert message!",
+      id: "alertId",
+    };
+
+    const { container } = render(
+      <AlertBanner onClose={mockOnClose} alert={alert} />
+    );
+
+    const alertBanner = screen.getByTestId(`errorAlert-${alert.id}`);
+    expect(alertBanner).toBeInTheDocument();
+
+    const alertCloseButton = within(alertBanner).getByRole("button");
+    expect(alertCloseButton).toBeInTheDocument();
+
+    await act(async () => {
+      fireEvent.click(alertCloseButton);
+    });
+
+    expect(mockOnClose).toHaveBeenCalledWith(alert.id)
 
     expect(await axe(container)).toHaveNoViolations();
   });

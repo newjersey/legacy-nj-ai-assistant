@@ -1,4 +1,4 @@
-import { render, screen, within } from "@testing-library/react";
+import { render, screen, within, fireEvent, act } from "@testing-library/react";
 import { axe, toHaveNoViolations } from "jest-axe";
 
 import "@testing-library/jest-dom";
@@ -38,6 +38,31 @@ describe("Test the FileUploadPreview component", () => {
     );
 
     expect(screen.queryByText(expectedFilename)).toBeInTheDocument();
+
+    expect(await axe(container)).toHaveNoViolations();
+  });
+});
+
+describe("Test the onClose function", () => {
+  it("calls the onClose function with the file upload preview ID when the close button is clicked", async () => {
+    const mockOnClose = jest.fn();
+    const fileName = "fileName.jpg";
+    const fileId = "fileId";
+    const { container } = render(
+      <FileUploadPreview onClose={mockOnClose} fileId={fileId} fileName={fileName} />
+    );
+
+    const fileUploadPreview = screen.getByTestId(`filePreview-${fileId}`);
+    expect(fileUploadPreview).toBeInTheDocument();
+
+    const fileUploadPreviewCloseButton = within(fileUploadPreview).getByRole("button");
+    expect(fileUploadPreviewCloseButton).toBeInTheDocument();
+
+    await act(async () => {
+      fireEvent.click(fileUploadPreviewCloseButton);
+    });
+
+    expect(mockOnClose).toHaveBeenCalledWith(fileId)
 
     expect(await axe(container)).toHaveNoViolations();
   });

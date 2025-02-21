@@ -3,7 +3,7 @@ import { axe, toHaveNoViolations } from "jest-axe";
 
 import "@testing-library/jest-dom";
 
-import { ACCEPTED_FILE_TYPES } from "../../custom/fileUploadUtils";
+import { ACCEPTED_FILE_TYPES, UploadedFile } from "../../custom/fileUploadUtils";
 import { createMockFile } from "../../test/factories";
 
 const uuidv4Mock = jest.fn();
@@ -30,11 +30,27 @@ function inputChatMessage(message?: string) {
   });
 }
 
-function submitChatMessage() {
+function clickSubmitButton() {
   const submitButton = screen.getByLabelText("Ask question button");
 
   fireEvent.click(submitButton);
 }
+
+describe("Test the QuestionInput component", () => {
+  it("correctly renders the QuestionInput component without any accessibility errors", async () => {
+    const { container } = render(
+      <QuestionInput
+        onSend={() => {}}
+        disabled={false}
+        placeholder={"placeholder"}
+        conversationId={undefined}
+        clearOnSend={false}
+      />
+    );
+
+    expect(await axe(container)).toHaveNoViolations();
+  });
+});
 
 describe("Test file upload previews", () => {
   const defaultMockUuid = "defaultMockUuid";
@@ -444,7 +460,7 @@ describe("Test error alerts", () => {
     await act(async () => {
       uploadFiles([uploadedFile]);
       inputChatMessage();
-      submitChatMessage();
+      clickSubmitButton();
     });
 
     await waitFor(() => {
@@ -469,7 +485,7 @@ describe("Test error alerts", () => {
 
     await act(async () => {
       inputChatMessage(prompt);
-      submitChatMessage();
+      clickSubmitButton();
     });
 
     const inputError = screen.queryByText(/Please try a smaller prompt./);
@@ -494,7 +510,7 @@ describe("Test error alerts", () => {
     await act(async () => {
       uploadFiles([uploadedPdfFile]);
       inputChatMessage();
-      submitChatMessage();
+      clickSubmitButton();
     });
 
     await waitFor(() => {
@@ -520,7 +536,7 @@ describe("Test error alerts", () => {
     await act(async () => {
       uploadFiles([uploadedDocxFile]);
       inputChatMessage();
-      submitChatMessage();
+      clickSubmitButton();
     });
 
     await waitFor(() => {
@@ -626,6 +642,275 @@ describe("Test uploading files", () => {
 
     const validFileUploadPreview = screen.getByTestId(`filePreview-${mockValidFileUuid}`);
     expect(validFileUploadPreview).toBeInTheDocument();
+
+    expect(await axe(container)).toHaveNoViolations();
+  });
+});
+
+describe("Test sending input", () => {
+  it("sends input with just the prompt question when the enter button is pressed while the text area is selected", async () => {
+    const mockOnSend = jest.fn();
+    const expectedText = "hello!!";
+
+    const { container } = render(
+      <QuestionInput
+        onSend={mockOnSend}
+        disabled={false}
+        placeholder={"placeholder"}
+        conversationId={undefined}
+        clearOnSend={false}
+      />
+    );
+
+    const textArea = screen.getByLabelText("Type a question");
+
+    await act(async () => {
+      inputChatMessage(expectedText);
+      fireEvent.keyDown(textArea, { key: "Enter", code: 13, charCode: 13 });
+    });
+
+    expect(mockOnSend).toHaveBeenCalledTimes(1);
+    expect(mockOnSend).toHaveBeenCalledWith(expectedText, undefined, []);
+
+    expect(await axe(container)).toHaveNoViolations();
+  });
+
+  it("sends input with just the prompt question when the enter button is pressed while the file upload button is selected", async () => {
+    const mockOnSend = jest.fn();
+    const expectedText = "hello!!";
+
+    const { container } = render(
+      <QuestionInput
+        onSend={mockOnSend}
+        disabled={false}
+        placeholder={"placeholder"}
+        conversationId={undefined}
+        clearOnSend={false}
+      />
+    );
+
+    const sendButton = screen.getByLabelText("Ask question button");
+
+    await act(async () => {
+      inputChatMessage(expectedText);
+      fireEvent.keyDown(sendButton, { key: "Enter", code: 13, charCode: 13 });
+    });
+
+    expect(mockOnSend).toHaveBeenCalledTimes(1);
+    expect(mockOnSend).toHaveBeenCalledWith(expectedText, undefined, []);
+
+    expect(await axe(container)).toHaveNoViolations();
+  });
+
+  it("sends input with just the prompt question when the send button is clicked and no files are uploaded", async () => {
+    const mockOnSend = jest.fn();
+    const expectedText = "hello!!";
+
+    const { container } = render(
+      <QuestionInput
+        onSend={mockOnSend}
+        disabled={false}
+        placeholder={"placeholder"}
+        conversationId={undefined}
+        clearOnSend={false}
+      />
+    );
+
+    await act(async () => {
+      inputChatMessage(expectedText);
+      clickSubmitButton();
+    });
+
+    expect(mockOnSend).toHaveBeenCalledTimes(1);
+    expect(mockOnSend).toHaveBeenCalledWith(expectedText, undefined, []);
+
+    expect(await axe(container)).toHaveNoViolations();
+  });
+
+  it("sends the conversationId with the input when the conversationId is not undefined", async () => {
+    const mockOnSend = jest.fn();
+    const expectedText = "hello!!";
+    const expectedConversationId = "Id";
+
+    const { container } = render(
+      <QuestionInput
+        onSend={mockOnSend}
+        disabled={false}
+        placeholder={"placeholder"}
+        conversationId={expectedConversationId}
+        clearOnSend={false}
+      />
+    );
+
+    const textArea = screen.getByLabelText("Type a question");
+
+    await act(async () => {
+      inputChatMessage(expectedText);
+      clickSubmitButton();
+    });
+
+    expect(mockOnSend).toHaveBeenCalledTimes(1);
+    expect(mockOnSend).toHaveBeenCalledWith(expectedText, expectedConversationId, []);
+
+    expect(await axe(container)).toHaveNoViolations();
+  });
+
+  it("sends input with the uploaded file when the send button is clicked and one file is uploaded", async () => {
+    const mockOnSend = jest.fn();
+    const expectedText = "hello!!";
+
+    const uploadedFileContents = "hello";
+    const uploadedFile = createMockFile("csv", ACCEPTED_FILE_TYPES.CSV, 5, uploadedFileContents);
+    const expectedUploadedFilesArray: UploadedFile[] = [
+      {
+        name: uploadedFile.name,
+        contents: uploadedFileContents,
+        extension: ACCEPTED_FILE_TYPES.CSV,
+        size: uploadedFile.size,
+      },
+    ];
+
+    const { container } = render(
+      <QuestionInput
+        onSend={mockOnSend}
+        disabled={false}
+        placeholder={"placeholder"}
+        conversationId={undefined}
+        clearOnSend={false}
+      />
+    );
+
+    await act(async () => {
+      inputChatMessage(expectedText);
+      uploadFiles([uploadedFile]);
+      clickSubmitButton();
+    });
+
+    await waitFor(() => {
+      expect(mockOnSend).toHaveBeenCalledTimes(1);
+      expect(mockOnSend).toHaveBeenCalledWith(expectedText, undefined, expectedUploadedFilesArray);
+    });
+
+    expect(await axe(container)).toHaveNoViolations();
+  });
+
+  it("sends input with all uploaded files when the send button is clicked and multiple files are uploaded", async () => {
+    const mockOnSend = jest.fn();
+    const expectedText = "hello!!";
+
+    const uploadedFileContents = "hello";
+    const uploadedFileOne = createMockFile("csv", ACCEPTED_FILE_TYPES.CSV, 5, uploadedFileContents);
+    const uploadedFileTwo = createMockFile("csv", ACCEPTED_FILE_TYPES.CSV, 5, uploadedFileContents);
+    const expectedUploadedFilesArray: UploadedFile[] = [
+      {
+        name: uploadedFileOne.name,
+        contents: uploadedFileContents,
+        extension: ACCEPTED_FILE_TYPES.CSV,
+        size: uploadedFileOne.size,
+      },
+      {
+        name: uploadedFileTwo.name,
+        contents: uploadedFileContents,
+        extension: ACCEPTED_FILE_TYPES.CSV,
+        size: uploadedFileTwo.size,
+      },
+    ];
+
+    const { container } = render(
+      <QuestionInput
+        onSend={mockOnSend}
+        disabled={false}
+        placeholder={"placeholder"}
+        conversationId={undefined}
+        clearOnSend={false}
+      />
+    );
+
+    await act(async () => {
+      inputChatMessage(expectedText);
+      uploadFiles([uploadedFileOne, uploadedFileTwo]);
+      clickSubmitButton();
+    });
+
+    await waitFor(() => {
+      expect(mockOnSend).toHaveBeenCalledTimes(1);
+      expect(mockOnSend).toHaveBeenCalledWith(expectedText, undefined, expectedUploadedFilesArray);
+    });
+
+    expect(await axe(container)).toHaveNoViolations();
+  });
+
+  it("does not send input when the send button is clicked but the prompt is only whitespace", async () => {
+    const mockOnSend = jest.fn();
+    const expectedText = "     ";
+
+    const { container } = render(
+      <QuestionInput
+        onSend={mockOnSend}
+        disabled={false}
+        placeholder={"placeholder"}
+        conversationId={undefined}
+        clearOnSend={false}
+      />
+    );
+
+    await act(async () => {
+      inputChatMessage(expectedText);
+      clickSubmitButton();
+    });
+
+    expect(mockOnSend).toHaveBeenCalledTimes(0);
+
+    expect(await axe(container)).toHaveNoViolations();
+  });
+
+  it("does not send input when the send button is clicked and files are uploaded but no prompt is entered", async () => {
+    const mockOnSend = jest.fn();
+    const expectedText = "";
+
+    const uploadedFile = createMockFile("jpg", ACCEPTED_FILE_TYPES.JPEG);
+
+    const { container } = render(
+      <QuestionInput
+        onSend={mockOnSend}
+        disabled={false}
+        placeholder={"placeholder"}
+        conversationId={undefined}
+        clearOnSend={false}
+      />
+    );
+
+    await act(async () => {
+      inputChatMessage(expectedText);
+      uploadFiles([uploadedFile]);
+      clickSubmitButton();
+    });
+
+    expect(mockOnSend).toHaveBeenCalledTimes(0);
+
+    expect(await axe(container)).toHaveNoViolations();
+  });
+
+  it("does not send input when the send button is clicked but file upload is disabled", async () => {
+    const mockOnSend = jest.fn();
+    const expectedText = "hello!!";
+
+    const { container } = render(
+      <QuestionInput
+        onSend={mockOnSend}
+        disabled={true}
+        placeholder={"placeholder"}
+        conversationId={undefined}
+        clearOnSend={false}
+      />
+    );
+
+    await act(async () => {
+      inputChatMessage(expectedText);
+      clickSubmitButton();
+    });
+
+    expect(mockOnSend).toHaveBeenCalledTimes(0);
 
     expect(await axe(container)).toHaveNoViolations();
   });
