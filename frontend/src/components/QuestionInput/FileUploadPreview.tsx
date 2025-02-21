@@ -17,7 +17,12 @@ export const FileUploadPreview = ({ onClose, fileId, fileName }: FileUploadPrevi
       id={fileId}
       data-testid={`filePreview-${fileId}`}
     >
-      <svg className={`usa-icon margin-right-05 ${styles.filePreviewIcon}`} aria-hidden="true" focusable="false" role="img">
+      <svg
+        className={`usa-icon margin-right-05 ${styles.filePreviewIcon}`}
+        aria-hidden="true"
+        focusable="false"
+        role="img"
+      >
         <use href={`${icons}#image`} />
       </svg>
       <p className={`margin-top-0 font-sans-3xs`}>{truncateFilename(fileName)}</p>
