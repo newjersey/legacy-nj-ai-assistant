@@ -2,7 +2,6 @@ import { useContext, useEffect, useLayoutEffect, useRef, useState } from "react"
 import ReactMarkdown from "react-markdown";
 import { Prism as SyntaxHighlighter } from "react-syntax-highlighter";
 import { nord } from "react-syntax-highlighter/dist/cjs/styles/prism";
-import { v4 as uuidv4 } from "uuid";
 import { CommandBarButton, Dialog, DialogType, IconButton, Stack } from "@fluentui/react";
 import { useBoolean } from "@fluentui/react-hooks";
 import { ErrorCircleRegular, ShieldLockRegular, SquareRegular } from "@fluentui/react-icons";
@@ -11,6 +10,7 @@ import DOMPurify from "dompurify";
 import { isEmpty } from "lodash";
 import rehypeRaw from "rehype-raw";
 import remarkGfm from "remark-gfm";
+import { v4 as uuidv4 } from "uuid";
 
 import {
   AzureSqlServerExecResults,
@@ -34,11 +34,11 @@ import NjLogo from "../../assets/nj-logo.svg";
 import { Answer } from "../../components/Answer";
 import { ChatHistoryPanel } from "../../components/ChatHistory/ChatHistoryPanel";
 import { QuestionInput } from "../../components/QuestionInput";
+import { DEFAULT_CHAT_DESCRIPTION, DEFAULT_CHAT_TITLE } from "../../constants/defaultAppState";
 import { XSSAllowTags } from "../../constants/sanatizeAllowables";
-import { DEFAULT_CHAT_TITLE, DEFAULT_CHAT_DESCRIPTION } from "../../constants/defaultAppState";
+import { AppStateContext } from "../../state/AppProvider";
 import { isImageFile, truncateFilename, UploadedFile } from "../../utils/fileUploadUtils";
 import { logEvent } from "../../utils/logEvent";
-import { AppStateContext } from "../../state/AppProvider";
 
 import styles from "./Chat.module.css";
 
@@ -934,7 +934,12 @@ export const Chat = () => {
                                     className={`margin-left-205 ${styles.chatMessageImageAttachmentPreview}`}
                                     key={file.name}
                                   >
-                                    <img height="auto" src={file.contents} alt={file.name} role="img"></img>
+                                    <img
+                                      height="auto"
+                                      src={file.contents}
+                                      alt={file.name}
+                                      role="img"
+                                    ></img>
                                   </div>
                                 ))}
                               </div>

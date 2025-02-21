@@ -3,12 +3,11 @@ import { axe, toHaveNoViolations } from "jest-axe";
 
 import "@testing-library/jest-dom";
 
-import { ACCEPTED_FILE_TYPES, UploadedFile } from "../../utils/fileUploadUtils";
+import * as api from "../../api";
 import { createMockFile } from "../../test/factories";
+import { ACCEPTED_FILE_TYPES, UploadedFile } from "../../utils/fileUploadUtils";
 
 import { Chat } from "./Chat";
-
-import * as api from "../../api";
 jest.mock("../../api");
 
 expect.extend(toHaveNoViolations);
