@@ -2,7 +2,7 @@ import { useContext, useEffect, useLayoutEffect, useRef, useState } from "react"
 import ReactMarkdown from "react-markdown";
 import { Prism as SyntaxHighlighter } from "react-syntax-highlighter";
 import { nord } from "react-syntax-highlighter/dist/cjs/styles/prism";
-import { CommandBarButton, Dialog, DialogType, IconButton, Stack } from "@fluentui/react";
+import { Dialog, DialogType, IconButton, Stack } from "@fluentui/react";
 import { useBoolean } from "@fluentui/react-hooks";
 import { ErrorCircleRegular, ShieldLockRegular, SquareRegular } from "@fluentui/react-icons";
 import icons from "@newjersey/njwds/dist/img/sprite.svg";
@@ -938,7 +938,6 @@ export const Chat = () => {
                                       height="auto"
                                       src={file.contents}
                                       alt={file.name}
-                                      role="img"
                                     ></img>
                                   </div>
                                 ))}
@@ -1022,10 +1021,10 @@ export const Chat = () => {
                 <Stack className="flex-justify-end margin-bottom-5">
                   {isCosmosDbConfigured() && (
                     <button
-                      role="button"
                       className={styles.newChatIcon}
                       onClick={newChat}
                       aria-label="start a new chat button"
+                      disabled={disabledButton()}
                     >
                       <svg className="usa-icon" aria-hidden="true" focusable="false" role="img">
                         <use href={`${icons}#add`} />
