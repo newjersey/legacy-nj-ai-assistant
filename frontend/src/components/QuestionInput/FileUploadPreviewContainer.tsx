@@ -15,14 +15,12 @@ export const FileUploadPreviewContainer = ({ onClose, files }: FileUploadPreview
       className={`display-flex flex-wrap margin-x-2 margin-bottom-05 ${styles.fileUploadPreviewsContainer}`}
     >
       {files.map((file) => (
-        <div key={file.fileId}>
-          <FileUploadPreview
-            onClose={onClose}
-            fileId={file.fileId}
-            fileName={file.name}
-            key={file.fileId}
-          />
-        </div>
+        <FileUploadPreview
+          key={file.fileId}
+          onClose={onClose}
+          fileId={file.fileId}
+          fileName={file.name}
+        />
       ))}
     </div>
   );
