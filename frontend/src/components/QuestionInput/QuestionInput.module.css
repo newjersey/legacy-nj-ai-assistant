@@ -68,9 +68,6 @@ textarea.questionInputTextArea {
 }
 
 .errorAlert {
-  /* top: -50px;
-  z-index: 1;
-  gap: 12px; */
   outline: none;
 }
 

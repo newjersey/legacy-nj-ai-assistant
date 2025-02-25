@@ -1,4 +1,4 @@
-import { act, fireEvent, render, screen, waitFor, within } from "@testing-library/react";
+import { fireEvent, render, screen, waitFor, within } from "@testing-library/react";
 import { axe, toHaveNoViolations } from "jest-axe";
 
 import "@testing-library/jest-dom";
@@ -78,9 +78,7 @@ describe("Test file upload previews", () => {
       />
     );
 
-    await act(async () => {
-      uploadFiles([uploadedFile]);
-    });
+    uploadFiles([uploadedFile]);
 
     const fileUploadPreview = screen.getByTestId(`filePreview-${defaultMockUuid}`);
     expect(fileUploadPreview).toBeInTheDocument();
@@ -112,9 +110,7 @@ describe("Test file upload previews", () => {
       />
     );
 
-    await act(async () => {
-      uploadFiles([uploadedFileOne, uploadedFileTwo]);
-    });
+    uploadFiles([uploadedFileOne, uploadedFileTwo]);
 
     const fileUploadPreviewOne = screen.getByTestId(`filePreview-${mockUuidOne}`);
     expect(fileUploadPreviewOne).toBeInTheDocument();
@@ -138,9 +134,7 @@ describe("Test file upload previews", () => {
       />
     );
 
-    await act(async () => {
-      uploadFiles([uploadedFile]);
-    });
+    uploadFiles([uploadedFile]);
 
     const fileUploadPreview = screen.getByTestId(`filePreview-${defaultMockUuid}`);
     expect(fileUploadPreview).toBeInTheDocument();
@@ -179,9 +173,7 @@ describe("Test file upload previews", () => {
       />
     );
 
-    await act(async () => {
-      uploadFiles([uploadedFileOne, uploadedFileTwo]);
-    });
+    uploadFiles([uploadedFileOne, uploadedFileTwo]);
 
     const fileUploadPreviewOne = screen.getByTestId(`filePreview-${mockUuidOne}`);
     expect(fileUploadPreviewOne).toBeInTheDocument();
@@ -230,9 +222,7 @@ describe("Test error alerts", () => {
       />
     );
 
-    await act(async () => {
-      uploadFiles([uploadedFile]);
-    });
+    uploadFiles([uploadedFile]);
 
     const inputError = screen.getByTestId(`errorAlert-invalidFiletype-${defaultMockUuid}`);
     expect(inputError).toBeInTheDocument();
@@ -253,9 +243,7 @@ describe("Test error alerts", () => {
       />
     );
 
-    await act(async () => {
-      uploadFiles([uploadedFile]);
-    });
+    uploadFiles([uploadedFile]);
 
     const inputError = screen.getByTestId(`errorAlert-invalidFiletype-${defaultMockUuid}`);
     expect(inputError).toBeInTheDocument();
@@ -295,9 +283,7 @@ describe("Test error alerts", () => {
       />
     );
 
-    await act(async () => {
-      uploadFiles([uploadedFileOne, uploadedFileTwo]);
-    });
+    uploadFiles([uploadedFileOne, uploadedFileTwo]);
 
     const inputErrorOne = screen.getByTestId(`errorAlert-exceedsMaxSize-${mockUuidOne}`);
     expect(inputErrorOne).toBeInTheDocument();
@@ -331,9 +317,7 @@ describe("Test error alerts", () => {
       />
     );
 
-    await act(async () => {
-      uploadFiles([uploadedFileOne, uploadedFileTwo]);
-    });
+    uploadFiles([uploadedFileOne, uploadedFileTwo]);
 
     const inputErrorOne = screen.getByTestId(`errorAlert-exceedsMaxSize-${mockUuidOne}`);
     expect(inputErrorOne).toBeInTheDocument();
@@ -369,9 +353,7 @@ describe("Test error alerts", () => {
       />
     );
 
-    await act(async () => {
-      uploadFiles([uploadedFile]);
-    });
+    uploadFiles([uploadedFile]);
 
     const inputError = screen.queryByText(/Only the following file types are supported/i);
 
@@ -401,9 +383,7 @@ describe("Test error alerts", () => {
         />
       );
 
-      await act(async () => {
-        uploadFiles([uploadedFile]);
-      });
+      uploadFiles([uploadedFile]);
 
       const inputError = screen.queryByText(/exceeds 10MB and cannot be uploaded/i);
 
@@ -432,9 +412,7 @@ describe("Test error alerts", () => {
         />
       );
 
-      await act(async () => {
-        uploadFiles([uploadedFile]);
-      });
+      uploadFiles([uploadedFile]);
 
       const inputError = screen.queryByText(/exceeds 50MB and cannot be uploaded/i);
 
@@ -457,11 +435,9 @@ describe("Test error alerts", () => {
       />
     );
 
-    await act(async () => {
-      uploadFiles([uploadedFile]);
-      inputChatMessage();
-      clickSubmitButton();
-    });
+    uploadFiles([uploadedFile]);
+    inputChatMessage();
+    clickSubmitButton();
 
     await waitFor(() => {
       expect(screen.getByText(/Please try a smaller file./)).toBeInTheDocument();
@@ -483,13 +459,12 @@ describe("Test error alerts", () => {
       />
     );
 
-    await act(async () => {
-      inputChatMessage(prompt);
-      clickSubmitButton();
-    });
+    inputChatMessage(prompt);
+    clickSubmitButton();
 
-    const inputError = screen.queryByText(/Please try a smaller prompt./);
-    expect(inputError).toBeInTheDocument();
+    await waitFor(() => {
+      expect(screen.getByText(/Please try a smaller prompt./)).toBeInTheDocument();
+    });
 
     expect(await axe(container)).toHaveNoViolations();
   });
@@ -507,11 +482,9 @@ describe("Test error alerts", () => {
       />
     );
 
-    await act(async () => {
-      uploadFiles([uploadedPdfFile]);
-      inputChatMessage();
-      clickSubmitButton();
-    });
+    uploadFiles([uploadedPdfFile]);
+    inputChatMessage();
+    clickSubmitButton();
 
     await waitFor(() => {
       expect(screen.getByText(/Could not read text from PDF:/)).toBeInTheDocument();
@@ -533,11 +506,9 @@ describe("Test error alerts", () => {
       />
     );
 
-    await act(async () => {
-      uploadFiles([uploadedDocxFile]);
-      inputChatMessage();
-      clickSubmitButton();
-    });
+    uploadFiles([uploadedDocxFile]);
+    inputChatMessage();
+    clickSubmitButton();
 
     await waitFor(() => {
       expect(screen.getByText(/Could not read text from .docx file:/)).toBeInTheDocument();
@@ -561,9 +532,7 @@ describe("Test error alerts", () => {
       />
     );
 
-    await act(async () => {
-      uploadFiles(mockFilesToUpload);
-    });
+    uploadFiles(mockFilesToUpload);
 
     const inputError = screen.queryByText(/A maximum of 10 files can be uploaded/);
     expect(inputError).toBeInTheDocument();
@@ -601,9 +570,7 @@ describe("Test uploading files", () => {
         />
       );
 
-      await act(async () => {
-        uploadFiles([uploadedFile]);
-      });
+      uploadFiles([uploadedFile]);
 
       expect(await axe(container)).toHaveNoViolations();
     }
@@ -633,9 +600,7 @@ describe("Test uploading files", () => {
       />
     );
 
-    await act(async () => {
-      uploadFiles([invalidUploadedFile, validUploadedFile]);
-    });
+    uploadFiles([invalidUploadedFile, validUploadedFile]);
 
     const inputError = screen.getByTestId(`errorAlert-exceedsMaxSize-${mockInvalidFileUuid}`);
     expect(inputError).toBeInTheDocument();
@@ -664,13 +629,13 @@ describe("Test sending input", () => {
 
     const textArea = screen.getByLabelText("Type a question");
 
-    await act(async () => {
-      inputChatMessage(expectedText);
-      fireEvent.keyDown(textArea, { key: "Enter", code: 13, charCode: 13 });
-    });
+    inputChatMessage(expectedText);
+    fireEvent.keyDown(textArea, { key: "Enter", code: 13, charCode: 13 });
 
-    expect(mockOnSend).toHaveBeenCalledTimes(1);
-    expect(mockOnSend).toHaveBeenCalledWith(expectedText, undefined, []);
+    await waitFor(() => {
+      expect(mockOnSend).toHaveBeenCalledTimes(1);
+      expect(mockOnSend).toHaveBeenCalledWith(expectedText, undefined, []);
+    });
 
     expect(await axe(container)).toHaveNoViolations();
   });
@@ -691,13 +656,13 @@ describe("Test sending input", () => {
 
     const sendButton = screen.getByLabelText("Ask question button");
 
-    await act(async () => {
-      inputChatMessage(expectedText);
-      fireEvent.keyDown(sendButton, { key: "Enter", code: 13, charCode: 13 });
-    });
+    inputChatMessage(expectedText);
+    fireEvent.keyDown(sendButton, { key: "Enter", code: 13, charCode: 13 });
 
-    expect(mockOnSend).toHaveBeenCalledTimes(1);
-    expect(mockOnSend).toHaveBeenCalledWith(expectedText, undefined, []);
+    await waitFor(() => {
+      expect(mockOnSend).toHaveBeenCalledTimes(1);
+      expect(mockOnSend).toHaveBeenCalledWith(expectedText, undefined, []);
+    });
 
     expect(await axe(container)).toHaveNoViolations();
   });
@@ -716,13 +681,13 @@ describe("Test sending input", () => {
       />
     );
 
-    await act(async () => {
-      inputChatMessage(expectedText);
-      clickSubmitButton();
-    });
+    inputChatMessage(expectedText);
+    clickSubmitButton();
 
-    expect(mockOnSend).toHaveBeenCalledTimes(1);
-    expect(mockOnSend).toHaveBeenCalledWith(expectedText, undefined, []);
+    await waitFor(() => {
+      expect(mockOnSend).toHaveBeenCalledTimes(1);
+      expect(mockOnSend).toHaveBeenCalledWith(expectedText, undefined, []);
+    });
 
     expect(await axe(container)).toHaveNoViolations();
   });
@@ -742,13 +707,13 @@ describe("Test sending input", () => {
       />
     );
 
-    await act(async () => {
-      inputChatMessage(expectedText);
-      clickSubmitButton();
-    });
+    inputChatMessage(expectedText);
+    clickSubmitButton();
 
-    expect(mockOnSend).toHaveBeenCalledTimes(1);
-    expect(mockOnSend).toHaveBeenCalledWith(expectedText, expectedConversationId, []);
+    await waitFor(() => {
+      expect(mockOnSend).toHaveBeenCalledTimes(1);
+      expect(mockOnSend).toHaveBeenCalledWith(expectedText, expectedConversationId, []);
+    });
 
     expect(await axe(container)).toHaveNoViolations();
   });
@@ -778,11 +743,9 @@ describe("Test sending input", () => {
       />
     );
 
-    await act(async () => {
-      inputChatMessage(expectedText);
-      uploadFiles([uploadedFile]);
-      clickSubmitButton();
-    });
+    inputChatMessage(expectedText);
+    uploadFiles([uploadedFile]);
+    clickSubmitButton();
 
     await waitFor(() => {
       expect(mockOnSend).toHaveBeenCalledTimes(1);
@@ -824,11 +787,9 @@ describe("Test sending input", () => {
       />
     );
 
-    await act(async () => {
-      inputChatMessage(expectedText);
-      uploadFiles([uploadedFileOne, uploadedFileTwo]);
-      clickSubmitButton();
-    });
+    inputChatMessage(expectedText);
+    uploadFiles([uploadedFileOne, uploadedFileTwo]);
+    clickSubmitButton();
 
     await waitFor(() => {
       expect(mockOnSend).toHaveBeenCalledTimes(1);
@@ -852,10 +813,8 @@ describe("Test sending input", () => {
       />
     );
 
-    await act(async () => {
-      inputChatMessage(expectedText);
-      clickSubmitButton();
-    });
+    inputChatMessage(expectedText);
+    clickSubmitButton();
 
     expect(mockOnSend).toHaveBeenCalledTimes(0);
 
@@ -878,11 +837,9 @@ describe("Test sending input", () => {
       />
     );
 
-    await act(async () => {
-      inputChatMessage(expectedText);
-      uploadFiles([uploadedFile]);
-      clickSubmitButton();
-    });
+    inputChatMessage(expectedText);
+    uploadFiles([uploadedFile]);
+    clickSubmitButton();
 
     expect(mockOnSend).toHaveBeenCalledTimes(0);
 
@@ -903,10 +860,8 @@ describe("Test sending input", () => {
       />
     );
 
-    await act(async () => {
-      inputChatMessage(expectedText);
-      clickSubmitButton();
-    });
+    inputChatMessage(expectedText);
+    clickSubmitButton();
 
     expect(mockOnSend).toHaveBeenCalledTimes(0);
 

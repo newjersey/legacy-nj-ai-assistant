@@ -29,6 +29,8 @@ interface Props {
 
 const MAX_INPUT_LENGTH = 1048576;
 const MAX_UPLOADED_FILE_COUNT = 10;
+const MAX_UPLOADED_FILE_SIZE_IN_MB = 50;
+const MAX_UPLOADED_IMAGE_SIZE_IN_MB = 10;
 
 function isValidLength(content: string) {
   return content.length <= MAX_INPUT_LENGTH;
@@ -73,7 +75,7 @@ export const QuestionInput = ({
   const filterUploadedFilesBySize = (files: File[]): File[] => {
     const inputSizeErrors: Alert[] = [];
     const validFiles = files.filter((file) => {
-      if (file.type.includes("image") && file.size > 10 * 1024 * 1024) {
+      if (file.type.includes("image") && file.size > MAX_UPLOADED_IMAGE_SIZE_IN_MB * 1024 * 1024) {
         // 10MB limit for image files
         inputSizeErrors.push({
           message: `${truncateFilename(file.name)} exceeds 10MB and cannot be uploaded`,
@@ -90,7 +92,7 @@ export const QuestionInput = ({
         });
 
         return;
-      } else if (file.size > 50 * 1024 * 1024) {
+      } else if (file.size > MAX_UPLOADED_FILE_SIZE_IN_MB * 1024 * 1024) {
         // 50MB limit for other filetypes
         inputSizeErrors.push({
           message: `${truncateFilename(file.name)} exceeds 50MB and cannot be uploaded`,
@@ -141,8 +143,8 @@ export const QuestionInput = ({
       })
     );
 
-    if (uploadedFiles.length > 0) {
-      if (uploadedFiles != null && getTotalFileContentLength(uploadedFiles) > MAX_INPUT_LENGTH) {
+    if (Array.isArray(uploadedFiles) && uploadedFiles.length > 0) {
+      if (getTotalFileContentLength(uploadedFiles) > MAX_INPUT_LENGTH) {
         setInputErrors([
           ...inputErrors,
           {
@@ -353,9 +355,7 @@ export const QuestionInput = ({
         {selectedFiles.length > 0 && (
           <FileUploadPreviewContainer
             onClose={closePreview}
-            files={selectedFiles.map((file) => {
-              return { name: file.name, fileId: file.fileId };
-            })}
+            files={selectedFiles.map((file) => ({ name: file.name, fileId: file.fileId }))}
           />
         )}
 

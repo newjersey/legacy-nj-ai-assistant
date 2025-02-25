@@ -1,4 +1,4 @@
-import { act, fireEvent, render, screen, within } from "@testing-library/react";
+import { fireEvent, render, screen, within } from "@testing-library/react";
 import { axe, toHaveNoViolations } from "jest-axe";
 
 import "@testing-library/jest-dom";
@@ -45,9 +45,7 @@ describe("Test the onClose function", () => {
     const alertCloseButton = within(alertBanner).getByRole("button");
     expect(alertCloseButton).toBeInTheDocument();
 
-    await act(async () => {
-      fireEvent.click(alertCloseButton);
-    });
+    fireEvent.click(alertCloseButton);
 
     expect(mockOnClose).toHaveBeenCalledWith(alert.id);
 

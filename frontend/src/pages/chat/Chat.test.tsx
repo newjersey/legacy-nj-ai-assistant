@@ -1,4 +1,4 @@
-import { act, fireEvent, render, screen, waitFor } from "@testing-library/react";
+import { fireEvent, render, screen, waitFor } from "@testing-library/react";
 import { axe, toHaveNoViolations } from "jest-axe";
 
 import "@testing-library/jest-dom";
@@ -12,10 +12,10 @@ jest.mock("../../api");
 
 expect.extend(toHaveNoViolations);
 
-async function uploadFiles(uploadedFiles: File[]) {
+function uploadFiles(uploadedFiles: File[]) {
   const fileInput = screen.getByLabelText("Upload files");
 
-  await fireEvent.change(fileInput, { target: { files: uploadedFiles } });
+  fireEvent.change(fileInput, { target: { files: uploadedFiles } });
 }
 
 function inputChatMessage(message?: string) {
@@ -65,11 +65,9 @@ describe("Test the user attachment disclaimer text", () => {
 
     const { container } = render(<Chat />);
 
-    await act(async () => {
-      inputChatMessage();
-      uploadFiles([uploadedFile]);
-      clickSubmitButton();
-    });
+    inputChatMessage();
+    uploadFiles([uploadedFile]);
+    clickSubmitButton();
 
     await waitFor(() => {
       expect(screen.getByText(`${uploadedFile.name} is being referenced`)).toBeInTheDocument();
@@ -85,11 +83,9 @@ describe("Test the user attachment disclaimer text", () => {
 
     const { container } = render(<Chat />);
 
-    await act(async () => {
-      inputChatMessage();
-      uploadFiles([uploadedFileOne, uploadedFileTwo, uploadedFileThree]);
-      clickSubmitButton();
-    });
+    inputChatMessage();
+    uploadFiles([uploadedFileOne, uploadedFileTwo, uploadedFileThree]);
+    clickSubmitButton();
 
     await waitFor(() => {
       expect(
@@ -110,11 +106,9 @@ describe("Test the user attachment disclaimer text", () => {
 
     const { container } = render(<Chat />);
 
-    await act(async () => {
-      inputChatMessage();
-      uploadFiles([uploadedFile]);
-      clickSubmitButton();
-    });
+    inputChatMessage();
+    uploadFiles([uploadedFile]);
+    clickSubmitButton();
 
     await waitFor(() => {
       expect(screen.getByText(`${expectedDisplayName} is being referenced`)).toBeInTheDocument();
@@ -132,11 +126,9 @@ describe("Test uploaded image previews", () => {
 
     const { container } = render(<Chat />);
 
-    await act(async () => {
-      inputChatMessage();
-      uploadFiles([uploadedFileOne, uploadedFileTwo, uploadedFileThree]);
-      clickSubmitButton();
-    });
+    inputChatMessage();
+    uploadFiles([uploadedFileOne, uploadedFileTwo, uploadedFileThree]);
+    clickSubmitButton();
 
     await waitFor(() => {
       expect(screen.queryByAltText(`${uploadedFileOne.name}`)).toBeInTheDocument();
@@ -154,11 +146,9 @@ describe("Test uploaded image previews", () => {
 
     const { container } = render(<Chat />);
 
-    await act(async () => {
-      inputChatMessage();
-      uploadFiles([uploadedFileOne, uploadedFileTwo, uploadedFileThree]);
-      clickSubmitButton();
-    });
+    inputChatMessage();
+    uploadFiles([uploadedFileOne, uploadedFileTwo, uploadedFileThree]);
+    clickSubmitButton();
 
     await waitFor(() => {
       expect(screen.queryByAltText(`${uploadedFileOne.name}`)).toBeInTheDocument();

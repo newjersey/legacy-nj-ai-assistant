@@ -21,7 +21,7 @@ export const conversationApi = async (
     const apiMessage = structuredClone(message);
     delete apiMessage.uploaded_files;
 
-    if (uploadedFiles != null && uploadedFiles.length > 0) {
+    if (Array.isArray(uploadedFiles) && uploadedFiles.length > 0) {
       const fileContents: any[] = [];
 
       uploadedFiles.forEach((uploadedFile) => {
