@@ -1,4 +1,4 @@
-import { render, screen, within, waitFor } from "@testing-library/react";
+import { render, screen, waitFor, within } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
 import { axe, toHaveNoViolations } from "jest-axe";
 
@@ -61,9 +61,9 @@ describe("Test the onClose function", () => {
 
     userEvent.click(fileUploadPreviewCloseButton);
 
-        await waitFor(() => {
-    expect(mockOnClose).toHaveBeenCalledWith(fileId);
-        });
+    await waitFor(() => {
+      expect(mockOnClose).toHaveBeenCalledWith(fileId);
+    });
 
     expect(await axe(container)).toHaveNoViolations();
   });
