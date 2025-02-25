@@ -53,7 +53,6 @@ export const QuestionInput = ({
     const inputSizeErrors: Alert[] = [];
     const validFiles = [...files].filter((file) => {
       if (file.type.includes("image") && file.size > MAX_UPLOADED_IMAGE_SIZE_IN_MB * 1024 * 1024) {
-        // 10MB limit for image files
         inputSizeErrors.push({
           message: `${truncateFilename(file.name)} exceeds 10MB and cannot be uploaded`,
           id: `exceedsMaxSize-${uuidv4()}`,
@@ -70,7 +69,6 @@ export const QuestionInput = ({
 
         return;
       } else if (file.size > MAX_UPLOADED_FILE_SIZE_IN_MB * 1024 * 1024) {
-        // 50MB limit for other filetypes
         inputSizeErrors.push({
           message: `${truncateFilename(file.name)} exceeds 50MB and cannot be uploaded`,
           id: `exceedsMaxSize-${uuidv4()}`,
