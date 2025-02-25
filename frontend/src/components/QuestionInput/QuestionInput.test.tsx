@@ -1,4 +1,5 @@
 import { fireEvent, render, screen, waitFor, within } from "@testing-library/react";
+import userEvent from "@testing-library/user-event";
 import { axe, toHaveNoViolations } from "jest-axe";
 
 import "@testing-library/jest-dom";
@@ -19,21 +20,20 @@ expect.extend(toHaveNoViolations);
 async function uploadFiles(uploadedFiles: File[]) {
   const fileInput = screen.getByLabelText("Upload files");
 
-  await fireEvent.change(fileInput, { target: { files: uploadedFiles } });
+  await userEvent.upload(fileInput, uploadedFiles);
 }
 
-function inputChatMessage(message?: string) {
+async function inputChatMessage(message?: string) {
   const textInputField = screen.getByLabelText("Type a question");
+  const input = message ?? "This is my message";
 
-  fireEvent.change(textInputField, {
-    target: { value: message ?? "This is my message" },
-  });
+  await userEvent.type(textInputField, input);
 }
 
 function clickSubmitButton() {
   const submitButton = screen.getByLabelText("Ask question button");
 
-  fireEvent.click(submitButton);
+  userEvent.click(submitButton);
 }
 
 describe("Test the QuestionInput component", () => {
@@ -78,7 +78,7 @@ describe("Test file upload previews", () => {
       />
     );
 
-    uploadFiles([uploadedFile]);
+    await uploadFiles([uploadedFile]);
 
     const fileUploadPreview = screen.getByTestId(`filePreview-${defaultMockUuid}`);
     expect(fileUploadPreview).toBeInTheDocument();
@@ -110,7 +110,7 @@ describe("Test file upload previews", () => {
       />
     );
 
-    uploadFiles([uploadedFileOne, uploadedFileTwo]);
+    await uploadFiles([uploadedFileOne, uploadedFileTwo]);
 
     const fileUploadPreviewOne = screen.getByTestId(`filePreview-${mockUuidOne}`);
     expect(fileUploadPreviewOne).toBeInTheDocument();
@@ -134,7 +134,7 @@ describe("Test file upload previews", () => {
       />
     );
 
-    uploadFiles([uploadedFile]);
+    await uploadFiles([uploadedFile]);
 
     const fileUploadPreview = screen.getByTestId(`filePreview-${defaultMockUuid}`);
     expect(fileUploadPreview).toBeInTheDocument();
@@ -142,9 +142,11 @@ describe("Test file upload previews", () => {
     const fileUploadPreviewCloseButton = within(fileUploadPreview!).getByRole("button");
     expect(fileUploadPreviewCloseButton).toBeInTheDocument();
 
-    fireEvent.click(fileUploadPreviewCloseButton);
+    userEvent.click(fileUploadPreviewCloseButton);
 
-    expect(fileUploadPreview).not.toBeInTheDocument();
+    await waitFor(() => {
+      expect(fileUploadPreview).not.toBeInTheDocument();
+    });
 
     expect(await axe(container)).toHaveNoViolations();
   });
@@ -173,7 +175,7 @@ describe("Test file upload previews", () => {
       />
     );
 
-    uploadFiles([uploadedFileOne, uploadedFileTwo]);
+    await uploadFiles([uploadedFileOne, uploadedFileTwo]);
 
     const fileUploadPreviewOne = screen.getByTestId(`filePreview-${mockUuidOne}`);
     expect(fileUploadPreviewOne).toBeInTheDocument();
@@ -184,13 +186,15 @@ describe("Test file upload previews", () => {
     const fileUploadPreviewOneCloseButton = within(fileUploadPreviewOne).getByRole("button");
     expect(fileUploadPreviewOneCloseButton).toBeInTheDocument();
 
-    fireEvent.click(fileUploadPreviewOneCloseButton);
+    userEvent.click(fileUploadPreviewOneCloseButton);
 
     const fileUploadPreviewOneAfter = screen.queryByTestId(`filePreview-${mockUuidOne}`);
-    expect(fileUploadPreviewOneAfter).not.toBeInTheDocument();
-
     const fileUploadPreviewTwoAfter = screen.queryByTestId(`filePreview-${mockUuidTwo}`);
-    expect(fileUploadPreviewTwoAfter).toBeInTheDocument();
+
+    await waitFor(() => {
+      expect(fileUploadPreviewOneAfter).not.toBeInTheDocument();
+      expect(fileUploadPreviewTwoAfter).toBeInTheDocument();
+    });
 
     expect(await axe(container)).toHaveNoViolations();
   });
@@ -210,7 +214,7 @@ describe("Test error alerts", () => {
   });
 
   it("displays an error alert when there is an error uploading a file", async () => {
-    const uploadedFile = createMockFile("fakeExtension", "invalid/filetype");
+    const uploadedFile = createMockFile("png", ACCEPTED_FILE_TYPES.PNG, 100);
 
     const { container } = render(
       <QuestionInput
@@ -222,16 +226,19 @@ describe("Test error alerts", () => {
       />
     );
 
-    uploadFiles([uploadedFile]);
+    await uploadFiles([uploadedFile]);
 
-    const inputError = screen.getByTestId(`errorAlert-invalidFiletype-${defaultMockUuid}`);
-    expect(inputError).toBeInTheDocument();
+    const inputError = screen.getByTestId(`errorAlert-exceedsMaxSize-${defaultMockUuid}`);
+
+    await waitFor(() => {
+      expect(inputError).toBeInTheDocument();
+    });
 
     expect(await axe(container)).toHaveNoViolations();
   });
 
   it("removes the error alert when the close button is clicked", async () => {
-    const uploadedFile = createMockFile("fakeExtension", "invalid/filetype");
+    const uploadedFile = createMockFile("png", ACCEPTED_FILE_TYPES.PNG, 100);
 
     const { container } = render(
       <QuestionInput
@@ -243,18 +250,21 @@ describe("Test error alerts", () => {
       />
     );
 
-    uploadFiles([uploadedFile]);
+    await uploadFiles([uploadedFile]);
 
-    const inputError = screen.getByTestId(`errorAlert-invalidFiletype-${defaultMockUuid}`);
+    const inputError = screen.getByTestId(`errorAlert-exceedsMaxSize-${defaultMockUuid}`);
     expect(inputError).toBeInTheDocument();
 
     const inputErrorCloseButton = within(inputError!).getByRole("button");
     expect(inputErrorCloseButton).toBeInTheDocument();
 
-    fireEvent.click(inputErrorCloseButton);
+    userEvent.click(inputErrorCloseButton);
 
     const inputErrorAfter = screen.queryByTestId(`errorAlert-invalidFiletype-${defaultMockUuid}`);
-    expect(inputErrorAfter).not.toBeInTheDocument();
+
+    await waitFor(() => {
+      expect(inputErrorAfter).not.toBeInTheDocument();
+    });
 
     expect(await axe(container)).toHaveNoViolations();
   });
@@ -283,7 +293,7 @@ describe("Test error alerts", () => {
       />
     );
 
-    uploadFiles([uploadedFileOne, uploadedFileTwo]);
+    await uploadFiles([uploadedFileOne, uploadedFileTwo]);
 
     const inputErrorOne = screen.getByTestId(`errorAlert-exceedsMaxSize-${mockUuidOne}`);
     expect(inputErrorOne).toBeInTheDocument();
@@ -317,7 +327,7 @@ describe("Test error alerts", () => {
       />
     );
 
-    uploadFiles([uploadedFileOne, uploadedFileTwo]);
+    await uploadFiles([uploadedFileOne, uploadedFileTwo]);
 
     const inputErrorOne = screen.getByTestId(`errorAlert-exceedsMaxSize-${mockUuidOne}`);
     expect(inputErrorOne).toBeInTheDocument();
@@ -329,35 +339,15 @@ describe("Test error alerts", () => {
     const inputErrorOneCloseButton = within(inputErrorOne).getByRole("button");
     expect(inputErrorOneCloseButton).toBeInTheDocument();
 
-    fireEvent.click(inputErrorOneCloseButton);
+    userEvent.click(inputErrorOneCloseButton);
 
     const inputErrorOneAfter = screen.queryByTestId(`errorAlert-exceedsMaxSize-${mockUuidOne}`);
-    expect(inputErrorOneAfter).not.toBeInTheDocument();
-
     const inputErrorTwoAfter = screen.queryByTestId(`errorAlert-exceedsMaxSize-${mockUuidTwo}`);
-    expect(inputErrorTwoAfter).toBeInTheDocument();
 
-    expect(await axe(container)).toHaveNoViolations();
-  });
-
-  it("displays the appropriate input error if the uploaded file is not of a valid filetype", async () => {
-    const uploadedFile = createMockFile("fakeExtension", "invalid/filetype");
-
-    const { container } = render(
-      <QuestionInput
-        onSend={() => {}}
-        disabled={false}
-        placeholder={"placeholder"}
-        conversationId={undefined}
-        clearOnSend={false}
-      />
-    );
-
-    uploadFiles([uploadedFile]);
-
-    const inputError = screen.queryByText(/Only the following file types are supported/i);
-
-    expect(inputError).toBeInTheDocument();
+    await waitFor(() => {
+      expect(inputErrorOneAfter).not.toBeInTheDocument();
+      expect(inputErrorTwoAfter).toBeInTheDocument();
+    });
 
     expect(await axe(container)).toHaveNoViolations();
   });
@@ -383,7 +373,7 @@ describe("Test error alerts", () => {
         />
       );
 
-      uploadFiles([uploadedFile]);
+      await uploadFiles([uploadedFile]);
 
       const inputError = screen.queryByText(/exceeds 10MB and cannot be uploaded/i);
 
@@ -412,7 +402,7 @@ describe("Test error alerts", () => {
         />
       );
 
-      uploadFiles([uploadedFile]);
+      await uploadFiles([uploadedFile]);
 
       const inputError = screen.queryByText(/exceeds 50MB and cannot be uploaded/i);
 
@@ -435,8 +425,8 @@ describe("Test error alerts", () => {
       />
     );
 
-    uploadFiles([uploadedFile]);
-    inputChatMessage();
+    await uploadFiles([uploadedFile]);
+    await inputChatMessage();
     clickSubmitButton();
 
     await waitFor(() => {
@@ -459,7 +449,10 @@ describe("Test error alerts", () => {
       />
     );
 
-    inputChatMessage(prompt);
+    // use fireEvent here to avoid timeouts caused by userEvent
+    await fireEvent.change(screen.getByLabelText("Type a question"), {
+      target: { value: prompt },
+    });
     clickSubmitButton();
 
     await waitFor(() => {
@@ -482,8 +475,8 @@ describe("Test error alerts", () => {
       />
     );
 
-    uploadFiles([uploadedPdfFile]);
-    inputChatMessage();
+    await uploadFiles([uploadedPdfFile]);
+    await inputChatMessage();
     clickSubmitButton();
 
     await waitFor(() => {
@@ -506,8 +499,8 @@ describe("Test error alerts", () => {
       />
     );
 
-    uploadFiles([uploadedDocxFile]);
-    inputChatMessage();
+    await uploadFiles([uploadedDocxFile]);
+    await inputChatMessage();
     clickSubmitButton();
 
     await waitFor(() => {
@@ -532,7 +525,7 @@ describe("Test error alerts", () => {
       />
     );
 
-    uploadFiles(mockFilesToUpload);
+    await uploadFiles(mockFilesToUpload);
 
     const inputError = screen.queryByText(/A maximum of 10 files can be uploaded/);
     expect(inputError).toBeInTheDocument();
@@ -570,7 +563,7 @@ describe("Test uploading files", () => {
         />
       );
 
-      uploadFiles([uploadedFile]);
+      await uploadFiles([uploadedFile]);
 
       expect(await axe(container)).toHaveNoViolations();
     }
@@ -600,7 +593,7 @@ describe("Test uploading files", () => {
       />
     );
 
-    uploadFiles([invalidUploadedFile, validUploadedFile]);
+    await uploadFiles([invalidUploadedFile, validUploadedFile]);
 
     const inputError = screen.getByTestId(`errorAlert-exceedsMaxSize-${mockInvalidFileUuid}`);
     expect(inputError).toBeInTheDocument();
@@ -629,8 +622,16 @@ describe("Test sending input", () => {
 
     const textArea = screen.getByLabelText("Type a question");
 
-    inputChatMessage(expectedText);
-    fireEvent.keyDown(textArea, { key: "Enter", code: 13, charCode: 13 });
+    await inputChatMessage(expectedText);
+
+    await userEvent.tab();
+    await userEvent.tab();
+    await userEvent.tab();
+    await userEvent.tab();
+
+    expect(textArea).toHaveFocus();
+
+    await userEvent.keyboard("[Enter]");
 
     await waitFor(() => {
       expect(mockOnSend).toHaveBeenCalledTimes(1);
@@ -656,8 +657,18 @@ describe("Test sending input", () => {
 
     const sendButton = screen.getByLabelText("Ask question button");
 
-    inputChatMessage(expectedText);
-    fireEvent.keyDown(sendButton, { key: "Enter", code: 13, charCode: 13 });
+    await inputChatMessage(expectedText);
+
+    await userEvent.tab();
+    await userEvent.tab();
+    await userEvent.tab();
+    await userEvent.tab();
+    await userEvent.tab();
+    await userEvent.tab();
+
+    expect(sendButton).toHaveFocus();
+
+    await userEvent.keyboard("[Enter]");
 
     await waitFor(() => {
       expect(mockOnSend).toHaveBeenCalledTimes(1);
@@ -681,7 +692,7 @@ describe("Test sending input", () => {
       />
     );
 
-    inputChatMessage(expectedText);
+    await inputChatMessage(expectedText);
     clickSubmitButton();
 
     await waitFor(() => {
@@ -707,7 +718,7 @@ describe("Test sending input", () => {
       />
     );
 
-    inputChatMessage(expectedText);
+    await inputChatMessage(expectedText);
     clickSubmitButton();
 
     await waitFor(() => {
@@ -743,8 +754,8 @@ describe("Test sending input", () => {
       />
     );
 
-    inputChatMessage(expectedText);
-    uploadFiles([uploadedFile]);
+    await inputChatMessage(expectedText);
+    await uploadFiles([uploadedFile]);
     clickSubmitButton();
 
     await waitFor(() => {
@@ -787,8 +798,8 @@ describe("Test sending input", () => {
       />
     );
 
-    inputChatMessage(expectedText);
-    uploadFiles([uploadedFileOne, uploadedFileTwo]);
+    await inputChatMessage(expectedText);
+    await uploadFiles([uploadedFileOne, uploadedFileTwo]);
     clickSubmitButton();
 
     await waitFor(() => {
@@ -813,7 +824,7 @@ describe("Test sending input", () => {
       />
     );
 
-    inputChatMessage(expectedText);
+    await inputChatMessage(expectedText);
     clickSubmitButton();
 
     expect(mockOnSend).toHaveBeenCalledTimes(0);
@@ -823,7 +834,6 @@ describe("Test sending input", () => {
 
   it("does not send input when the send button is clicked and files are uploaded but no prompt is entered", async () => {
     const mockOnSend = jest.fn();
-    const expectedText = "";
 
     const uploadedFile = createMockFile("jpg", ACCEPTED_FILE_TYPES.JPEG);
 
@@ -837,8 +847,7 @@ describe("Test sending input", () => {
       />
     );
 
-    inputChatMessage(expectedText);
-    uploadFiles([uploadedFile]);
+    await uploadFiles([uploadedFile]);
     clickSubmitButton();
 
     expect(mockOnSend).toHaveBeenCalledTimes(0);
@@ -860,7 +869,7 @@ describe("Test sending input", () => {
       />
     );
 
-    inputChatMessage(expectedText);
+    await inputChatMessage(expectedText);
     clickSubmitButton();
 
     expect(mockOnSend).toHaveBeenCalledTimes(0);

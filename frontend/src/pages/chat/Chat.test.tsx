@@ -1,4 +1,5 @@
-import { fireEvent, render, screen, waitFor } from "@testing-library/react";
+import { render, screen, waitFor } from "@testing-library/react";
+import userEvent from "@testing-library/user-event";
 import { axe, toHaveNoViolations } from "jest-axe";
 
 import "@testing-library/jest-dom";
@@ -15,21 +16,19 @@ expect.extend(toHaveNoViolations);
 function uploadFiles(uploadedFiles: File[]) {
   const fileInput = screen.getByLabelText("Upload files");
 
-  fireEvent.change(fileInput, { target: { files: uploadedFiles } });
+  userEvent.upload(fileInput, uploadedFiles);
 }
 
-function inputChatMessage(message?: string) {
+async function inputChatMessage() {
   const textInputField = screen.getByLabelText("Type a question");
 
-  fireEvent.change(textInputField, {
-    target: { value: message ?? "This is my message" },
-  });
+  await userEvent.type(textInputField, "This is my message");
 }
 
 function clickSubmitButton() {
   const submitButton = screen.getByLabelText("Ask question button");
 
-  fireEvent.click(submitButton);
+  userEvent.click(submitButton);
 }
 
 describe("Test the Chat component", () => {
@@ -65,7 +64,7 @@ describe("Test the user attachment disclaimer text", () => {
 
     const { container } = render(<Chat />);
 
-    inputChatMessage();
+    await inputChatMessage();
     uploadFiles([uploadedFile]);
     clickSubmitButton();
 
@@ -83,7 +82,7 @@ describe("Test the user attachment disclaimer text", () => {
 
     const { container } = render(<Chat />);
 
-    inputChatMessage();
+    await inputChatMessage();
     uploadFiles([uploadedFileOne, uploadedFileTwo, uploadedFileThree]);
     clickSubmitButton();
 
@@ -106,7 +105,7 @@ describe("Test the user attachment disclaimer text", () => {
 
     const { container } = render(<Chat />);
 
-    inputChatMessage();
+    await inputChatMessage();
     uploadFiles([uploadedFile]);
     clickSubmitButton();
 
@@ -126,7 +125,7 @@ describe("Test uploaded image previews", () => {
 
     const { container } = render(<Chat />);
 
-    inputChatMessage();
+    await inputChatMessage();
     uploadFiles([uploadedFileOne, uploadedFileTwo, uploadedFileThree]);
     clickSubmitButton();
 
@@ -146,7 +145,7 @@ describe("Test uploaded image previews", () => {
 
     const { container } = render(<Chat />);
 
-    inputChatMessage();
+    await inputChatMessage();
     uploadFiles([uploadedFileOne, uploadedFileTwo, uploadedFileThree]);
     clickSubmitButton();
 

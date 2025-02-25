@@ -49,32 +49,9 @@ export const QuestionInput = ({
   const [selectedFiles, setSelectedFiles] = useState<SelectedFile[]>([]);
   const [inputErrors, setInputErrors] = useState<Alert[]>([]);
 
-  const filterUploadedFilesByFiletype = (files: FileList): File[] => {
-    const acceptedFileTypesArray = Object.values(ACCEPTED_FILE_TYPES) as string[];
-
-    const validFiles = [...files].filter((file) => {
-      if (!acceptedFileTypesArray.includes(file.type)) {
-        logEvent("submit_prompt_client_error_file_type", { object_type: file.type });
-      } else {
-        return file;
-      }
-    });
-
-    if (files.length !== validFiles.length) {
-      const invalidFiletypeAlert: Alert = {
-        message:
-          "Only the following file types are supported: .csv, .docx, .pdf, .jpeg, .png, .gif, .bmp, .tiff. Please try a different file.",
-        id: `invalidFiletype-${uuidv4()}`,
-      };
-      setInputErrors([...inputErrors, invalidFiletypeAlert]);
-    }
-
-    return validFiles;
-  };
-
-  const filterUploadedFilesBySize = (files: File[]): File[] => {
+  const filterUploadedFilesBySize = (files: FileList): File[] => {
     const inputSizeErrors: Alert[] = [];
-    const validFiles = files.filter((file) => {
+    const validFiles = [...files].filter((file) => {
       if (file.type.includes("image") && file.size > MAX_UPLOADED_IMAGE_SIZE_IN_MB * 1024 * 1024) {
         // 10MB limit for image files
         inputSizeErrors.push({
@@ -296,15 +273,13 @@ export const QuestionInput = ({
     const files = event.target.files;
 
     if (files != null) {
-      const validFilesByFiletype = filterUploadedFilesByFiletype(files);
+      const validFiles = filterUploadedFilesBySize(files);
 
-      if (validFilesByFiletype.length === 0) {
-        return;
+      if (validFiles.length === 0 && fileInputRef?.current?.value) {
+        fileInputRef.current.value = "";
       }
 
-      const validFilesBySize = filterUploadedFilesBySize(validFilesByFiletype);
-
-      const filesWithIds = validFilesBySize.map((file) => {
+      const filesWithIds = validFiles.map((file) => {
         const fileWithId = file as SelectedFile;
 
         fileWithId.fileId = uuidv4();
