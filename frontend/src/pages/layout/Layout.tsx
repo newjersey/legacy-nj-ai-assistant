@@ -5,11 +5,11 @@ import { CopyRegular } from "@fluentui/react-icons";
 
 import { CosmosDBStatus } from "../../api";
 import Contoso from "../../assets/Contoso.svg";
+import { AlertBanner } from "../../components/AlertBanner/AlertBanner";
 import { HistoryButton, ShareButton } from "../../components/common/Button";
 import { AppStateContext } from "../../state/AppProvider";
 
 import styles from "./Layout.module.css";
-import { AlertBanner } from "../../components/AlertBanner/AlertBanner";
 
 const Layout = () => {
   const [isSharePanelOpen, setIsSharePanelOpen] = useState<boolean>(false);
@@ -53,7 +53,7 @@ const Layout = () => {
     }
   }, [copyClicked]);
 
-  useEffect(() => { }, [appStateContext?.state.isCosmosDBAvailable.status]);
+  useEffect(() => {}, [appStateContext?.state.isCosmosDBAvailable.status]);
 
   useEffect(() => {
     const handleResize = () => {
@@ -77,13 +77,9 @@ const Layout = () => {
   return (
     <div className={styles.layout}>
       <header className={styles.header} role={"banner"}>
-        {ui?.alert_banner_message !== undefined
-          && ui.alert_banner_message !== null
-          && ui.alert_banner_message !== ""
-          && (
-            <AlertBanner messageHtml={ui.alert_banner_message} />
-          )
-        }
+        {ui?.alert_banner_message !== undefined &&
+          ui.alert_banner_message !== null &&
+          ui.alert_banner_message !== "" && <AlertBanner messageHtml={ui.alert_banner_message} />}
         <Stack horizontal verticalAlign="center" horizontalAlign="space-between">
           <Stack horizontal verticalAlign="center">
             <img src={logo} className={styles.headerIcon} aria-hidden="true" alt="" />
