@@ -79,3 +79,10 @@ Navigate into the `frontend` directory. `cd frontend`
 
 **To run tests for the backend** run the command `npm run test:api`
 **To run tests for the frontend** run the command `npm run test:react`
+
+## Additional Documentation
+
+See other files within this repo for in-depth documentation on specific code, infrastructure, and practices:
+
+### Azure
+- [Alerts in Azure](docs/azure/AZURE_ALERTS.md)
