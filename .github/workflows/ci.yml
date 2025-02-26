@@ -1,0 +1,41 @@
+# This workflow will do a clean installation of node dependencies, cache/restore them, build the source code, and run tests
+# For more information see: https://docs.github.com/en/actions/automating-builds-and-tests/building-and-testing-nodejs
+
+name: Automated testing
+
+on:
+  push:
+    branches: [nj-stable-dev, nj-stable]
+  pull_request:
+    branches: [nj-stable-dev, nj-stable]
+
+jobs:
+  build-and-test:
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: frontend
+
+    steps:
+      - uses: actions/checkout@v4
+      - name: Read .nvmrc
+        run: echo "NODE_VERSION=$(cat .nvmrc)" >> $GITHUB_OUTPUT
+        id: nvm
+      - name: Use Node.js ${{ steps.nvm.outputs.NODE_VERSION }}
+        uses: actions/setup-node@v3
+        with:
+          node-version: "${{ steps.nvm.outputs.NODE_VERSION }}"
+      - name: Install dependencies
+        run: npm ci
+      - name: Check for critical vulnerabilities
+        run: npm audit --audit-level=critical
+      - name: Run ESLint check
+        run: npm run lint
+      - name: Run prettier check
+        run: npm run prettier
+      - name: Set maximum memory size for build + run build
+        run: NODE_OPTIONS=--max_old_space_size=8192 npm run build --if-present
+      - name: Run frontend tests
+        run: npm run test:react
+      - name: Run API tests
+        run: npm run test:api

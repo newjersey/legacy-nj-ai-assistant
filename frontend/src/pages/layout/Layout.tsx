@@ -1,90 +1,81 @@
-import { useContext, useEffect, useState } from 'react'
-import { Link, Outlet } from 'react-router-dom'
-import { Dialog, Stack, TextField } from '@fluentui/react'
-import { CopyRegular } from '@fluentui/react-icons'
+import { useContext, useEffect, useState } from "react";
+import { Link, Outlet } from "react-router-dom";
+import { Dialog, Stack, TextField } from "@fluentui/react";
+import { CopyRegular } from "@fluentui/react-icons";
 
-import { CosmosDBStatus } from '../../api'
-import Contoso from '../../assets/Contoso.svg'
-import { HistoryButton, ShareButton } from '../../components/common/Button'
-import { AppStateContext } from '../../state/AppProvider'
+import { CosmosDBStatus } from "../../api";
+import Contoso from "../../assets/Contoso.svg";
+import { HistoryButton, ShareButton } from "../../components/common/Button";
+import { AppStateContext } from "../../state/AppProvider";
 
-import styles from './Layout.module.css'
-import { AlertBanner } from '../../components/AlertBanner/AlertBanner'
+import styles from "./Layout.module.css"
 
 const Layout = () => {
-  const [isSharePanelOpen, setIsSharePanelOpen] = useState<boolean>(false)
-  const [copyClicked, setCopyClicked] = useState<boolean>(false)
-  const [copyText, setCopyText] = useState<string>('Copy URL')
-  const [shareLabel, setShareLabel] = useState<string | undefined>('Share')
-  const [hideHistoryLabel, setHideHistoryLabel] = useState<string>('Hide chat history')
-  const [showHistoryLabel, setShowHistoryLabel] = useState<string>('Show chat history')
-  const [logo, setLogo] = useState('')
-  const appStateContext = useContext(AppStateContext)
-  const ui = appStateContext?.state.frontendSettings?.ui
+  const [isSharePanelOpen, setIsSharePanelOpen] = useState<boolean>(false);
+  const [copyClicked, setCopyClicked] = useState<boolean>(false);
+  const [copyText, setCopyText] = useState<string>("Copy URL");
+  const [shareLabel, setShareLabel] = useState<string | undefined>("Share");
+  const [hideHistoryLabel, setHideHistoryLabel] = useState<string>("Hide chat history");
+  const [showHistoryLabel, setShowHistoryLabel] = useState<string>("Show chat history");
+  const [logo, setLogo] = useState("");
+  const appStateContext = useContext(AppStateContext);
+  const ui = appStateContext?.state.frontendSettings?.ui;
 
   const handleShareClick = () => {
-    setIsSharePanelOpen(true)
-  }
+    setIsSharePanelOpen(true);
+  };
 
   const handleSharePanelDismiss = () => {
-    setIsSharePanelOpen(false)
-    setCopyClicked(false)
-    setCopyText('Copy URL')
-  }
+    setIsSharePanelOpen(false);
+    setCopyClicked(false);
+    setCopyText("Copy URL");
+  };
 
   const handleCopyClick = () => {
-    navigator.clipboard.writeText(window.location.href)
-    setCopyClicked(true)
-  }
+    navigator.clipboard.writeText(window.location.href);
+    setCopyClicked(true);
+  };
 
   const handleHistoryClick = () => {
-    appStateContext?.dispatch({ type: 'TOGGLE_CHAT_HISTORY' })
-  }
+    appStateContext?.dispatch({ type: "TOGGLE_CHAT_HISTORY" });
+  };
 
   useEffect(() => {
     if (!appStateContext?.state.isLoading) {
-      setLogo(ui?.logo || Contoso)
+      setLogo(ui?.logo || Contoso);
     }
-  }, [appStateContext?.state.isLoading])
+  }, [appStateContext?.state.isLoading, ui?.logo]);
 
   useEffect(() => {
     if (copyClicked) {
-      setCopyText('Copied URL')
+      setCopyText("Copied URL");
     }
-  }, [copyClicked])
+  }, [copyClicked]);
 
-  useEffect(() => { }, [appStateContext?.state.isCosmosDBAvailable.status])
+  useEffect(() => {}, [appStateContext?.state.isCosmosDBAvailable.status]);
 
   useEffect(() => {
     const handleResize = () => {
       if (window.innerWidth < 480) {
-        setShareLabel(undefined)
-        setHideHistoryLabel('Hide history')
-        setShowHistoryLabel('Show history')
+        setShareLabel(undefined);
+        setHideHistoryLabel("Hide history");
+        setShowHistoryLabel("Show history");
       } else {
-        setShareLabel('Share')
-        setHideHistoryLabel('Hide chat history')
-        setShowHistoryLabel('Show chat history')
+        setShareLabel("Share");
+        setHideHistoryLabel("Hide chat history");
+        setShowHistoryLabel("Show chat history");
       }
-    }
+    };
 
-    window.addEventListener('resize', handleResize)
-    handleResize()
+    window.addEventListener("resize", handleResize);
+    handleResize();
 
-    return () => window.removeEventListener('resize', handleResize)
-  }, [])
+    return () => window.removeEventListener("resize", handleResize);
+  }, []);
 
   return (
     <div className={styles.layout}>
       <header className={styles.header} role={'banner'}>
-        {/* {ui?.alert_banner_message !== undefined
-          && ui.alert_banner_message !== null
-          && ui.alert_banner_message !== ""
-          && (
-            <AlertBanner messageHtml={ui.alert_banner_message} />
-          )
-        } */}
-        <AlertBanner messageHtml="this is a test message i'm making it long so. it overflows this is a test message i'm making it long so it overflows this is a test message i'm making it long so it o.verflows this is a test message i'm making it long so it overflowsthis is a test message i'm making it long so. it overflows this is a test message i'm making it long so it overflows this is a test message i'm making it long so it o.verflows this is a test message i'm making it long so it overflows" />
         <Stack horizontal verticalAlign="center" horizontalAlign="space-between">
           <Stack horizontal verticalAlign="center">
             <img src={logo} className={styles.headerIcon} aria-hidden="true" alt="" />
@@ -93,12 +84,15 @@ const Layout = () => {
             </Link>
           </Stack>
           <Stack horizontal tokens={{ childrenGap: 4 }} className={styles.shareButtonContainer}>
-            {appStateContext?.state.isCosmosDBAvailable?.status !== CosmosDBStatus.NotConfigured && ui?.show_chat_history_button !== false && (
-              <HistoryButton
-                onClick={handleHistoryClick}
-                text={appStateContext?.state?.isChatHistoryOpen ? hideHistoryLabel : showHistoryLabel}
-              />
-            )}
+            {appStateContext?.state.isCosmosDBAvailable?.status !== CosmosDBStatus.NotConfigured &&
+              ui?.show_chat_history_button !== false && (
+                <HistoryButton
+                  onClick={handleHistoryClick}
+                  text={
+                    appStateContext?.state?.isChatHistoryOpen ? hideHistoryLabel : showHistoryLabel
+                  }
+                />
+              )}
             {ui?.show_share_button && <ShareButton onClick={handleShareClick} text={shareLabel} />}
           </Stack>
         </Stack>
@@ -111,23 +105,24 @@ const Layout = () => {
           main: [
             {
               selectors: {
-                ['@media (min-width: 480px)']: {
-                  maxWidth: '600px',
-                  background: '#FFFFFF',
-                  boxShadow: '0px 14px 28.8px rgba(0, 0, 0, 0.24), 0px 0px 8px rgba(0, 0, 0, 0.2)',
-                  borderRadius: '8px',
-                  maxHeight: '200px',
-                  minHeight: '100px'
-                }
-              }
-            }
-          ]
+                ["@media (min-width: 480px)"]: {
+                  maxWidth: "600px",
+                  background: "#FFFFFF",
+                  boxShadow: "0px 14px 28.8px rgba(0, 0, 0, 0.24), 0px 0px 8px rgba(0, 0, 0, 0.2)",
+                  borderRadius: "8px",
+                  maxHeight: "200px",
+                  minHeight: "100px",
+                },
+              },
+            },
+          ],
         }}
         dialogContentProps={{
-          title: 'Share the web app',
-          showCloseButton: true
-        }}>
-        <Stack horizontal verticalAlign="center" style={{ gap: '8px' }}>
+          title: "Share the web app",
+          showCloseButton: true,
+        }}
+      >
+        <Stack horizontal verticalAlign="center" style={{ gap: "8px" }}>
           <TextField className={styles.urlTextBox} defaultValue={window.location.href} readOnly />
           <div
             className={styles.copyButtonContainer}
@@ -135,7 +130,8 @@ const Layout = () => {
             tabIndex={0}
             aria-label="Copy"
             onClick={handleCopyClick}
-            onKeyDown={e => (e.key === 'Enter' || e.key === ' ' ? handleCopyClick() : null)}>
+            onKeyDown={(e) => (e.key === "Enter" || e.key === " " ? handleCopyClick() : null)}
+          >
             <CopyRegular className={styles.copyButton} />
             <span className={styles.copyButtonText}>{copyText}</span>
           </div>
@@ -144,9 +140,10 @@ const Layout = () => {
       <feedback-widget
         only-save-rating-to-analytics="true"
         show-comment-disclaimer="false"
-        skip-email-step="true"></feedback-widget>
+        skip-email-step="true"
+      ></feedback-widget>
     </div>
-  )
-}
+  );
+};
 
-export default Layout
+export default Layout;

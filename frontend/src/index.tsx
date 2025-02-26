@@ -1,29 +1,30 @@
-import React from 'react'
-import ReactDOM from 'react-dom/client'
-import { HashRouter, Route, Routes } from 'react-router-dom'
-import { initializeIcons } from '@fluentui/react'
+import React from "react";
+import ReactDOM from "react-dom/client";
+import { HashRouter, Route, Routes } from "react-router-dom";
+import { initializeIcons } from "@fluentui/react";
 
 import "@newjersey/feedback-widget/feedback-widget.min.js";
 import "@newjersey/njwds/dist/js/uswds-init.min.js";
 import "@newjersey/njwds/dist/js/uswds.min.js";
 
-import Chat from './pages/chat/Chat'
-import Layout from './pages/layout/Layout'
-import NoPage from './pages/NoPage'
-import { AppStateProvider } from './state/AppProvider'
+import Chat from "./pages/chat/Chat";
+import Layout from "./pages/layout/Layout";
+import NoPage from "./pages/NoPage";
+import { AppStateProvider } from "./state/AppProvider";
 
 import "./index.css";
 import "@newjersey/njwds/dist/css/styles.css";
 
 declare global {
+  // eslint-disable-next-line @typescript-eslint/no-namespace
   namespace JSX {
     interface IntrinsicElements {
-      'feedback-widget': React.DetailedHTMLProps<React.HTMLAttributes<HTMLElement>, HTMLElement>
+      "feedback-widget": React.DetailedHTMLProps<React.HTMLAttributes<HTMLElement>, HTMLElement>;
     }
   }
 }
 
-initializeIcons()
+initializeIcons();
 
 export default function App() {
   return (
@@ -37,11 +38,11 @@ export default function App() {
         </Routes>
       </HashRouter>
     </AppStateProvider>
-  )
+  );
 }
 
-ReactDOM.createRoot(document.getElementById('root') as HTMLElement).render(
+ReactDOM.createRoot(document.getElementById("root") as HTMLElement).render(
   <React.StrictMode>
     <App />
   </React.StrictMode>
-)
+);
