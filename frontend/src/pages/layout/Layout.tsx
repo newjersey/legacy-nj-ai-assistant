@@ -9,6 +9,7 @@ import { HistoryButton, ShareButton } from '../../components/common/Button'
 import { AppStateContext } from '../../state/AppProvider'
 
 import styles from './Layout.module.css'
+import { AlertBanner } from '../../components/AlertBanner/AlertBanner'
 
 const Layout = () => {
   const [isSharePanelOpen, setIsSharePanelOpen] = useState<boolean>(false)
@@ -76,6 +77,9 @@ const Layout = () => {
   return (
     <div className={styles.layout}>
       <header className={styles.header} role={'banner'}>
+        <AlertBanner>
+          Test
+        </AlertBanner>
         <Stack horizontal verticalAlign="center" horizontalAlign="space-between">
           <Stack horizontal verticalAlign="center">
             <img src={logo} className={styles.headerIcon} aria-hidden="true" alt="" />
