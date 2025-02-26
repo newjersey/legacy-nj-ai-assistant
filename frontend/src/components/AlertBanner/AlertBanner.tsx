@@ -1,3 +1,5 @@
+import styles from './AlertBanner.module.css'
+
 interface Props {
     messageHtml: string
 }
@@ -9,7 +11,7 @@ export const AlertBanner = (props: Props) => {
             className="usa-alert usa-alert--info usa-alert--slim usa-alert--no-icon"
         >
             <div className="usa-alert__body">
-                <p className="usa-alert__text"
+                <p className={`${styles.alertBannerText} usa-alert__text`}
                     dangerouslySetInnerHTML={{ __html: props.messageHtml }}
                 />
             </div>

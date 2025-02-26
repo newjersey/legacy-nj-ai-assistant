@@ -77,11 +77,14 @@ const Layout = () => {
   return (
     <div className={styles.layout}>
       <header className={styles.header} role={'banner'}>
-        {ui?.alert_banner_message !== undefined
-          && ui?.alert_banner_message !== null
+        {/* {ui?.alert_banner_message !== undefined
+          && ui.alert_banner_message !== null
           && ui.alert_banner_message !== ""
-          && <AlertBanner messageHtml={`altering message (env var follows): ${ui.alert_banner_message}`} />
-        }
+          && (
+            <AlertBanner messageHtml={ui.alert_banner_message} />
+          )
+        } */}
+        <AlertBanner messageHtml="this is a test message i'm making it long so. it overflows this is a test message i'm making it long so it overflows this is a test message i'm making it long so it o.verflows this is a test message i'm making it long so it overflowsthis is a test message i'm making it long so. it overflows this is a test message i'm making it long so it overflows this is a test message i'm making it long so it o.verflows this is a test message i'm making it long so it overflows" />
         <Stack horizontal verticalAlign="center" horizontalAlign="space-between">
           <Stack horizontal verticalAlign="center">
             <img src={logo} className={styles.headerIcon} aria-hidden="true" alt="" />
