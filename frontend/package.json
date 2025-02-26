@@ -22,7 +22,7 @@
     "@newjersey/feedback-widget": "^0.6.0",
     "@newjersey/njwds": "2.1.0",
     "@testing-library/user-event": "^14.5.2",
-    "dompurify": "^3.0.8",
+    "dompurify": "^3.2.4",
     "identity-obj-proxy": "^3.0.0",
     "jest-axe": "^9.0.0",
     "lodash": "^4.17.21",
