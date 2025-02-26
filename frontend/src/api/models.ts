@@ -141,6 +141,7 @@ export type UI = {
   chat_logo?: string;
   show_share_button?: boolean;
   show_chat_history_button?: boolean;
+  alert_banner_message?: string;
 };
 
 export type FrontendSettings = {
