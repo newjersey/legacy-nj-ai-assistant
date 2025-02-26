@@ -1,16 +1,17 @@
 declare global {
   interface Window {
-    dataLayer: Array<Object>
+    dataLayer: Array<object>;
   }
 }
 
-export function logEvent(eventName: string, extraParameters: Object) {
+export function logEvent(eventName: string, extraParameters: object) {
   if (window.dataLayer != null) {
-    window.dataLayer.push({ event: eventName, ...extraParameters })
+    window.dataLayer.push({ event: eventName, ...extraParameters });
   } else {
-    console.log('In production, the following event would be logged to Google Analytics:', {
+    // eslint-disable-next-line no-console
+    console.log("In production, the following event would be logged to Google Analytics:", {
       eventName,
-      extraParameters
-    })
+      extraParameters,
+    });
   }
 }
