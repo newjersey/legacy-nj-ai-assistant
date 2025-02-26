@@ -8,6 +8,27 @@ This document has information specific to the NJ-specific fork of the Microsoft 
 - This code is deployed to a production stage (`nj-stable` branch) and dev stage (`nj-stable-dev` branch)
 - Note that certain features from the open-source parent are not enabled, such as chat history (anything related to `CosmosDB`)
 
+## About our LLM Model
+As of 2/26/2025, the NJ AI assistant runs on the GPT-4o model with a strict content filter (2024-08-06 version). The same model deployment (named `gpt-4o-strict-filter`) is used for both our dev and prod deployments.
+
+This model is configured in the [Azure AI Foundry portal](https://ai.azure.com) within the `nj-innovation-ai` resource.
+
+### 
+
+### Updating the Model Version Used in the Model Deployment
+As the model version in use agea, degradea, and becomea outdated, the version being used may need to be manually updated through Azure AI Foundry.
+
+*Note that as users of Azure Government cloud, there are [some limitations](https://learn.microsoft.com/en-us/azure/ai-services/openai/concepts/model-retirements#special-considerations-for-azure-government-clouds) to keep in mind regarding what model versions are available to us.*
+
+Follow the steps below to update the model version used in the model deployment:
+1. Open the [Azure AI Foundry portal](https://ai.azure.com). Make sure that the `nj-innovation-ai` resource is selected in the dropdown at the top of the screen.
+2. From the lefthand sidebar menu, select **Deployments** from under the **Shared resources** section. You should see a list of model deployments on your screen.
+3. Click the `gpt-4o-strict-filter` model deployment. You should see a new page with details about the model deployment.
+4. Click the **Edit** button under the details tab. A modal with the heading **Update deployment** should open allowing you to make updates to the model.
+5. From the **Model version** dropdown, select the version of the model that you would like to use. *Note: typically the most recent version of the model that is available will be the most reliable. Occasionally, in the event of outages and disruptions, you may need to switch to an older version of the model.*
+6. Click the blue **Save and close** button at the bottom of the modal. Your changes should be applied immediately.
+7. Please test changes in dev and prod immediately upon saving to ensure that your update to the model version have not caused outages or disruptions.
+
 ## Contributing to the NJ AI Assistant
 - To contribute to the NJ AI assistant, create a feature branch from the `nj-stable-dev` branch of the `newjersey/nj-ai-assistant` repository. Add changes to the feature branch then open a PR to have it merged into the `nj-stable-dev` branch. **When merging changes to the `nj-stable-dev` branch, the "Squash and merge" option is preferred".**
 - Deploy and preview changes on the dev site by following the steps **in the "Deployment" section below.**
