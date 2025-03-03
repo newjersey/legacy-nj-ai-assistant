@@ -1,0 +1,22 @@
+import { Alert } from "../../utils/alertUtils";
+
+import { ErrorAlert } from "./ErrorAlert";
+
+import styles from "./QuestionInput.module.css";
+
+interface AlertContainerProps {
+  onClose: (id: string) => void;
+  alerts: Alert[];
+}
+
+export const AlertContainer = ({ onClose, alerts }: AlertContainerProps) => {
+  return (
+    <div
+      className={`alertContainer display-flex flex-column width-full  ${styles.errorAlertContainer}`}
+    >
+      {alerts.map((alert) => (
+        <ErrorAlert onClose={onClose} alert={alert} key={alert.id} />
+      ))}
+    </div>
+  );
+};

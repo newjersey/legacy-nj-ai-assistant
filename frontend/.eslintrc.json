@@ -78,5 +78,5 @@
   // enabled + we have a deeper understanding of how to handle 
   // lint errors and warnings here
 
-  "ignorePatterns": ["node_modules/", "build/", "dist/", "public/", "*.config.ts", "src/components/ChatHistory/"]
+  "ignorePatterns": ["node_modules/", "build/", "dist/", "public/", "*.config.ts", "polyfills.js", "src/components/ChatHistory/"]
 }

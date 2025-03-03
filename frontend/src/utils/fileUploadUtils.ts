@@ -1,0 +1,38 @@
+export enum ACCEPTED_FILE_TYPES {
+  JPEG = "image/jpeg",
+  PNG = "image/png",
+  GIF = "image/gif",
+  BMP = "image/bmp",
+  TIFF = "image/tiff",
+  PDF = "application/pdf",
+  CSV = "text/csv",
+  DOCX = "application/vnd.openxmlformats-officedocument.wordprocessingml.document",
+}
+
+export interface UploadedFile {
+  name: string;
+  contents: string;
+  size: number;
+  extension: string;
+}
+
+export interface SelectedFile extends File {
+  fileId: string;
+}
+
+export interface FilePreview {
+  name: string;
+  fileId: string;
+}
+
+export const isImageFile = (file: UploadedFile): boolean => {
+  return file.extension.includes("image");
+};
+
+export const truncateFilename = (fileName: string) => {
+  if (fileName.length < 20) {
+    return fileName;
+  }
+
+  return `${fileName.substring(0, 9)}...${fileName.substring(fileName.length - 9)}`;
+};

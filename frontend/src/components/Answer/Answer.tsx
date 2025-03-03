@@ -2,7 +2,7 @@ import { FormEvent, useContext, useEffect, useMemo, useState } from "react";
 import ReactMarkdown from "react-markdown";
 import Plot from "react-plotly.js";
 import { Prism as SyntaxHighlighter } from "react-syntax-highlighter";
-import { nord } from "react-syntax-highlighter/dist/esm/styles/prism";
+import { nord } from "react-syntax-highlighter/dist/cjs/styles/prism";
 import { Checkbox, DefaultButton, Dialog, FontIcon, Stack, Text } from "@fluentui/react";
 import { useBoolean } from "@fluentui/react-hooks";
 import { ThumbDislike20Filled, ThumbLike20Filled } from "@fluentui/react-icons";

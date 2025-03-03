@@ -1,0 +1,4 @@
+export const MAX_INPUT_LENGTH = 1048576;
+export const MAX_UPLOADED_FILE_COUNT = 10;
+export const MAX_UPLOADED_FILE_SIZE_IN_MB = 50;
+export const MAX_UPLOADED_IMAGE_SIZE_IN_MB = 10;

@@ -1,5 +1,5 @@
 import { ConversationRequest } from "../api/models";
-import { ACCEPTED_FILE_TYPES, UploadedFile } from "../custom/fileUploadUtils";
+import { ACCEPTED_FILE_TYPES, UploadedFile } from "../utils/fileUploadUtils";
 
 import { conversationApi } from "./api";
 
@@ -20,7 +20,9 @@ describe("Test the conversationApi function", () => {
     signal: defaultAbortSignal,
   };
 
-  const createConversationRequestWithUploadedFile = (file?: UploadedFile): ConversationRequest => {
+  const createConversationRequestWithUploadedFile = (
+    files?: UploadedFile[]
+  ): ConversationRequest => {
     return {
       messages: [
         {
@@ -28,7 +30,7 @@ describe("Test the conversationApi function", () => {
           role: "default role",
           content: "default content",
           date: "default date",
-          uploaded_file: file ?? undefined,
+          uploaded_files: files ?? undefined,
         },
       ],
     };
@@ -45,7 +47,7 @@ describe("Test the conversationApi function", () => {
     jest.resetAllMocks();
   });
 
-  it("formats content correctly when there is no uploaded file", async () => {
+  it("formats content and calls the /conversation endpoint correctly when there is no uploaded file", async () => {
     const conversationRequest = createConversationRequestWithUploadedFile();
 
     await conversationApi(conversationRequest, defaultAbortSignal, null);
@@ -56,51 +58,54 @@ describe("Test the conversationApi function", () => {
     });
   });
 
-  it("formats content correctly when an image file is uploaded", async () => {
-    const imageFile: UploadedFile = { ...defaultUploadedFile, extension: ACCEPTED_FILE_TYPES.JPEG };
-    const conversationRequest = createConversationRequestWithUploadedFile(imageFile);
+  it.each([
+    ["jpg", ACCEPTED_FILE_TYPES.JPEG, "image_url"],
+    ["png", ACCEPTED_FILE_TYPES.PNG, "image_url"],
+    ["gif", ACCEPTED_FILE_TYPES.GIF, "image_url"],
+    ["bmp", ACCEPTED_FILE_TYPES.BMP, "image_url"],
+    ["tiff", ACCEPTED_FILE_TYPES.TIFF, "image_url"],
+    ["docx", ACCEPTED_FILE_TYPES.DOCX, "Use the following document in your responses"],
+    ["csv", ACCEPTED_FILE_TYPES.CSV, "CSV format"],
+    ["pdf", ACCEPTED_FILE_TYPES.PDF, "Use the following document in your responses"],
+  ])(
+    "formats content and calls the /conversation endpoint correctly when a file of type .%s is uploaded",
+    async (extension: string, fileType: ACCEPTED_FILE_TYPES, expectedString: string) => {
+      const uploadedFile: UploadedFile = {
+        ...defaultUploadedFile,
+        extension: fileType,
+      };
+      const conversationRequest = createConversationRequestWithUploadedFile([uploadedFile]);
+
+      await conversationApi(conversationRequest, defaultAbortSignal, null);
+
+      expect(fetch).toHaveBeenCalledWith("/conversation", {
+        ...defaultFetchRequest,
+        body: expect.stringContaining(expectedString),
+      });
+    }
+  );
+
+  it("formats content and calls the /conversation endpoint correctly when there are multiple uploaded files", async () => {
+    const uploadedFiles: UploadedFile[] = [
+      { ...defaultUploadedFile, extension: ACCEPTED_FILE_TYPES.JPEG },
+      { ...defaultUploadedFile, extension: ACCEPTED_FILE_TYPES.PNG },
+      { ...defaultUploadedFile, extension: ACCEPTED_FILE_TYPES.GIF },
+      { ...defaultUploadedFile, extension: ACCEPTED_FILE_TYPES.BMP },
+      { ...defaultUploadedFile, extension: ACCEPTED_FILE_TYPES.TIFF },
+      { ...defaultUploadedFile, extension: ACCEPTED_FILE_TYPES.DOCX },
+      { ...defaultUploadedFile, extension: ACCEPTED_FILE_TYPES.CSV },
+      { ...defaultUploadedFile, extension: ACCEPTED_FILE_TYPES.PDF },
+    ];
+
+    const conversationRequest = createConversationRequestWithUploadedFile(uploadedFiles);
 
     await conversationApi(conversationRequest, defaultAbortSignal, null);
 
     expect(fetch).toHaveBeenCalledWith("/conversation", {
       ...defaultFetchRequest,
-      body: expect.stringContaining("image_url"),
-    });
-  });
-
-  it("formats content correctly when a .pdf is uploaded", async () => {
-    const pdfFile: UploadedFile = { ...defaultUploadedFile, extension: ACCEPTED_FILE_TYPES.PDF };
-    const conversationRequest = createConversationRequestWithUploadedFile(pdfFile);
-
-    await conversationApi(conversationRequest, defaultAbortSignal, null);
-
-    expect(fetch).toHaveBeenCalledWith("/conversation", {
-      ...defaultFetchRequest,
-      body: expect.stringContaining("Use the following document in your responses"),
-    });
-  });
-
-  it("formats content correctly when a .docx file is uploaded", async () => {
-    const docxFile: UploadedFile = { ...defaultUploadedFile, extension: ACCEPTED_FILE_TYPES.DOCX };
-    const conversationRequest = createConversationRequestWithUploadedFile(docxFile);
-
-    await conversationApi(conversationRequest, defaultAbortSignal, null);
-
-    expect(fetch).toHaveBeenCalledWith("/conversation", {
-      ...defaultFetchRequest,
-      body: expect.stringContaining("Use the following document in your responses"),
-    });
-  });
-
-  it("formats content correctly when a .csv file is uploaded", async () => {
-    const csvFile: UploadedFile = { ...defaultUploadedFile, extension: ACCEPTED_FILE_TYPES.CSV };
-    const conversationRequest = createConversationRequestWithUploadedFile(csvFile);
-
-    await conversationApi(conversationRequest, defaultAbortSignal, null);
-
-    expect(fetch).toHaveBeenCalledWith("/conversation", {
-      ...defaultFetchRequest,
-      body: expect.stringContaining("CSV format"),
+      body: expect.stringMatching(
+        /"type":"image_url".*"type":"image_url".*"type":"image_url".*"type":"image_url".*"type":"image_url".*Use the following document in your responses.*CSV format.*Use the following document in your responses/
+      ),
     });
   });
 });
