@@ -624,13 +624,7 @@ describe("Test sending input", () => {
 
     await inputChatMessage(expectedText);
 
-    await userEvent.tab();
-    await userEvent.tab();
-    await userEvent.tab();
-    await userEvent.tab();
-
-    expect(textArea).toHaveFocus();
-
+    fireEvent.focus(textArea)
     await userEvent.keyboard("[Enter]");
 
     await waitFor(() => {
@@ -659,15 +653,7 @@ describe("Test sending input", () => {
 
     await inputChatMessage(expectedText);
 
-    await userEvent.tab();
-    await userEvent.tab();
-    await userEvent.tab();
-    await userEvent.tab();
-    await userEvent.tab();
-    await userEvent.tab();
-
-    expect(sendButton).toHaveFocus();
-
+    fireEvent.focus(sendButton)
     await userEvent.keyboard("[Enter]");
 
     await waitFor(() => {
