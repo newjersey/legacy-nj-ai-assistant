@@ -6,24 +6,24 @@ import "@testing-library/jest-dom";
 
 import { Alert } from "../../utils/alertUtils";
 
-import { AlertBanner } from "./AlertBanner";
+import { ErrorAlert } from "./ErrorAlert";
 expect.extend(toHaveNoViolations);
 
-describe("Test the AlertBanner component", () => {
-  it("correctly renders an alert banner", async () => {
+describe("Test the ErrorAlert component", () => {
+  it("correctly renders an error alert", async () => {
     const alert: Alert = {
       message: "alert message!",
       id: "alertId",
     };
-    const { container } = render(<AlertBanner onClose={() => {}} alert={alert} />);
+    const { container } = render(<ErrorAlert onClose={() => {}} alert={alert} />);
 
-    const alertBanner = screen.getByTestId(`errorAlert-${alert.id}`);
-    expect(alertBanner).toBeInTheDocument();
+    const errorAlert = screen.getByTestId(`errorAlert-${alert.id}`);
+    expect(errorAlert).toBeInTheDocument();
 
-    const alertText = within(alertBanner).getByText(alert.message);
+    const alertText = within(errorAlert).getByText(alert.message);
     expect(alertText).toBeInTheDocument();
 
-    const alertCloseButton = within(alertBanner).getByRole("button");
+    const alertCloseButton = within(errorAlert).getByRole("button");
     expect(alertCloseButton).toBeInTheDocument();
 
     expect(await axe(container)).toHaveNoViolations();
@@ -38,12 +38,12 @@ describe("Test the onClose function", () => {
       id: "alertId",
     };
 
-    const { container } = render(<AlertBanner onClose={mockOnClose} alert={alert} />);
+    const { container } = render(<ErrorAlert onClose={mockOnClose} alert={alert} />);
 
-    const alertBanner = screen.getByTestId(`errorAlert-${alert.id}`);
-    expect(alertBanner).toBeInTheDocument();
+    const errorAlert = screen.getByTestId(`errorAlert-${alert.id}`);
+    expect(errorAlert).toBeInTheDocument();
 
-    const alertCloseButton = within(alertBanner).getByRole("button");
+    const alertCloseButton = within(errorAlert).getByRole("button");
     expect(alertCloseButton).toBeInTheDocument();
 
     userEvent.click(alertCloseButton);

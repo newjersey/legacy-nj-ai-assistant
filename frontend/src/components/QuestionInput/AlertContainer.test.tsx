@@ -22,29 +22,29 @@ const createMockAlerts = (number: number): Alert[] => {
 };
 
 describe("Test the AlertContainer component", () => {
-  it("correctly renders an alert container containing one alert banner", async () => {
+  it("correctly renders an alert container containing one error alert", async () => {
     const mockAlerts = createMockAlerts(1);
     const { container } = render(<AlertContainer onClose={() => {}} alerts={mockAlerts} />);
 
-    const alertBanner = screen.getByTestId(`errorAlert-${mockAlerts[0].id}`);
-    expect(alertBanner).toBeInTheDocument();
+    const errorAlert = screen.getByTestId(`errorAlert-${mockAlerts[0].id}`);
+    expect(errorAlert).toBeInTheDocument();
 
-    const alertText = within(alertBanner).getByText(mockAlerts[0].message);
+    const alertText = within(errorAlert).getByText(mockAlerts[0].message);
     expect(alertText).toBeInTheDocument();
 
     expect(await axe(container)).toHaveNoViolations();
   });
 
-  it("correctly renders an alert container containing multiple alert banners", async () => {
+  it("correctly renders an alert container containing multiple error alerts", async () => {
     const mockAlerts = createMockAlerts(3);
 
     const { container } = render(<AlertContainer onClose={() => {}} alerts={mockAlerts} />);
 
     mockAlerts.forEach((alert) => {
-      const alertBanner = screen.getByTestId(`errorAlert-${alert.id}`);
-      expect(alertBanner).toBeInTheDocument();
+      const errorAlert = screen.getByTestId(`errorAlert-${alert.id}`);
+      expect(errorAlert).toBeInTheDocument();
 
-      const alertText = within(alertBanner).getByText(alert.message);
+      const alertText = within(errorAlert).getByText(alert.message);
       expect(alertText).toBeInTheDocument();
     });
 

@@ -1,6 +1,6 @@
 import { Alert } from "../../utils/alertUtils";
 
-import { AlertBanner } from "./AlertBanner";
+import { ErrorAlert } from "./ErrorAlert";
 
 import styles from "./QuestionInput.module.css";
 
@@ -15,7 +15,7 @@ export const AlertContainer = ({ onClose, alerts }: AlertContainerProps) => {
       className={`alertContainer display-flex flex-column width-full  ${styles.errorAlertContainer}`}
     >
       {alerts.map((alert) => (
-        <AlertBanner onClose={onClose} alert={alert} key={alert.id} />
+        <ErrorAlert onClose={onClose} alert={alert} key={alert.id} />
       ))}
     </div>
   );

@@ -4,12 +4,12 @@ import { Alert } from "../../utils/alertUtils";
 
 import styles from "./QuestionInput.module.css";
 
-interface AlertBannerProps {
+interface ErrorAlertProps {
   onClose: (id: string) => void;
   alert: Alert;
 }
 
-export const AlertBanner = ({ onClose, alert }: AlertBannerProps) => {
+export const ErrorAlert = ({ onClose, alert }: ErrorAlertProps) => {
   return (
     <div
       className={`usa-alert usa-alert--error usa-alert--slim margin-top-0 line-height-sans-5 width-full padding-y-0 position-relative display-flex flex-justify ${styles.errorAlert}`}
