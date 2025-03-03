@@ -47,8 +47,7 @@ export const conversationApi = async (
         }
       });
 
-      if (fileContents)
-        apiMessage.content = [...fileContents, { type: "text", text: apiMessage.content }];
+      apiMessage.content = [...fileContents, { type: "text", text: apiMessage.content }];
     }
 
     return apiMessage;
