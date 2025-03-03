@@ -12,8 +12,8 @@
   --image-preview-dimensions: 150px;
   --image-preview-margin-x: 0.25rem;
   --image-preview-container-max-width: calc(
-      (var(--image-preview-dimension) * 5) + (var(--image-preview-margin-x) * 10)
-    );
+    (var(--image-preview-dimension) * 5) + (var(--image-preview-margin-x) * 10)
+  );
 
   --message-margin-bottom: 20px;
   --message-final-margin-bottom: 28px;
