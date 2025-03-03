@@ -9,7 +9,7 @@
     "watch": "tsc && vite build --watch",
     "test": "jest",
     "lint": "npx eslint src",
-    "lint:fix": "npx eslint --fix",
+    "lint:fix": "npx eslint . --fix",
     "prettier": "npx prettier src --check",
     "prettier:fix": "npx prettier src --write",
     "format": "npm run prettier:fix && npm run lint:fix"

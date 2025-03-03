@@ -15,6 +15,12 @@ import {
 import { logEvent } from "../../utils/logEvent";
 
 import { AlertContainer } from "./AlertContainer";
+import {
+  MAX_INPUT_LENGTH,
+  MAX_UPLOADED_FILE_COUNT,
+  MAX_UPLOADED_FILE_SIZE_IN_MB,
+  MAX_UPLOADED_IMAGE_SIZE_IN_MB,
+} from "./constants";
 import { FileUploadPreviewContainer } from "./FileUploadPreviewContainer";
 
 import styles from "./QuestionInput.module.css";
@@ -26,11 +32,6 @@ interface Props {
   clearOnSend?: boolean;
   conversationId?: string;
 }
-
-const MAX_INPUT_LENGTH = 1048576;
-const MAX_UPLOADED_FILE_COUNT = 10;
-const MAX_UPLOADED_FILE_SIZE_IN_MB = 50;
-const MAX_UPLOADED_IMAGE_SIZE_IN_MB = 10;
 
 function isValidLength(content: string) {
   return content.length <= MAX_INPUT_LENGTH;
@@ -54,7 +55,7 @@ export const QuestionInput = ({
     const validFiles = [...files].filter((file) => {
       if (file.type.includes("image") && file.size > MAX_UPLOADED_IMAGE_SIZE_IN_MB * 1024 * 1024) {
         inputSizeErrors.push({
-          message: `${truncateFilename(file.name)} exceeds 10MB and cannot be uploaded`,
+          message: `${truncateFilename(file.name)} exceeds ${MAX_UPLOADED_IMAGE_SIZE_IN_MB} MB and cannot be uploaded`,
           id: `exceedsMaxSize-${uuidv4()}`,
         });
 
@@ -70,7 +71,7 @@ export const QuestionInput = ({
         return;
       } else if (file.size > MAX_UPLOADED_FILE_SIZE_IN_MB * 1024 * 1024) {
         inputSizeErrors.push({
-          message: `${truncateFilename(file.name)} exceeds 50MB and cannot be uploaded`,
+          message: `${truncateFilename(file.name)} exceeds ${MAX_UPLOADED_FILE_SIZE_IN_MB} MB and cannot be uploaded`,
           id: `exceedsMaxSize-${uuidv4()}`,
         });
 

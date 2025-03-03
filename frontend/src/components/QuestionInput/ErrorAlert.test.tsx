@@ -1,4 +1,4 @@
-import { render, screen, waitFor, within } from "@testing-library/react";
+import { render, screen, within } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
 import { axe, toHaveNoViolations } from "jest-axe";
 
@@ -26,6 +26,8 @@ describe("Test the ErrorAlert component", () => {
     const alertCloseButton = within(errorAlert).getByRole("button");
     expect(alertCloseButton).toBeInTheDocument();
 
+    expect(alertCloseButton).toHaveAttribute("aria-label", "Close error alert");
+
     expect(await axe(container)).toHaveNoViolations();
   });
 });
@@ -46,11 +48,9 @@ describe("Test the onClose function", () => {
     const alertCloseButton = within(errorAlert).getByRole("button");
     expect(alertCloseButton).toBeInTheDocument();
 
-    userEvent.click(alertCloseButton);
+    await userEvent.click(alertCloseButton);
 
-    await waitFor(() => {
-      expect(mockOnClose).toHaveBeenCalledWith(alert.id);
-    });
+    expect(mockOnClose).toHaveBeenCalledWith(alert.id);
 
     expect(await axe(container)).toHaveNoViolations();
   });

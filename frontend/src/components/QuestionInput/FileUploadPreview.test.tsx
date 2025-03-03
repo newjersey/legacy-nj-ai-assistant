@@ -1,4 +1,4 @@
-import { render, screen, waitFor, within } from "@testing-library/react";
+import { render, screen, within } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
 import { axe, toHaveNoViolations } from "jest-axe";
 
@@ -38,7 +38,7 @@ describe("Test the FileUploadPreview component", () => {
       />
     );
 
-    expect(screen.queryByText(expectedFilename)).toBeInTheDocument();
+    expect(screen.getByText(expectedFilename)).toBeInTheDocument();
 
     expect(await axe(container)).toHaveNoViolations();
   });
@@ -59,11 +59,9 @@ describe("Test the onClose function", () => {
     const fileUploadPreviewCloseButton = within(fileUploadPreview).getByRole("button");
     expect(fileUploadPreviewCloseButton).toBeInTheDocument();
 
-    userEvent.click(fileUploadPreviewCloseButton);
+    await userEvent.click(fileUploadPreviewCloseButton);
 
-    await waitFor(() => {
-      expect(mockOnClose).toHaveBeenCalledWith(fileId);
-    });
+    expect(mockOnClose).toHaveBeenCalledWith(fileId);
 
     expect(await axe(container)).toHaveNoViolations();
   });

@@ -103,7 +103,6 @@
 }
 
 .chatMessageUserMessage {
-  /* display: flex; */
   padding: 20px;
   background: #edf5fd;
   border-radius: 8px;
@@ -120,7 +119,6 @@
   white-space: pre-wrap;
   word-wrap: break-word;
   max-width: 85%;
-  /* flex-wrap: wrap; */
 }
 
 .chatMessageGpt {
