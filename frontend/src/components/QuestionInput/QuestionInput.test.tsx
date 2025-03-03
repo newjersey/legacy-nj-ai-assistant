@@ -456,7 +456,7 @@ describe("Test error alerts", () => {
     await clickSubmitButton();
 
     await waitFor(() => {
-    expect(screen.getByText(/Please try a smaller file./)).toBeInTheDocument();
+      expect(screen.getByText(/Please try a smaller file./)).toBeInTheDocument();
     });
 
     expect(await axe(container)).toHaveNoViolations();
