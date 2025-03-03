@@ -104,7 +104,7 @@ describe("Test the conversationApi function", () => {
     expect(fetch).toHaveBeenCalledWith("/conversation", {
       ...defaultFetchRequest,
       body: expect.stringMatching(
-        /\"type\":\"image_url\".*\"type\":\"image_url\".*\"type\":\"image_url\".*\"type\":\"image_url\".*\"type\":\"image_url\".*Use the following document in your responses.*CSV format.*Use the following document in your responses/
+        /"type":"image_url".*"type":"image_url".*"type":"image_url".*"type":"image_url".*"type":"image_url".*Use the following document in your responses.*CSV format.*Use the following document in your responses/
       ),
     });
   });
