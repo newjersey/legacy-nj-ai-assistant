@@ -1,15 +1,26 @@
+import { useEffect } from "react";
 import icons from "@newjersey/njwds/dist/img/sprite.svg";
 
-import { Alert } from "../../utils/alertUtils";
+import { Alert, ERROR_ALERT_TIMEOUT_PERIOD_IN_MS } from "../../utils/alertUtils";
 
 import styles from "./QuestionInput.module.css";
 
 interface ErrorAlertProps {
-  onClose: (id: string) => void;
+  onRemove: (id: string) => void;
   alert: Alert;
 }
 
-export const ErrorAlert = ({ onClose, alert }: ErrorAlertProps) => {
+export const ErrorAlert = ({ onRemove, alert }: ErrorAlertProps) => {
+  useEffect(() => {
+    const timeId = setTimeout(() => {
+      onRemove(alert.id);
+    }, ERROR_ALERT_TIMEOUT_PERIOD_IN_MS);
+
+    return () => {
+      clearTimeout(timeId);
+    };
+  });
+
   return (
     <div
       className={`usa-alert usa-alert--error usa-alert--slim margin-top-0 line-height-sans-5 width-full padding-y-0 position-relative display-flex flex-justify ${styles.errorAlert}`}
@@ -23,7 +34,7 @@ export const ErrorAlert = ({ onClose, alert }: ErrorAlertProps) => {
       <button
         className={`usa-button usa-button--unstyled margin-right-1 ${styles.closeButton}`}
         aria-label="Close error alert"
-        onClick={() => onClose(alert.id)}
+        onClick={() => onRemove(alert.id)}
       >
         <svg className="usa-icon" aria-hidden="true" focusable="false" role="img">
           <use href={`${icons}#close`} />

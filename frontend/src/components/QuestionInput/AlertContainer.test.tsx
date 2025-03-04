@@ -24,7 +24,7 @@ const createMockAlerts = (number: number): Alert[] => {
 describe("Test the AlertContainer component", () => {
   it("correctly renders an alert container containing one error alert", async () => {
     const mockAlerts = createMockAlerts(1);
-    const { container } = render(<AlertContainer onClose={() => {}} alerts={mockAlerts} />);
+    const { container } = render(<AlertContainer onRemove={() => {}} alerts={mockAlerts} />);
 
     const errorAlert = screen.getByTestId(`errorAlert-${mockAlerts[0].id}`);
     expect(errorAlert).toBeInTheDocument();
@@ -38,7 +38,7 @@ describe("Test the AlertContainer component", () => {
   it("correctly renders an alert container containing multiple error alerts", async () => {
     const mockAlerts = createMockAlerts(3);
 
-    const { container } = render(<AlertContainer onClose={() => {}} alerts={mockAlerts} />);
+    const { container } = render(<AlertContainer onRemove={() => {}} alerts={mockAlerts} />);
 
     mockAlerts.forEach((alert) => {
       const errorAlert = screen.getByTestId(`errorAlert-${alert.id}`);
