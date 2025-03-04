@@ -29,8 +29,9 @@ A summary of existing alert rules within Azure. These can be viewed in the Azure
 ## Alert actions
 All currently configured alerts are set to notify the following when triggered:
 
-- `#resx-bots-alerts` Slack channel
 - `#platform-eng-alerts` Slack channel
 - NJOIT's support email address
 
-If you do not have access to the listed Slack channels and would like to be added, please notify a member of the Platform team.
+If you do not have access to the `#platform-eng-alerts` and would like to be added, please notify a member of the Platform team.
+
+Alert actions can be edited through the console when editing alert rules.
