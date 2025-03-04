@@ -433,7 +433,38 @@ describe("Test error alerts", () => {
     }
   );
 
+  it("displays the appropriate input error if send button is clicked but no prompt is entered", async () => {
+    const mockOnSend = jest.fn();
+
+    const uploadedFile = createMockFile("jpg", ACCEPTED_FILE_TYPES.JPEG);
+
+    const { container } = render(
+      <QuestionInput
+        onSend={mockOnSend}
+        disabled={false}
+        placeholder={"placeholder"}
+        conversationId={undefined}
+        clearOnSend={false}
+      />
+    );
+
+    await uploadFiles([uploadedFile]);
+    await clickSubmitButton();
+
+    await waitFor(() => {
+      expect(
+        screen.getByText(/Please enter a prompt into the text field to continue./)
+      ).toBeInTheDocument();
+    });
+
+    expect(mockOnSend).toHaveBeenCalledTimes(0);
+
+    expect(await axe(container)).toHaveNoViolations();
+  });
+
   it("displays the appropriate input error if the total file contents are too long", async () => {
+    const mockOnSend = jest.fn();
+
     const uploadedFile = createMockFile(
       "csv",
       ACCEPTED_FILE_TYPES.CSV,
@@ -459,10 +490,14 @@ describe("Test error alerts", () => {
       expect(screen.getByText(/Please try a smaller file./)).toBeInTheDocument();
     });
 
+    expect(mockOnSend).toHaveBeenCalledTimes(0);
+
     expect(await axe(container)).toHaveNoViolations();
   });
 
   it("displays the appropriate input error if the prompt length is too long", async () => {
+    const mockOnSend = jest.fn();
+
     const prompt = "a".repeat(MAX_INPUT_LENGTH + 5);
 
     const { container } = render(
@@ -483,10 +518,14 @@ describe("Test error alerts", () => {
 
     expect(screen.getByText(/Please try a smaller prompt./)).toBeInTheDocument();
 
+    expect(mockOnSend).toHaveBeenCalledTimes(0);
+
     expect(await axe(container)).toHaveNoViolations();
   });
 
   it("displays the appropriate input error if text cannot be read from a .pdf file", async () => {
+    const mockOnSend = jest.fn();
+
     const uploadedPdfFile = createMockFile("pdf", ACCEPTED_FILE_TYPES.PDF, 8, "");
 
     const { container } = render(
@@ -505,10 +544,14 @@ describe("Test error alerts", () => {
 
     expect(screen.getByText(/Could not read text from PDF:/)).toBeInTheDocument();
 
+    expect(mockOnSend).toHaveBeenCalledTimes(0);
+
     expect(await axe(container)).toHaveNoViolations();
   });
 
   it("displays the appropriate input error if text cannot be read from a .docx file", async () => {
+    const mockOnSend = jest.fn();
+
     const uploadedDocxFile = createMockFile("docx", ACCEPTED_FILE_TYPES.DOCX, 8, "");
 
     const { container } = render(
@@ -526,6 +569,8 @@ describe("Test error alerts", () => {
     await clickSubmitButton();
 
     expect(screen.getByText(/Could not read text from .docx file:/)).toBeInTheDocument();
+
+    expect(mockOnSend).toHaveBeenCalledTimes(0);
 
     expect(await axe(container)).toHaveNoViolations();
   });
@@ -819,29 +864,6 @@ describe("Test sending input", () => {
     );
 
     await inputChatMessage(expectedText);
-    await clickSubmitButton();
-
-    expect(mockOnSend).toHaveBeenCalledTimes(0);
-
-    expect(await axe(container)).toHaveNoViolations();
-  });
-
-  it("does not send input when the send button is clicked and files are uploaded but no prompt is entered", async () => {
-    const mockOnSend = jest.fn();
-
-    const uploadedFile = createMockFile("jpg", ACCEPTED_FILE_TYPES.JPEG);
-
-    const { container } = render(
-      <QuestionInput
-        onSend={mockOnSend}
-        disabled={false}
-        placeholder={"placeholder"}
-        conversationId={undefined}
-        clearOnSend={false}
-      />
-    );
-
-    await uploadFiles([uploadedFile]);
     await clickSubmitButton();
 
     expect(mockOnSend).toHaveBeenCalledTimes(0);

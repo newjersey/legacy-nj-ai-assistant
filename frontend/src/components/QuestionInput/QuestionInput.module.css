@@ -14,8 +14,8 @@
 }
 
 textarea.questionInputTextArea {
-  padding-top: 10px;
-  padding-bottom: 10px;
+  padding-top: 24px;
+  padding-bottom: 24px;
   resize: none;
   outline: none;
 }

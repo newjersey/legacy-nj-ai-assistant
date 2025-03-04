@@ -897,14 +897,14 @@ export const Chat = () => {
           <div className={`${styles.chatContainer}`}>
             {!messages || messages.length < 1 ? (
               <div className={`display-flex flex-column ${styles.chatEmptyState}`}>
-                <div className={`display-flex flex-row flex-align-center ${styles.chatHeader}`}>
+                <div className={`display-flex flex-row flex-align-center width-full flex-justify-start ${styles.chatHeader}`}>
                   <img
                     src={NjLogo}
-                    className={`margin-x-1 ${styles.chatIcon}`}
+                    className={`${styles.chatIcon}`}
                     aria-hidden="true"
                     alt="Official logo for the State of New Jersey"
                   />
-                  <h1 className={`margin-x-1 ${styles.chatEmptyStateTitle}`}>
+                  <h1 className={`margin-left-2 ${styles.chatEmptyStateTitle}`}>
                     {ui?.chat_title ?? DEFAULT_CHAT_TITLE}
                   </h1>
                 </div>

@@ -107,7 +107,19 @@ export const QuestionInput = ({
   };
 
   const sendQuestion = async () => {
-    if (disabled || !question.trim()) {
+    if (!question.trim()) {
+      setInputErrors([
+        ...inputErrors,
+        {
+          message: `Please enter a prompt into the text field to continue.`,
+          id: `promptNotEnteredError-${uuidv4()}`,
+        },
+      ]);
+
+      return;
+    }
+
+    if (disabled) {
       return;
     }
 
