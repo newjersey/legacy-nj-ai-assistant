@@ -897,7 +897,9 @@ export const Chat = () => {
           <div className={`${styles.chatContainer}`}>
             {!messages || messages.length < 1 ? (
               <div className={`display-flex flex-column ${styles.chatEmptyState}`}>
-                <div className={`display-flex flex-row flex-align-center width-full flex-justify-start ${styles.chatHeader}`}>
+                <div
+                  className={`display-flex flex-row flex-align-center width-full flex-justify-start ${styles.chatHeader}`}
+                >
                   <img
                     src={NjLogo}
                     className={`${styles.chatIcon}`}

@@ -318,7 +318,7 @@ export const QuestionInput = ({
 
   const onFileUploadButtonClick = () => {
     fileInputRef?.current?.click();
-  }
+  };
 
   const closePreview = (idToClose: string): void => {
     setSelectedFiles((selectedFiles) => selectedFiles.filter((file) => file.fileId !== idToClose));
@@ -353,8 +353,8 @@ export const QuestionInput = ({
           className={`display-flex margin-bottom-3 width-full padding-x-2 ${styles.questionInputChatButtons}`}
         >
           <button
-          className="usa-button usa-button--unstyled text-no-underline"
-          onClick={onFileUploadButtonClick}
+            className="usa-button usa-button--unstyled text-no-underline"
+            onClick={onFileUploadButtonClick}
           >
             <label
               htmlFor="file-upload"
