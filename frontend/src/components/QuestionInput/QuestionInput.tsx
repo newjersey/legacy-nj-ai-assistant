@@ -320,13 +320,13 @@ export const QuestionInput = ({
     setSelectedFiles((selectedFiles) => selectedFiles.filter((file) => file.fileId !== idToClose));
   };
 
-  const closeError = (idToClose: string): void => {
-    setInputErrors((inputErrors) => inputErrors.filter((error) => error.id !== idToClose));
+  const removeError = (idToRemove: string): void => {
+    setInputErrors((inputErrors) => inputErrors.filter((error) => error.id !== idToRemove));
   };
 
   return (
     <div className="width-full">
-      {inputErrors.length > 0 && <AlertContainer onClose={closeError} alerts={inputErrors} />}
+      {inputErrors.length > 0 && <AlertContainer onRemove={removeError} alerts={inputErrors} />}
 
       <div className={styles.questionInput}>
         <textarea

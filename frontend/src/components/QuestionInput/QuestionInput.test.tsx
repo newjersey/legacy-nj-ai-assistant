@@ -5,6 +5,7 @@ import { axe, toHaveNoViolations } from "jest-axe";
 import "@testing-library/jest-dom";
 
 import { createMockFile } from "../../test/factories";
+import { ERROR_ALERT_TIMEOUT_PERIOD_IN_MS } from "../../utils/alertUtils";
 import { ACCEPTED_FILE_TYPES, UploadedFile } from "../../utils/fileUploadUtils";
 
 import {
@@ -272,6 +273,36 @@ describe("Test error alerts", () => {
     const inputErrorAfter = screen.queryByTestId(`errorAlert-invalidFiletype-${defaultMockUuid}`);
 
     expect(inputErrorAfter).not.toBeInTheDocument();
+
+    expect(await axe(container)).toHaveNoViolations();
+  });
+
+  it("removes the error alert when the alert times out", async () => {
+    const uploadedFile = createMockFile(
+      "png",
+      ACCEPTED_FILE_TYPES.PNG,
+      MAX_UPLOADED_IMAGE_SIZE_IN_MB + 5
+    );
+
+    const { container } = render(
+      <QuestionInput
+        onSend={() => {}}
+        disabled={false}
+        placeholder={"placeholder"}
+        conversationId={undefined}
+        clearOnSend={false}
+      />
+    );
+
+    await uploadFiles([uploadedFile]);
+
+    const inputError = screen.getByTestId(`errorAlert-exceedsMaxSize-${defaultMockUuid}`);
+    expect(inputError).toBeInTheDocument();
+
+    const inputErrorAfter = screen.queryByTestId(`errorAlert-invalidFiletype-${defaultMockUuid}`);
+
+    await new Promise((_) => setTimeout(_, ERROR_ALERT_TIMEOUT_PERIOD_IN_MS));
+    await waitFor(() => expect(expect(inputErrorAfter).not.toBeInTheDocument()));
 
     expect(await axe(container)).toHaveNoViolations();
   });
