@@ -20,6 +20,8 @@ describe("Test the ErrorAlert component", () => {
     const errorAlert = screen.getByTestId(`errorAlert-${alert.id}`);
     expect(errorAlert).toBeInTheDocument();
 
+    expect(errorAlert).toHaveAttribute("role", "alert");
+
     const alertText = within(errorAlert).getByText(alert.message);
     expect(alertText).toBeInTheDocument();
 
