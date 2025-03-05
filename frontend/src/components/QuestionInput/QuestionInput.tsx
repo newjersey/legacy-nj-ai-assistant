@@ -316,6 +316,10 @@ export const QuestionInput = ({
     }
   };
 
+  const onFileUploadButtonClick = () => {
+    fileInputRef?.current?.click();
+  }
+
   const closePreview = (idToClose: string): void => {
     setSelectedFiles((selectedFiles) => selectedFiles.filter((file) => file.fileId !== idToClose));
   };
@@ -348,7 +352,10 @@ export const QuestionInput = ({
         <div
           className={`display-flex margin-bottom-3 width-full padding-x-2 ${styles.questionInputChatButtons}`}
         >
-          <div>
+          <button
+          className="usa-button usa-button--unstyled text-no-underline"
+          onClick={onFileUploadButtonClick}
+          >
             <label
               htmlFor="file-upload"
               className={`usa-button usa-button--unstyled text-no-underline ${styles.fileInputLabel}`}
@@ -374,7 +381,7 @@ export const QuestionInput = ({
               aria-label="Upload file"
               multiple
             />
-          </div>
+          </button>
           <div
             className="usa-button margin-right-0"
             id={styles.questionInputSendButtonContainer}
