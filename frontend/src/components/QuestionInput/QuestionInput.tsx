@@ -370,18 +370,18 @@ export const QuestionInput = ({
               </svg>
               Upload files
             </label>
-            <input
-              ref={fileInputRef}
-              type="file"
-              id="file-upload"
-              accept={(Object.values(ACCEPTED_FILE_TYPES) as string[]).join(",")}
-              onChange={onFileChange}
-              disabled={disabled}
-              className={styles.fileInput}
-              aria-label="Upload file"
-              multiple
-            />
           </button>
+          <input
+            ref={fileInputRef}
+            type="file"
+            id="file-upload"
+            accept={(Object.values(ACCEPTED_FILE_TYPES) as string[]).join(",")}
+            onChange={onFileChange}
+            disabled={disabled}
+            className={styles.fileInput}
+            aria-label="Upload file"
+            multiple
+          />
           <div
             className="usa-button margin-right-0"
             id={styles.questionInputSendButtonContainer}
