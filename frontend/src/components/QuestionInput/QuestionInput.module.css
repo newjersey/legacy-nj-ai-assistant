@@ -58,18 +58,6 @@ textarea.questionInputTextArea {
   align-items: center;
 }
 
-/* animation styling */
-.fade-out {
-  animation: fade-out 0.25s forwards;
-}
-
-@keyframes fade-out {
-  100% {
-    opacity: 0;
-    display: none;
-  }
-}
-
 /* alert styling */
 
 .errorAlertContainer {
