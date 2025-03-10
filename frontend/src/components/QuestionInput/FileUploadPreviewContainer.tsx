@@ -1,4 +1,5 @@
 import { FilePreview } from "../../utils/fileUploadUtils";
+import { motion, AnimatePresence } from "framer-motion";
 
 import { FileUploadPreview } from "./FileUploadPreview";
 
@@ -11,17 +12,27 @@ interface FileUploadPreviewContainerProps {
 
 export const FileUploadPreviewContainer = ({ onClose, files }: FileUploadPreviewContainerProps) => {
   return (
-    <div
-      className={`display-flex flex-wrap margin-x-2 margin-bottom-05 ${styles.fileUploadPreviewsContainer}`}
-    >
-      {files.map((file) => (
-        <FileUploadPreview
-          key={file.fileId}
-          onClose={onClose}
-          fileId={file.fileId}
-          fileName={file.name}
-        />
-      ))}
-    </div>
+    <AnimatePresence>
+      <div
+        className={`display-flex flex-wrap margin-x-2 margin-bottom-05 ${styles.fileUploadPreviewsContainer}`}
+      >
+        {files.map((file) => (
+          <motion.div
+            key={file.fileId}
+            layout
+            initial={{ opacity: 1 }}
+            exit={{ opacity: 0 }}
+            transition={{ duration: 0.3 }}
+          >
+            <FileUploadPreview
+              key={file.fileId}
+              onClose={onClose}
+              fileId={file.fileId}
+              fileName={file.name}
+            />
+          </motion.div>
+        ))}
+      </div>
+    </AnimatePresence>
   );
 };
