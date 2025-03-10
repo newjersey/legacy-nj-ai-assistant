@@ -354,13 +354,13 @@ export const QuestionInput = ({
 
         <div
           className={`display-flex margin-bottom-3 width-full padding-x-2 ${styles.questionInputChatButtons}`}
-          role="button"
         >
           <label
             htmlFor="file-upload"
             onKeyDown={onFileUploadButtonEnterPress}
             className={`usa-button usa-button--unstyled text-no-underline ${styles.fileInputLabel}`}
             aria-label="Upload files"
+            role="button"
             tabIndex={0}
           >
             <svg
