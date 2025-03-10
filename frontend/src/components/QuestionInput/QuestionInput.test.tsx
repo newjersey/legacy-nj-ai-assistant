@@ -26,7 +26,7 @@ import { QuestionInput } from "./QuestionInput";
 expect.extend(toHaveNoViolations);
 
 async function uploadFiles(uploadedFiles: File[]) {
-  const fileInput = screen.getByLabelText("Upload files");
+  const fileInput = screen.getByText("Upload files");
 
   await userEvent.upload(fileInput, uploadedFiles);
 }

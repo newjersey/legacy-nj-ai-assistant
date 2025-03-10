@@ -273,15 +273,16 @@ export const QuestionInput = ({
     return uploadedFile;
   };
 
-  const onEnterPress = (ev: React.KeyboardEvent<Element>) => {
-    if (ev.key === "Enter" && !ev.shiftKey && !(ev.nativeEvent?.isComposing === true)) {
-      ev.preventDefault();
+  const onTextareaEnterPress = (event: React.KeyboardEvent<Element>) => {
+    if (event.key === "Enter" && !event.shiftKey && !(event.nativeEvent?.isComposing === true)) {
+      event.preventDefault();
       sendQuestion();
     }
   };
 
   const onFileChange = (event: React.ChangeEvent<HTMLInputElement>) => {
     const files = event.target.files;
+    console.log("okok");
 
     if (files != null) {
       const validFiles = filterUploadedFilesBySize(files);
@@ -316,8 +317,10 @@ export const QuestionInput = ({
     }
   };
 
-  const onFileUploadButtonClick = () => {
-    fileInputRef?.current?.click();
+  const onFileUploadButtonEnterPress = (event: React.KeyboardEvent<HTMLElement>) => {
+    if (event.key === "Enter" && fileInputRef.current != null) {
+      fileInputRef.current.click();
+    }
   };
 
   const closePreview = (idToClose: string): void => {
@@ -338,7 +341,7 @@ export const QuestionInput = ({
           placeholder={placeholder}
           value={question}
           onChange={(e) => setQuestion(e.target.value)}
-          onKeyDown={onEnterPress}
+          onKeyDown={onTextareaEnterPress}
           aria-label="Type a question"
         ></textarea>
 
@@ -352,36 +355,34 @@ export const QuestionInput = ({
         <div
           className={`display-flex margin-bottom-3 width-full padding-x-2 ${styles.questionInputChatButtons}`}
         >
-          <button
-            className="usa-button usa-button--unstyled text-no-underline"
-            onClick={onFileUploadButtonClick}
+          <label
+            htmlFor="file-upload"
+            onKeyDown={onFileUploadButtonEnterPress}
+            className={`usa-button usa-button--unstyled text-no-underline ${styles.fileInputLabel}`}
+            aria-label="Upload files"
+            tabIndex={0}
           >
-            <label
-              htmlFor="file-upload"
-              className={`usa-button usa-button--unstyled text-no-underline ${styles.fileInputLabel}`}
+            <svg
+              className="usa-icon margin-right-05"
+              aria-hidden="true"
+              focusable="false"
+              role="img"
             >
-              <svg
-                className="usa-icon margin-right-05"
-                aria-hidden="true"
-                focusable="false"
-                role="img"
-              >
-                <use href={`${icons}#attach_file`} />
-              </svg>
-              Upload files
-            </label>
-          </button>
-          <input
-            ref={fileInputRef}
-            type="file"
-            id="file-upload"
-            accept={(Object.values(ACCEPTED_FILE_TYPES) as string[]).join(",")}
-            onChange={onFileChange}
-            disabled={disabled}
-            className={styles.fileInput}
-            aria-label="Upload file"
-            multiple
-          />
+              <use href={`${icons}#attach_file`} />
+            </svg>
+            Upload files
+            <input
+              ref={fileInputRef}
+              type="file"
+              id="file-upload"
+              accept={(Object.values(ACCEPTED_FILE_TYPES) as string[]).join(",")}
+              onChange={onFileChange}
+              disabled={disabled}
+              className={styles.fileInput}
+              aria-hidden="true"
+              multiple
+            />
+          </label>
           <div
             className="usa-button margin-right-0"
             id={styles.questionInputSendButtonContainer}

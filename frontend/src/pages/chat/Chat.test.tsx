@@ -14,7 +14,7 @@ jest.mock("../../api");
 expect.extend(toHaveNoViolations);
 
 function uploadFiles(uploadedFiles: File[]) {
-  const fileInput = screen.getByLabelText("Upload files");
+  const fileInput = screen.getByText("Upload files");
 
   userEvent.upload(fileInput, uploadedFiles);
 }
