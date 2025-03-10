@@ -58,8 +58,29 @@ textarea.questionInputTextArea {
   align-items: center;
 }
 
-/* alert styling */
+/* animation styling */
+@keyframes fade-out {
+  0% {
+    opacity: 1;
+  }
+  20% {
+    opacity: 1;
+  }
+  100% {
+    opacity: 0;
+  }
+}
 
+@-webkit-keyframes fade-out {
+  0% {
+    opacity: 1;
+  }
+  100% {
+    opacity: 0;
+  }
+}
+
+/* alert styling */
 .errorAlertContainer {
   bottom: 190px;
   z-index: 1;
@@ -69,6 +90,7 @@ textarea.questionInputTextArea {
 
 .errorAlert {
   outline: none;
+  animation: fade-out 3s forwards;
 }
 
 button.closeButton {
@@ -76,7 +98,6 @@ button.closeButton {
 }
 
 /* file input styling */
-
 label.fileInputLabel {
   z-index: 1;
   outline: none;

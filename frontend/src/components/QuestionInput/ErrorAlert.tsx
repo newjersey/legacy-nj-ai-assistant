@@ -1,4 +1,4 @@
-import { useEffect } from "react";
+import { useEffect, useState } from "react";
 import icons from "@newjersey/njwds/dist/img/sprite.svg";
 
 import { Alert, ERROR_ALERT_TIMEOUT_PERIOD_IN_MS } from "../../utils/alertUtils";
@@ -35,7 +35,9 @@ export const ErrorAlert = ({ onRemove, alert }: ErrorAlertProps) => {
       <button
         className={`usa-button usa-button--unstyled margin-right-1 ${styles.closeButton}`}
         aria-label="Close error alert"
-        onClick={() => onRemove(alert.id)}
+        onClick={() => {
+          onRemove(alert.id);
+        }}
       >
         <svg className="usa-icon" aria-hidden="true" focusable="false" role="img">
           <use href={`${icons}#close`} />
