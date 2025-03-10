@@ -31,6 +31,12 @@
     "no-underscore-dangle": 0,
     "jsx-a11y/click-events-have-key-events": 0,
     "jsx-a11y/anchor-is-valid": 0,
+    "jsx-a11y/no-noninteractive-element-to-interactive-role": [
+      "error",
+      {
+        "label": ["button"]
+      }
+    ],
     "no-await-in-loop": 0,
     "no-unused-expressions": ["error", { "allowShortCircuit": true, "allowTernary": true }],
     "no-unused-vars": "off", // Turn off the base rule and use @typescript-eslint/no-unused-vars
@@ -74,9 +80,17 @@
       }
     ]
   },
-  // Ignore files related to ChatHistory until this feature is 
-  // enabled + we have a deeper understanding of how to handle 
+  // Ignore files related to ChatHistory until this feature is
+  // enabled + we have a deeper understanding of how to handle
   // lint errors and warnings here
 
-  "ignorePatterns": ["node_modules/", "build/", "dist/", "public/", "*.config.ts", "polyfills.js", "src/components/ChatHistory/"]
+  "ignorePatterns": [
+    "node_modules/",
+    "build/",
+    "dist/",
+    "public/",
+    "*.config.ts",
+    "polyfills.js",
+    "src/components/ChatHistory/"
+  ]
 }
