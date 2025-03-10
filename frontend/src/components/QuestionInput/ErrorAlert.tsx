@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { useEffect } from "react";
 import icons from "@newjersey/njwds/dist/img/sprite.svg";
 
 import { Alert, ERROR_ALERT_TIMEOUT_PERIOD_IN_MS } from "../../utils/alertUtils";
