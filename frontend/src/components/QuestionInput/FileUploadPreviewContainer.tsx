@@ -1,5 +1,6 @@
+import { AnimatePresence, motion } from "framer-motion";
+
 import { FilePreview } from "../../utils/fileUploadUtils";
-import { motion, AnimatePresence } from "framer-motion";
 
 import { FileUploadPreview } from "./FileUploadPreview";
 
