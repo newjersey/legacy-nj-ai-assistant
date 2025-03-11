@@ -11,6 +11,13 @@ import { ACCEPTED_FILE_TYPES } from "../../utils/fileUploadUtils";
 import { Chat } from "./Chat";
 jest.mock("../../api");
 
+jest.mock("framer-motion", () => ({
+  motion: {
+    div: (props: any) => <div data-testid="motion-div" {...props} />,
+  },
+  AnimatePresence: ({ children }: { children: React.ReactNode }) => <>{children}</>,
+}));
+
 expect.extend(toHaveNoViolations);
 
 function uploadFiles(uploadedFiles: File[]) {
