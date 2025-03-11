@@ -8,13 +8,8 @@ import { FilePreview } from "../../utils/fileUploadUtils";
 jest.mock('framer-motion', () => ({
   motion: {
     div: (props: any) => <div data-testid="motion-div" {...props} />,
-    span: (props: any) => <span data-testid="motion-span" {...props} />,
-    button: (props: any) => <button data-testid="motion-button" {...props} />,
   },
   AnimatePresence: ({ children }: { children: React.ReactNode }) => <>{children}</>,
-  useAnimation: () => ({ start: jest.fn() }),
-  useMotionValue: () => ({ get: jest.fn(), set: jest.fn() }),
-  useTransform: jest.fn(),
 }));
 
 import { FileUploadPreviewContainer } from "./FileUploadPreviewContainer";
