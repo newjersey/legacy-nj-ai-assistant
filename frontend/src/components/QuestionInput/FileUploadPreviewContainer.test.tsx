@@ -5,7 +5,7 @@ import "@testing-library/jest-dom";
 
 import { FilePreview } from "../../utils/fileUploadUtils";
 
-jest.mock('framer-motion', () => ({
+jest.mock("framer-motion", () => ({
   motion: {
     div: (props: any) => <div data-testid="motion-div" {...props} />,
   },

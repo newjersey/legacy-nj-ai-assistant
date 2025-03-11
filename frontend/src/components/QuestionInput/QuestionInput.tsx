@@ -282,7 +282,6 @@ export const QuestionInput = ({
 
   const onFileChange = (event: React.ChangeEvent<HTMLInputElement>) => {
     const files = event.target.files;
-    console.log("okok");
 
     if (files != null) {
       const validFiles = filterUploadedFilesBySize(files);
@@ -323,6 +322,12 @@ export const QuestionInput = ({
     }
   };
 
+  const onFileUploadButtonClick = () => {
+    if (fileInputRef.current != null) {
+      fileInputRef.current.click();
+    }
+  };
+
   const closePreview = (idToClose: string): void => {
     setSelectedFiles((selectedFiles) => selectedFiles.filter((file) => file.fileId !== idToClose));
   };
@@ -355,35 +360,41 @@ export const QuestionInput = ({
         <div
           className={`display-flex margin-bottom-3 width-full padding-x-2 ${styles.questionInputChatButtons}`}
         >
-          <label
-            htmlFor="file-upload"
-            onKeyDown={onFileUploadButtonEnterPress}
-            className={`usa-button usa-button--unstyled text-no-underline ${styles.fileInputLabel}`}
-            aria-label="Upload files"
+          <div
             role="button"
+            className={`usa-button usa-button--unstyled text-no-underline`}
+            onKeyDown={onFileUploadButtonEnterPress}
+            onClick={onFileUploadButtonClick}
             tabIndex={0}
           >
-            <svg
-              className="usa-icon margin-right-05"
-              aria-hidden="true"
-              focusable="false"
-              role="img"
+            <label
+              htmlFor="file-upload"
+              className={`display-flex ${styles.fileInputLabel}`}
+              aria-label="Upload files"
             >
-              <use href={`${icons}#attach_file`} />
-            </svg>
-            Upload files
-            <input
-              ref={fileInputRef}
-              type="file"
-              id="file-upload"
-              accept={(Object.values(ACCEPTED_FILE_TYPES) as string[]).join(",")}
-              onChange={onFileChange}
-              disabled={disabled}
-              className={styles.fileInput}
-              aria-hidden="true"
-              multiple
-            />
-          </label>
+              <svg
+                className="usa-icon margin-right-05"
+                aria-hidden="true"
+                focusable="false"
+                role="img"
+              >
+                <use href={`${icons}#attach_file`} />
+              </svg>
+              Upload files
+            </label>
+          </div>
+          <input
+            ref={fileInputRef}
+            type="file"
+            id="file-upload"
+            accept={(Object.values(ACCEPTED_FILE_TYPES) as string[]).join(",")}
+            onChange={onFileChange}
+            disabled={disabled}
+            tabIndex={-1}
+            className={styles.fileInput}
+            aria-hidden="true"
+            multiple
+          />
           <div
             className="usa-button margin-right-0"
             id={styles.questionInputSendButtonContainer}

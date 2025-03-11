@@ -98,6 +98,7 @@ button.closeButton {
 label.fileInputLabel {
   z-index: 1;
   outline: none;
+  align-items: center;
 }
 
 .fileInput {
