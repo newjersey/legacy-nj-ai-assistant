@@ -95,7 +95,7 @@ button.closeButton {
 }
 
 /* file input styling */
-label.fileInputLabel {
+button.fileInputButton {
   z-index: 1;
   outline: none;
   align-items: center;

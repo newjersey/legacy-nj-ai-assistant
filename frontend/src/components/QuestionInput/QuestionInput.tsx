@@ -360,29 +360,23 @@ export const QuestionInput = ({
         <div
           className={`display-flex margin-bottom-3 width-full padding-x-2 ${styles.questionInputChatButtons}`}
         >
-          <div
-            role="button"
-            className={`usa-button usa-button--unstyled text-no-underline`}
+          <button
+            className={`usa-button usa-button--unstyled text-no-underline display-flex ${styles.fileInputButton}`}
             onKeyDown={onFileUploadButtonEnterPress}
             onClick={onFileUploadButtonClick}
             tabIndex={0}
+            aria-label="Upload files"
           >
-            <label
-              htmlFor="file-upload"
-              className={`display-flex ${styles.fileInputLabel}`}
-              aria-label="Upload files"
+            <svg
+              className="usa-icon margin-right-05"
+              aria-hidden="true"
+              focusable="false"
+              role="img"
             >
-              <svg
-                className="usa-icon margin-right-05"
-                aria-hidden="true"
-                focusable="false"
-                role="img"
-              >
-                <use href={`${icons}#attach_file`} />
-              </svg>
-              Upload files
-            </label>
-          </div>
+              <use href={`${icons}#attach_file`} />
+            </svg>
+            Upload files
+          </button>
           <input
             ref={fileInputRef}
             type="file"
