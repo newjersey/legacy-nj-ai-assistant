@@ -3,14 +3,7 @@ import { axe, toHaveNoViolations } from "jest-axe";
 
 import "@testing-library/jest-dom";
 
-import { FilePreview } from "../../utils/fileUploadUtils";
-
-jest.mock("framer-motion", () => ({
-  motion: {
-    div: (props: any) => <div data-testid="motion-div" {...props} />,
-  },
-  AnimatePresence: ({ children }: { children: React.ReactNode }) => <>{children}</>,
-}));
+import type { FilePreview } from "../../utils/fileUploadUtils";
 
 import { FileUploadPreviewContainer } from "./FileUploadPreviewContainer";
 expect.extend(toHaveNoViolations);
@@ -33,7 +26,7 @@ describe("Test the FileUploadPreview component", () => {
     const mockFilePreviews = createMockFilePreviews(1);
 
     const { container } = render(
-      <FileUploadPreviewContainer onClose={() => {}} files={mockFilePreviews} />
+      <FileUploadPreviewContainer onClose={jest.fn()} files={mockFilePreviews} />
     );
 
     const fileUploadPreview = screen.getByTestId(`filePreview-${mockFilePreviews[0].fileId}`);
@@ -49,7 +42,7 @@ describe("Test the FileUploadPreview component", () => {
     const mockFilePreviews = createMockFilePreviews(3);
 
     const { container } = render(
-      <FileUploadPreviewContainer onClose={() => {}} files={mockFilePreviews} />
+      <FileUploadPreviewContainer onClose={jest.fn()} files={mockFilePreviews} />
     );
 
     mockFilePreviews.forEach((file) => {

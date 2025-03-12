@@ -1,4 +1,4 @@
-import { Alert } from "../../utils/alertUtils";
+import type { Alert } from "../../utils/alertUtils";
 
 import { ErrorAlert } from "./ErrorAlert";
 

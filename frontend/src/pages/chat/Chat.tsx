@@ -12,23 +12,25 @@ import rehypeRaw from "rehype-raw";
 import remarkGfm from "remark-gfm";
 import { v4 as uuidv4 } from "uuid";
 
-import {
+import type {
   AzureSqlServerExecResults,
-  ChatHistoryLoadingState,
   ChatMessage,
   ChatResponse,
   Citation,
   Conversation,
-  conversationApi,
   ConversationRequest,
-  CosmosDBStatus,
   ErrorMessage,
   ExecResults,
+  ToolMessageContent,
+} from "../../api";
+import {
+  ChatHistoryLoadingState,
+  conversationApi,
+  CosmosDBStatus,
   getUserInfo,
   historyClear,
   historyGenerate,
   historyUpdate,
-  ToolMessageContent,
 } from "../../api";
 import NjLogo from "../../assets/nj-logo.svg";
 import { Answer } from "../../components/Answer";
@@ -37,7 +39,8 @@ import { QuestionInput } from "../../components/QuestionInput";
 import { DEFAULT_CHAT_DESCRIPTION, DEFAULT_CHAT_TITLE } from "../../constants/defaultAppState";
 import { XSSAllowTags } from "../../constants/sanatizeAllowables";
 import { AppStateContext } from "../../state/AppProvider";
-import { isImageFile, truncateFilename, UploadedFile } from "../../utils/fileUploadUtils";
+import type { UploadedFile } from "../../utils/fileUploadUtils";
+import { isImageFile, truncateFilename } from "../../utils/fileUploadUtils";
 import { logEvent } from "../../utils/logEvent";
 
 import styles from "./Chat.module.css";

@@ -58,25 +58,6 @@ textarea.questionInputTextArea {
   align-items: center;
 }
 
-/* animation styling */
-@keyframes fade-out {
-  0% {
-    opacity: 1;
-  }
-  100% {
-    opacity: 0;
-  }
-}
-
-@-webkit-keyframes fade-out {
-  0% {
-    opacity: 1;
-  }
-  100% {
-    opacity: 0;
-  }
-}
-
 /* alert styling */
 .errorAlertContainer {
   bottom: 190px;
@@ -87,7 +68,6 @@ textarea.questionInputTextArea {
 
 .errorAlert {
   outline: none;
-  animation: fade-out 2s ease-in 1s forwards;
 }
 
 button.closeButton {

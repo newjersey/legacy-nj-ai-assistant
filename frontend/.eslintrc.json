@@ -53,6 +53,7 @@
     "react/react-in-jsx-scope": 0,
     "react/jsx-filename-extension": 0,
     "@typescript-eslint/no-explicit-any": "off",
+    "@typescript-eslint/consistent-type-imports": "error",
     "simple-import-sort/exports": "error",
     "simple-import-sort/imports": [
       "error",
@@ -85,6 +86,7 @@
     "public/",
     "*.config.ts",
     "polyfills.js",
+    "jest.setup.tsx",
     "src/components/ChatHistory/"
   ]
 }

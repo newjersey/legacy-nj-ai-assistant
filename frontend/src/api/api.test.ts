@@ -1,5 +1,6 @@
-import { ConversationRequest } from "../api/models";
-import { ACCEPTED_FILE_TYPES, UploadedFile } from "../utils/fileUploadUtils";
+import type { ConversationRequest } from "../api/models";
+import type { UploadedFile } from "../utils/fileUploadUtils";
+import { ACCEPTED_FILE_TYPES } from "../utils/fileUploadUtils";
 
 import { conversationApi } from "./api";
 
@@ -43,9 +44,7 @@ describe("Test the conversationApi function", () => {
     });
   });
 
-  afterEach(() => {
-    jest.resetAllMocks();
-  });
+  afterEach(jest.resetAllMocks);
 
   it("formats content and calls the /conversation endpoint correctly when there is no uploaded file", async () => {
     const conversationRequest = createConversationRequestWithUploadedFile();

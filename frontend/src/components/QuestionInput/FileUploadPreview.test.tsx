@@ -12,7 +12,7 @@ describe("Test the FileUploadPreview component", () => {
     const fileName = "fileName.jpg";
     const fileId = "fileId";
     const { container } = render(
-      <FileUploadPreview onClose={() => {}} fileId={fileId} fileName={fileName} />
+      <FileUploadPreview onClose={jest.fn()} fileId={fileId} fileName={fileName} />
     );
 
     const fileUploadPreview = screen.getByTestId(`filePreview-${fileId}`);
@@ -32,7 +32,7 @@ describe("Test the FileUploadPreview component", () => {
 
     const { container } = render(
       <FileUploadPreview
-        onClose={() => {}}
+        onClose={jest.fn()}
         fileId={"fileId"}
         fileName={"veryveryverylongname.jpg"}
       />

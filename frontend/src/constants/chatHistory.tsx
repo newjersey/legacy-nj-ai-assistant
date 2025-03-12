@@ -1,4 +1,4 @@
-import { Conversation } from "../api/models";
+import type { Conversation } from "../api/models";
 
 export const chatHistorySampleData: Conversation[] = [
   {

@@ -4,14 +4,9 @@ import icons from "@newjersey/njwds/dist/img/sprite.svg";
 import { extractRawText } from "mammoth";
 import { v4 as uuidv4 } from "uuid";
 
-import { Alert } from "../../utils/alertUtils";
-import {
-  ACCEPTED_FILE_TYPES,
-  isImageFile,
-  SelectedFile,
-  truncateFilename,
-  UploadedFile,
-} from "../../utils/fileUploadUtils";
+import type { Alert } from "../../utils/alertUtils";
+import type { SelectedFile, UploadedFile } from "../../utils/fileUploadUtils";
+import { ACCEPTED_FILE_TYPES, isImageFile, truncateFilename } from "../../utils/fileUploadUtils";
 import { logEvent } from "../../utils/logEvent";
 
 import { AlertContainer } from "./AlertContainer";

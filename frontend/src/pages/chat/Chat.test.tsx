@@ -11,13 +11,6 @@ import { ACCEPTED_FILE_TYPES } from "../../utils/fileUploadUtils";
 import { Chat } from "./Chat";
 jest.mock("../../api");
 
-jest.mock("framer-motion", () => ({
-  motion: {
-    div: (props: any) => <div data-testid="motion-div" {...props} />,
-  },
-  AnimatePresence: ({ children }: { children: React.ReactNode }) => <>{children}</>,
-}));
-
 expect.extend(toHaveNoViolations);
 
 function uploadFiles(uploadedFiles: File[]) {
@@ -62,9 +55,7 @@ describe("Test the user attachment disclaimer text", () => {
       .mockImplementation(() => Promise.resolve(defaultMockResponse));
   });
 
-  afterEach(() => {
-    jest.clearAllMocks();
-  });
+  afterEach(jest.clearAllMocks);
 
   it("Displays the correct text when one file is referenced", async () => {
     const uploadedFile = createMockFile("jpg", ACCEPTED_FILE_TYPES.JPEG);

@@ -1,6 +1,6 @@
-import Plotly from "react-plotly.js";
+import type Plotly from "react-plotly.js";
 
-import { UploadedFile } from "../utils/fileUploadUtils";
+import type { UploadedFile } from "../utils/fileUploadUtils";
 
 export type AskResponse = {
   answer: string;
