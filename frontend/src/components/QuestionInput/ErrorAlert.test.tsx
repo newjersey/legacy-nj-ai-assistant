@@ -4,7 +4,7 @@ import { axe, toHaveNoViolations } from "jest-axe";
 
 import "@testing-library/jest-dom";
 
-import { Alert } from "../../utils/alertUtils";
+import type { Alert } from "../../utils/alertUtils";
 
 import { ErrorAlert } from "./ErrorAlert";
 expect.extend(toHaveNoViolations);
@@ -15,10 +15,12 @@ describe("Test the ErrorAlert component", () => {
       message: "alert message!",
       id: "alertId",
     };
-    const { container } = render(<ErrorAlert onClose={() => {}} alert={alert} />);
+    const { container } = render(<ErrorAlert onRemove={jest.fn()} alert={alert} />);
 
     const errorAlert = screen.getByTestId(`errorAlert-${alert.id}`);
     expect(errorAlert).toBeInTheDocument();
+
+    expect(errorAlert).toHaveAttribute("role", "alert");
 
     const alertText = within(errorAlert).getByText(alert.message);
     expect(alertText).toBeInTheDocument();
@@ -26,21 +28,23 @@ describe("Test the ErrorAlert component", () => {
     const alertCloseButton = within(errorAlert).getByRole("button");
     expect(alertCloseButton).toBeInTheDocument();
 
-    expect(alertCloseButton).toHaveAttribute("aria-label", "Close error alert");
+    expect(alertCloseButton).toHaveAttribute("aria-label", `Close error alert: ${alert.message}`);
 
     expect(await axe(container)).toHaveNoViolations();
   });
 });
 
-describe("Test the onClose function", () => {
-  it("calls the onClose function with the file upload preview ID when the close button is clicked", async () => {
-    const mockOnClose = jest.fn();
+describe("Test the onRemove function", () => {
+  afterEach(jest.clearAllMocks);
+
+  it("calls the onRemove function with the file upload preview ID when the close button is clicked", async () => {
+    const mockOnRemove = jest.fn();
     const alert: Alert = {
       message: "alert message!",
       id: "alertId",
     };
 
-    const { container } = render(<ErrorAlert onClose={mockOnClose} alert={alert} />);
+    const { container } = render(<ErrorAlert onRemove={mockOnRemove} alert={alert} />);
 
     const errorAlert = screen.getByTestId(`errorAlert-${alert.id}`);
     expect(errorAlert).toBeInTheDocument();
@@ -50,7 +54,7 @@ describe("Test the onClose function", () => {
 
     await userEvent.click(alertCloseButton);
 
-    expect(mockOnClose).toHaveBeenCalledWith(alert.id);
+    expect(mockOnRemove).toHaveBeenCalledWith(alert.id);
 
     expect(await axe(container)).toHaveNoViolations();
   });

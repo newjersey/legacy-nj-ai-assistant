@@ -1,14 +1,15 @@
 import { chatHistorySampleData } from "../constants/chatHistory";
-import { ACCEPTED_FILE_TYPES, isImageFile, UploadedFile } from "../utils/fileUploadUtils";
+import type { UploadedFile } from "../utils/fileUploadUtils";
+import { ACCEPTED_FILE_TYPES, isImageFile } from "../utils/fileUploadUtils";
 
-import {
+import type {
   ChatMessage,
   Conversation,
   ConversationRequest,
   CosmosDBHealth,
-  CosmosDBStatus,
   UserInfo,
 } from "./models";
+import { CosmosDBStatus } from "./models";
 
 export const conversationApi = async (
   options: ConversationRequest,

@@ -1,8 +1,9 @@
 import { cloneDeep } from "lodash";
 
-import { AskResponse, Citation } from "../../api"; // Ensure this path matches the location of your types
+import type { AskResponse, Citation } from "../../api"; // Ensure this path matches the location of your types
 
-import { enumerateCitations, parseAnswer, ParsedAnswer } from "./AnswerParser"; // Update the path accordingly
+import type { ParsedAnswer } from "./AnswerParser";
+import { enumerateCitations, parseAnswer } from "./AnswerParser"; // Update the path accordingly
 
 const sampleCitations: Citation[] = [
   {

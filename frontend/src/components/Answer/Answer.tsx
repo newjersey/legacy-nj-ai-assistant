@@ -1,4 +1,5 @@
-import { FormEvent, useContext, useEffect, useMemo, useState } from "react";
+import type { FormEvent } from "react";
+import { useContext, useEffect, useMemo, useState } from "react";
 import ReactMarkdown from "react-markdown";
 import Plot from "react-plotly.js";
 import { Prism as SyntaxHighlighter } from "react-syntax-highlighter";
@@ -10,7 +11,8 @@ import DOMPurify from "dompurify";
 import remarkGfm from "remark-gfm";
 import supersub from "remark-supersub";
 
-import { AskResponse, Citation, Feedback, historyMessageFeedback } from "../../api";
+import type { AskResponse, Citation } from "../../api";
+import { Feedback, historyMessageFeedback } from "../../api";
 import { XSSAllowAttributes, XSSAllowTags } from "../../constants/sanatizeAllowables";
 import { AppStateContext } from "../../state/AppProvider";
 

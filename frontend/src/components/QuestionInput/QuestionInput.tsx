@@ -4,14 +4,9 @@ import icons from "@newjersey/njwds/dist/img/sprite.svg";
 import { extractRawText } from "mammoth";
 import { v4 as uuidv4 } from "uuid";
 
-import { Alert } from "../../utils/alertUtils";
-import {
-  ACCEPTED_FILE_TYPES,
-  isImageFile,
-  SelectedFile,
-  truncateFilename,
-  UploadedFile,
-} from "../../utils/fileUploadUtils";
+import type { Alert } from "../../utils/alertUtils";
+import type { SelectedFile, UploadedFile } from "../../utils/fileUploadUtils";
+import { ACCEPTED_FILE_TYPES, isImageFile, truncateFilename } from "../../utils/fileUploadUtils";
 import { logEvent } from "../../utils/logEvent";
 
 import { AlertContainer } from "./AlertContainer";
@@ -107,7 +102,19 @@ export const QuestionInput = ({
   };
 
   const sendQuestion = async () => {
-    if (disabled || !question.trim()) {
+    if (!question.trim()) {
+      setInputErrors([
+        ...inputErrors,
+        {
+          message: `Please enter a prompt into the text field to continue.`,
+          id: `promptNotEnteredError-${uuidv4()}`,
+        },
+      ]);
+
+      return;
+    }
+
+    if (disabled) {
       return;
     }
 
@@ -261,9 +268,9 @@ export const QuestionInput = ({
     return uploadedFile;
   };
 
-  const onEnterPress = (ev: React.KeyboardEvent<Element>) => {
-    if (ev.key === "Enter" && !ev.shiftKey && !(ev.nativeEvent?.isComposing === true)) {
-      ev.preventDefault();
+  const onTextareaEnterPress = (event: React.KeyboardEvent<Element>) => {
+    if (event.key === "Enter" && !event.shiftKey && !(event.nativeEvent?.isComposing === true)) {
+      event.preventDefault();
       sendQuestion();
     }
   };
@@ -304,17 +311,29 @@ export const QuestionInput = ({
     }
   };
 
+  const onFileUploadButtonEnterPress = (event: React.KeyboardEvent<HTMLElement>) => {
+    if (event.key === "Enter" && fileInputRef.current != null) {
+      fileInputRef.current.click();
+    }
+  };
+
+  const onFileUploadButtonClick = () => {
+    if (fileInputRef.current != null) {
+      fileInputRef.current.click();
+    }
+  };
+
   const closePreview = (idToClose: string): void => {
     setSelectedFiles((selectedFiles) => selectedFiles.filter((file) => file.fileId !== idToClose));
   };
 
-  const closeError = (idToClose: string): void => {
-    setInputErrors((inputErrors) => inputErrors.filter((error) => error.id !== idToClose));
+  const removeError = (idToRemove: string): void => {
+    setInputErrors((inputErrors) => inputErrors.filter((error) => error.id !== idToRemove));
   };
 
   return (
     <div className="width-full">
-      {inputErrors.length > 0 && <AlertContainer onClose={closeError} alerts={inputErrors} />}
+      {inputErrors.length > 0 && <AlertContainer onRemove={removeError} alerts={inputErrors} />}
 
       <div className={styles.questionInput}>
         <textarea
@@ -322,7 +341,7 @@ export const QuestionInput = ({
           placeholder={placeholder}
           value={question}
           onChange={(e) => setQuestion(e.target.value)}
-          onKeyDown={onEnterPress}
+          onKeyDown={onTextareaEnterPress}
           aria-label="Type a question"
         ></textarea>
 
@@ -336,33 +355,36 @@ export const QuestionInput = ({
         <div
           className={`display-flex margin-bottom-3 width-full padding-x-2 ${styles.questionInputChatButtons}`}
         >
-          <div>
-            <label
-              htmlFor="file-upload"
-              className={`usa-button usa-button--unstyled text-no-underline ${styles.fileInputLabel}`}
+          <button
+            className={`usa-button usa-button--unstyled text-no-underline display-flex ${styles.fileInputButton}`}
+            onKeyDown={onFileUploadButtonEnterPress}
+            onClick={onFileUploadButtonClick}
+            tabIndex={0}
+            aria-label="Upload files"
+          >
+            <svg
+              className="usa-icon margin-right-05"
+              aria-hidden="true"
+              focusable="false"
+              role="img"
             >
-              <svg
-                className="usa-icon margin-right-05"
-                aria-hidden="true"
-                focusable="false"
-                role="img"
-              >
-                <use href={`${icons}#attach_file`} />
-              </svg>
-              Upload files
-            </label>
-            <input
-              ref={fileInputRef}
-              type="file"
-              id="file-upload"
-              accept={(Object.values(ACCEPTED_FILE_TYPES) as string[]).join(",")}
-              onChange={onFileChange}
-              disabled={disabled}
-              className={styles.fileInput}
-              aria-label="Upload file"
-              multiple
-            />
-          </div>
+              <use href={`${icons}#attach_file`} />
+            </svg>
+            Upload files
+          </button>
+          <input
+            ref={fileInputRef}
+            type="file"
+            id="file-upload"
+            data-testid="file-upload"
+            accept={(Object.values(ACCEPTED_FILE_TYPES) as string[]).join(",")}
+            onChange={onFileChange}
+            disabled={disabled}
+            tabIndex={-1}
+            className={styles.fileInput}
+            aria-hidden="true"
+            multiple
+          />
           <div
             className="usa-button margin-right-0"
             id={styles.questionInputSendButtonContainer}

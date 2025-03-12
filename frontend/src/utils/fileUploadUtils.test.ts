@@ -1,9 +1,5 @@
-import {
-  ACCEPTED_FILE_TYPES,
-  isImageFile,
-  truncateFilename,
-  UploadedFile,
-} from "./fileUploadUtils";
+import type { UploadedFile } from "./fileUploadUtils";
+import { ACCEPTED_FILE_TYPES, isImageFile, truncateFilename } from "./fileUploadUtils";
 
 describe("Test the truncateFilename function", () => {
   it("correctly truncates file names that are over 20 characters long", () => {

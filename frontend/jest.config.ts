@@ -7,7 +7,7 @@ const config: Config.InitialOptions = {
     "^.+\\.(ts|tsx)?$": "ts-jest",
     "^.+\\.(js|jsx)$": "babel-jest",
   },
-  setupFilesAfterEnv: ["<rootDir>/polyfills.js", "jest-canvas-mock"],
+  setupFilesAfterEnv: ["<rootDir>/polyfills.js", "jest-canvas-mock", "<rootDir>/jest.setup.tsx"],
   moduleNameMapper: {
     "\\.(css|less|sass|scss)$": "identity-obj-proxy",
     "^.+\\.svg$": "<rootDir>/__mocks__/fileMock.ts",

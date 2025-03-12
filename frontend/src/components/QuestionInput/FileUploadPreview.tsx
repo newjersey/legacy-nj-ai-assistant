@@ -29,7 +29,7 @@ export const FileUploadPreview = ({ onClose, fileId, fileName }: FileUploadPrevi
       <p className={`margin-top-0 font-sans-3xs`}>{truncateFilename(fileName)}</p>
       <button
         className={`usa-button usa-button--unstyled ${styles.closeButton}`}
-        aria-label="Remove file upload"
+        aria-label={`Remove file upload: ${fileName}`}
         onClick={() => onClose(fileId)}
       >
         <svg className="usa-icon" aria-hidden="true" focusable="false" role="img">

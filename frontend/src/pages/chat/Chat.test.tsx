@@ -14,7 +14,7 @@ jest.mock("../../api");
 expect.extend(toHaveNoViolations);
 
 function uploadFiles(uploadedFiles: File[]) {
-  const fileInput = screen.getByLabelText("Upload files");
+  const fileInput = screen.getByTestId("file-upload");
 
   userEvent.upload(fileInput, uploadedFiles);
 }
@@ -55,9 +55,7 @@ describe("Test the user attachment disclaimer text", () => {
       .mockImplementation(() => Promise.resolve(defaultMockResponse));
   });
 
-  afterEach(() => {
-    jest.clearAllMocks();
-  });
+  afterEach(jest.clearAllMocks);
 
   it("Displays the correct text when one file is referenced", async () => {
     const uploadedFile = createMockFile("jpg", ACCEPTED_FILE_TYPES.JPEG);

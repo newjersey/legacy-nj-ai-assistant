@@ -5,7 +5,12 @@ import { axe, toHaveNoViolations } from "jest-axe";
 import "@testing-library/jest-dom";
 
 import { createMockFile } from "../../test/factories";
-import { ACCEPTED_FILE_TYPES, UploadedFile } from "../../utils/fileUploadUtils";
+import {
+  ERROR_ALERT_FADEOUT_DELAY_IN_SECONDS,
+  ERROR_ALERT_TIMEOUT_PERIOD_IN_SECONDS,
+} from "../../utils/alertUtils";
+import type { UploadedFile } from "../../utils/fileUploadUtils";
+import { ACCEPTED_FILE_TYPES } from "../../utils/fileUploadUtils";
 
 import {
   MAX_INPUT_LENGTH,
@@ -25,7 +30,7 @@ import { QuestionInput } from "./QuestionInput";
 expect.extend(toHaveNoViolations);
 
 async function uploadFiles(uploadedFiles: File[]) {
-  const fileInput = screen.getByLabelText("Upload files");
+  const fileInput = screen.getByTestId("file-upload");
 
   await userEvent.upload(fileInput, uploadedFiles);
 }
@@ -47,7 +52,7 @@ describe("Test the QuestionInput component", () => {
   it("correctly renders the QuestionInput component without any axe violations", async () => {
     const { container } = render(
       <QuestionInput
-        onSend={() => {}}
+        onSend={jest.fn()}
         disabled={false}
         placeholder={"placeholder"}
         conversationId={undefined}
@@ -68,16 +73,14 @@ describe("Test file upload previews", () => {
     });
   });
 
-  afterEach(() => {
-    jest.clearAllMocks();
-  });
+  afterEach(jest.clearAllMocks);
 
   it("displays the file upload preview when a file is uploaded", async () => {
     const uploadedFile = createMockFile("jpg", ACCEPTED_FILE_TYPES.JPEG);
 
     const { container } = render(
       <QuestionInput
-        onSend={() => {}}
+        onSend={jest.fn()}
         disabled={false}
         placeholder={"placeholder"}
         conversationId={undefined}
@@ -109,7 +112,7 @@ describe("Test file upload previews", () => {
 
     const { container } = render(
       <QuestionInput
-        onSend={() => {}}
+        onSend={jest.fn()}
         disabled={false}
         placeholder={"placeholder"}
         conversationId={undefined}
@@ -133,7 +136,7 @@ describe("Test file upload previews", () => {
 
     const { container } = render(
       <QuestionInput
-        onSend={() => {}}
+        onSend={jest.fn()}
         disabled={false}
         placeholder={"placeholder"}
         conversationId={undefined}
@@ -172,7 +175,7 @@ describe("Test file upload previews", () => {
 
     const { container } = render(
       <QuestionInput
-        onSend={() => {}}
+        onSend={jest.fn()}
         disabled={false}
         placeholder={"placeholder"}
         conversationId={undefined}
@@ -212,9 +215,7 @@ describe("Test error alerts", () => {
     });
   });
 
-  afterEach(() => {
-    jest.clearAllMocks();
-  });
+  afterEach(jest.clearAllMocks);
 
   it("displays an error alert when there is an error uploading a file", async () => {
     const uploadedFile = createMockFile(
@@ -225,7 +226,7 @@ describe("Test error alerts", () => {
 
     const { container } = render(
       <QuestionInput
-        onSend={() => {}}
+        onSend={jest.fn()}
         disabled={false}
         placeholder={"placeholder"}
         conversationId={undefined}
@@ -251,7 +252,7 @@ describe("Test error alerts", () => {
 
     const { container } = render(
       <QuestionInput
-        onSend={() => {}}
+        onSend={jest.fn()}
         disabled={false}
         placeholder={"placeholder"}
         conversationId={undefined}
@@ -269,9 +270,44 @@ describe("Test error alerts", () => {
 
     await userEvent.click(inputErrorCloseButton);
 
-    const inputErrorAfter = screen.queryByTestId(`errorAlert-invalidFiletype-${defaultMockUuid}`);
+    const inputErrorAfter = screen.queryByTestId(`errorAlert-exceedsMaxSize-${defaultMockUuid}`);
 
     expect(inputErrorAfter).not.toBeInTheDocument();
+
+    expect(await axe(container)).toHaveNoViolations();
+  });
+
+  it("removes the error alert when the alert times out", async () => {
+    const uploadedFile = createMockFile(
+      "png",
+      ACCEPTED_FILE_TYPES.PNG,
+      MAX_UPLOADED_IMAGE_SIZE_IN_MB + 5
+    );
+
+    const { container } = render(
+      <QuestionInput
+        onSend={jest.fn()}
+        disabled={false}
+        placeholder={"placeholder"}
+        conversationId={undefined}
+        clearOnSend={false}
+      />
+    );
+
+    await uploadFiles([uploadedFile]);
+
+    const inputError = screen.getByTestId(`errorAlert-exceedsMaxSize-${defaultMockUuid}`);
+    expect(inputError).toBeInTheDocument();
+
+    const inputErrorAfter = screen.queryByTestId(`errorAlert-exceedsMaxSize-${defaultMockUuid}`);
+
+    await new Promise((resolve) =>
+      setTimeout(
+        resolve,
+        ERROR_ALERT_TIMEOUT_PERIOD_IN_SECONDS + ERROR_ALERT_FADEOUT_DELAY_IN_SECONDS
+      )
+    );
+    await waitFor(() => expect(expect(inputErrorAfter).not.toBeInTheDocument()));
 
     expect(await axe(container)).toHaveNoViolations();
   });
@@ -300,7 +336,7 @@ describe("Test error alerts", () => {
 
     const { container } = render(
       <QuestionInput
-        onSend={() => {}}
+        onSend={jest.fn()}
         disabled={false}
         placeholder={"placeholder"}
         conversationId={undefined}
@@ -342,7 +378,7 @@ describe("Test error alerts", () => {
 
     const { container } = render(
       <QuestionInput
-        onSend={() => {}}
+        onSend={jest.fn()}
         disabled={false}
         placeholder={"placeholder"}
         conversationId={undefined}
@@ -360,6 +396,7 @@ describe("Test error alerts", () => {
     expect(await axe(container)).toHaveNoViolations();
 
     const inputErrorOneCloseButton = within(inputErrorOne).getByRole("button");
+
     expect(inputErrorOneCloseButton).toBeInTheDocument();
 
     await userEvent.click(inputErrorOneCloseButton);
@@ -386,7 +423,7 @@ describe("Test error alerts", () => {
 
       const { container } = render(
         <QuestionInput
-          onSend={() => {}}
+          onSend={jest.fn()}
           disabled={false}
           placeholder={"placeholder"}
           conversationId={undefined}
@@ -415,7 +452,7 @@ describe("Test error alerts", () => {
 
       const { container } = render(
         <QuestionInput
-          onSend={() => {}}
+          onSend={jest.fn()}
           disabled={false}
           placeholder={"placeholder"}
           conversationId={undefined}
@@ -433,7 +470,38 @@ describe("Test error alerts", () => {
     }
   );
 
+  it("displays the appropriate input error if send button is clicked but no prompt is entered", async () => {
+    const mockOnSend = jest.fn();
+
+    const uploadedFile = createMockFile("jpg", ACCEPTED_FILE_TYPES.JPEG);
+
+    const { container } = render(
+      <QuestionInput
+        onSend={mockOnSend}
+        disabled={false}
+        placeholder={"placeholder"}
+        conversationId={undefined}
+        clearOnSend={false}
+      />
+    );
+
+    await uploadFiles([uploadedFile]);
+    await clickSubmitButton();
+
+    await waitFor(() => {
+      expect(
+        screen.getByText(/Please enter a prompt into the text field to continue./)
+      ).toBeInTheDocument();
+    });
+
+    expect(mockOnSend).toHaveBeenCalledTimes(0);
+
+    expect(await axe(container)).toHaveNoViolations();
+  });
+
   it("displays the appropriate input error if the total file contents are too long", async () => {
+    const mockOnSend = jest.fn();
+
     const uploadedFile = createMockFile(
       "csv",
       ACCEPTED_FILE_TYPES.CSV,
@@ -443,7 +511,7 @@ describe("Test error alerts", () => {
 
     const { container } = render(
       <QuestionInput
-        onSend={() => {}}
+        onSend={jest.fn()}
         disabled={false}
         placeholder={"placeholder"}
         conversationId={undefined}
@@ -459,15 +527,19 @@ describe("Test error alerts", () => {
       expect(screen.getByText(/Please try a smaller file./)).toBeInTheDocument();
     });
 
+    expect(mockOnSend).toHaveBeenCalledTimes(0);
+
     expect(await axe(container)).toHaveNoViolations();
   });
 
   it("displays the appropriate input error if the prompt length is too long", async () => {
+    const mockOnSend = jest.fn();
+
     const prompt = "a".repeat(MAX_INPUT_LENGTH + 5);
 
     const { container } = render(
       <QuestionInput
-        onSend={() => {}}
+        onSend={jest.fn()}
         disabled={false}
         placeholder={"placeholder"}
         conversationId={undefined}
@@ -483,15 +555,19 @@ describe("Test error alerts", () => {
 
     expect(screen.getByText(/Please try a smaller prompt./)).toBeInTheDocument();
 
+    expect(mockOnSend).toHaveBeenCalledTimes(0);
+
     expect(await axe(container)).toHaveNoViolations();
   });
 
   it("displays the appropriate input error if text cannot be read from a .pdf file", async () => {
+    const mockOnSend = jest.fn();
+
     const uploadedPdfFile = createMockFile("pdf", ACCEPTED_FILE_TYPES.PDF, 8, "");
 
     const { container } = render(
       <QuestionInput
-        onSend={() => {}}
+        onSend={jest.fn()}
         disabled={false}
         placeholder={"placeholder"}
         conversationId={undefined}
@@ -505,15 +581,19 @@ describe("Test error alerts", () => {
 
     expect(screen.getByText(/Could not read text from PDF:/)).toBeInTheDocument();
 
+    expect(mockOnSend).toHaveBeenCalledTimes(0);
+
     expect(await axe(container)).toHaveNoViolations();
   });
 
   it("displays the appropriate input error if text cannot be read from a .docx file", async () => {
+    const mockOnSend = jest.fn();
+
     const uploadedDocxFile = createMockFile("docx", ACCEPTED_FILE_TYPES.DOCX, 8, "");
 
     const { container } = render(
       <QuestionInput
-        onSend={() => {}}
+        onSend={jest.fn()}
         disabled={false}
         placeholder={"placeholder"}
         conversationId={undefined}
@@ -527,6 +607,8 @@ describe("Test error alerts", () => {
 
     expect(screen.getByText(/Could not read text from .docx file:/)).toBeInTheDocument();
 
+    expect(mockOnSend).toHaveBeenCalledTimes(0);
+
     expect(await axe(container)).toHaveNoViolations();
   });
 
@@ -537,7 +619,7 @@ describe("Test error alerts", () => {
 
     const { container } = render(
       <QuestionInput
-        onSend={() => {}}
+        onSend={jest.fn()}
         disabled={false}
         placeholder={"placeholder"}
         conversationId={undefined}
@@ -555,9 +637,7 @@ describe("Test error alerts", () => {
 });
 
 describe("Test uploading files", () => {
-  afterEach(() => {
-    jest.clearAllMocks();
-  });
+  afterEach(jest.clearAllMocks);
 
   it.each([
     ["jpg", ACCEPTED_FILE_TYPES.JPEG],
@@ -575,7 +655,7 @@ describe("Test uploading files", () => {
 
       const { container } = render(
         <QuestionInput
-          onSend={() => {}}
+          onSend={jest.fn()}
           disabled={false}
           placeholder={"placeholder"}
           conversationId={undefined}
@@ -605,7 +685,7 @@ describe("Test uploading files", () => {
 
     const { container } = render(
       <QuestionInput
-        onSend={() => {}}
+        onSend={jest.fn()}
         disabled={false}
         placeholder={"placeholder"}
         conversationId={undefined}
@@ -819,29 +899,6 @@ describe("Test sending input", () => {
     );
 
     await inputChatMessage(expectedText);
-    await clickSubmitButton();
-
-    expect(mockOnSend).toHaveBeenCalledTimes(0);
-
-    expect(await axe(container)).toHaveNoViolations();
-  });
-
-  it("does not send input when the send button is clicked and files are uploaded but no prompt is entered", async () => {
-    const mockOnSend = jest.fn();
-
-    const uploadedFile = createMockFile("jpg", ACCEPTED_FILE_TYPES.JPEG);
-
-    const { container } = render(
-      <QuestionInput
-        onSend={mockOnSend}
-        disabled={false}
-        placeholder={"placeholder"}
-        conversationId={undefined}
-        clearOnSend={false}
-      />
-    );
-
-    await uploadFiles([uploadedFile]);
     await clickSubmitButton();
 
     expect(mockOnSend).toHaveBeenCalledTimes(0);

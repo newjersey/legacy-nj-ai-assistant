@@ -1,4 +1,4 @@
-import { Action, AppState } from "./AppProvider";
+import type { Action, AppState } from "./AppProvider";
 
 // Define the reducer function
 export const appStateReducer = (state: AppState, action: Action): AppState => {

@@ -14,8 +14,8 @@
 }
 
 textarea.questionInputTextArea {
-  padding-top: 10px;
-  padding-bottom: 10px;
+  padding-top: 24px;
+  padding-bottom: 24px;
   resize: none;
   outline: none;
 }
@@ -59,7 +59,6 @@ textarea.questionInputTextArea {
 }
 
 /* alert styling */
-
 .errorAlertContainer {
   bottom: 190px;
   z-index: 1;
@@ -76,10 +75,10 @@ button.closeButton {
 }
 
 /* file input styling */
-
-label.fileInputLabel {
+button.fileInputButton {
   z-index: 1;
   outline: none;
+  align-items: center;
 }
 
 .fileInput {
