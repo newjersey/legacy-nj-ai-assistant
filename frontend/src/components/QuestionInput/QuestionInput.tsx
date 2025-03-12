@@ -381,6 +381,7 @@ export const QuestionInput = ({
             ref={fileInputRef}
             type="file"
             id="file-upload"
+            data-testid="file-upload"
             accept={(Object.values(ACCEPTED_FILE_TYPES) as string[]).join(",")}
             onChange={onFileChange}
             disabled={disabled}

@@ -33,7 +33,7 @@ import { QuestionInput } from "./QuestionInput";
 expect.extend(toHaveNoViolations);
 
 async function uploadFiles(uploadedFiles: File[]) {
-  const fileInput = screen.getByText("Upload files");
+  const fileInput = screen.getByTestId("file-upload");
 
   await userEvent.upload(fileInput, uploadedFiles);
 }

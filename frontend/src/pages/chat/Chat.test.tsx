@@ -21,7 +21,7 @@ jest.mock("framer-motion", () => ({
 expect.extend(toHaveNoViolations);
 
 function uploadFiles(uploadedFiles: File[]) {
-  const fileInput = screen.getByText("Upload files");
+  const fileInput = screen.getByTestId("file-upload");
 
   userEvent.upload(fileInput, uploadedFiles);
 }
