@@ -899,7 +899,9 @@ export const Chat = () => {
         <Stack horizontal className={styles.chatRoot}>
           <div className={`${styles.chatContainer}`}>
             {!messages || messages.length < 1 ? (
-              <div className={`display-flex flex-column ${styles.chatEmptyState}`}>
+              <div
+                className={`display-flex flex-column flex-justify-center ${styles.chatEmptyState}`}
+              >
                 <div
                   className={`display-flex flex-row flex-align-center width-full flex-justify-start ${styles.chatHeader}`}
                 >
