@@ -77,9 +77,9 @@ const Layout = () => {
   return (
     <div className={styles.layout}>
       <header className={styles.header} role={"banner"}>
-        {ui?.alert_banner_message !== undefined &&
-          ui.alert_banner_message !== null &&
-          ui.alert_banner_message !== "" && <AlertBanner messageHtml={ui.alert_banner_message} />}
+        {ui?.alert_banner_message != null && ui.alert_banner_message.trim().length > 0 && (
+          <AlertBanner messageHtml={ui.alert_banner_message} />
+        )}
         <Stack horizontal verticalAlign="center" horizontalAlign="space-between">
           <Stack horizontal verticalAlign="center">
             <img src={logo} className={styles.headerIcon} aria-hidden="true" alt="" />
