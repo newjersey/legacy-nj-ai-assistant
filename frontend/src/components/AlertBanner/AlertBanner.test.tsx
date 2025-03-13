@@ -1,42 +1,39 @@
-import { getByTestId, render, screen } from "@testing-library/react";
+import { render, screen } from "@testing-library/react";
 
 import "@testing-library/jest-dom";
 
-import { AlertBanner } from "./AlertBanner";
+import { ALERT_TYPES, AlertBanner } from "./AlertBanner";
 
 describe("<AlertBanner>", () => {
   it("renders the 'messageHtml' prop in a paragraph element with the 'usa-alert__text' class", () => {
-    const alertHtml = "This is an alert!";
-    render(<AlertBanner messageHtml={alertHtml} />);
-    const alertTextElement = screen.getByText(alertHtml);
+    const alertMessage = "This is an alert!";
+    render(<AlertBanner message={alertMessage} />);
+    const alertTextElement = screen.getByText(alertMessage);
     expect(alertTextElement).toBeInTheDocument();
     expect(alertTextElement).toHaveRole("paragraph");
     expect(alertTextElement).toHaveClass("usa-alert__text");
   });
 
-  it("renders the 'messageHtml' prop as unescaped HTML within the alert text paragraph element", () => {
-    const spanTestId = "alert-text-inner-span";
-    const alertHtml = `
-            <span data-testid='${spanTestId}'>
-                Important:
-            </span> there is an alert`;
-    render(<AlertBanner messageHtml={alertHtml} />);
-    const alertTextElement = screen.getByText("there is an alert");
-    expect(alertTextElement).toHaveRole("paragraph");
-    expect(getByTestId(alertTextElement, spanTestId)).toBeInTheDocument();
-  });
-
-  it("is styled to be a USWDS info alert (slim, no icon)", () => {
-    const expectedClasses = [
-      "usa-alert",
-      "usa-alert--info",
-      "usa-alert--slim",
-      "usa-alert--no-icon",
-    ];
-    render(<AlertBanner messageHtml="" />);
+  it("is styled to be a USWDS alert (slim, no icon)", () => {
+    const expectedClasses = ["usa-alert", "usa-alert--slim", "usa-alert--no-icon"];
+    render(<AlertBanner message="" />);
     const alertBanner = screen.getByTestId("alert-banner");
     for (const expectedClass of expectedClasses) {
       expect(alertBanner).toHaveClass(expectedClass);
     }
+  });
+
+  describe("alertType prop", () => {
+    it("renders the USWDS info alert type by default when the 'alertType' prop is missing", () => {
+      render(<AlertBanner message="" />);
+      expect(screen.getByTestId("alert-banner")).toHaveClass(`usa-alert--info`);
+    });
+
+    describe("sets the USWDS alert type based on the 'alertType' prop when it is defined", () => {
+      it.each(ALERT_TYPES)("alert type: %s", (alertType) => {
+        render(<AlertBanner message="" alertType={alertType} />);
+        expect(screen.getByTestId("alert-banner")).toHaveClass(`usa-alert--${alertType}`);
+      });
+    });
   });
 });
