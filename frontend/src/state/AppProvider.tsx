@@ -39,15 +39,15 @@ export type Action =
   | { type: "FETCH_CHAT_HISTORY"; payload: Conversation[] | null }
   | { type: "FETCH_FRONTEND_SETTINGS"; payload: FrontendSettings | null }
   | {
-      type: "SET_FEEDBACK_STATE";
-      payload: {
-        answerId: string;
-        feedback: Feedback.Positive | Feedback.Negative | Feedback.Neutral;
-      };
-    }
+    type: "SET_FEEDBACK_STATE";
+    payload: {
+      answerId: string;
+      feedback: Feedback.Positive | Feedback.Negative | Feedback.Neutral;
+    };
+  }
   | { type: "GET_FEEDBACK_STATE"; payload: string };
 
-const initialState: AppState = {
+export const initialState: AppState = {
   isChatHistoryOpen: false,
   chatHistoryLoadingState: ChatHistoryLoadingState.Loading,
   chatHistory: null,
@@ -64,9 +64,9 @@ const initialState: AppState = {
 
 export const AppStateContext = createContext<
   | {
-      state: AppState;
-      dispatch: React.Dispatch<Action>;
-    }
+    state: AppState;
+    dispatch: React.Dispatch<Action>;
+  }
   | undefined
 >(undefined);
 
