@@ -2,7 +2,7 @@ import { render, screen } from "@testing-library/react";
 
 import "@testing-library/jest-dom";
 
-import { ALERT_TYPES, AlertBanner } from "./AlertBanner";
+import { AlertBanner, AlertType } from "./AlertBanner";
 
 describe("<AlertBanner>", () => {
   it("renders the 'messageHtml' prop in a paragraph element with the 'usa-alert__text' class", () => {
@@ -30,7 +30,7 @@ describe("<AlertBanner>", () => {
     });
 
     describe("sets the USWDS alert type based on the 'alertType' prop when it is defined", () => {
-      it.each(ALERT_TYPES)("alert type: %s", (alertType) => {
+      it.each(Object.values(AlertType))("alert type: %s", (alertType) => {
         render(<AlertBanner message="" alertType={alertType} />);
         expect(screen.getByTestId("alert-banner")).toHaveClass(`usa-alert--${alertType}`);
       });

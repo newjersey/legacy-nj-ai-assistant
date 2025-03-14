@@ -1,8 +1,14 @@
 import styles from "./AlertBanner.module.css";
 
-export const ALERT_TYPES = ["info", "warning", "success", "error", "emergency"] as const;
+export const AlertType = {
+  INFO: "info",
+  WARNING: "warning",
+  SUCCESS: "success",
+  ERROR: "error",
+  EMERGENCY: "emergency",
+} as const;
 
-type AlertType = (typeof ALERT_TYPES)[number];
+type AlertType = (typeof AlertType)[keyof typeof AlertType];
 
 interface Props {
   message: string;
