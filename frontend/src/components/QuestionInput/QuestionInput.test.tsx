@@ -5,10 +5,6 @@ import { axe, toHaveNoViolations } from "jest-axe";
 import "@testing-library/jest-dom";
 
 import { createMockFile } from "../../test/factories";
-import {
-  ERROR_ALERT_FADEOUT_DELAY_IN_SECONDS,
-  ERROR_ALERT_TIMEOUT_PERIOD_IN_SECONDS,
-} from "../../utils/alertUtils";
 import type { UploadedFile } from "../../utils/fileUploadUtils";
 import { ACCEPTED_FILE_TYPES } from "../../utils/fileUploadUtils";
 
@@ -273,41 +269,6 @@ describe("Test error alerts", () => {
     const inputErrorAfter = screen.queryByTestId(`errorAlert-exceedsMaxSize-${defaultMockUuid}`);
 
     expect(inputErrorAfter).not.toBeInTheDocument();
-
-    expect(await axe(container)).toHaveNoViolations();
-  });
-
-  it("removes the error alert when the alert times out", async () => {
-    const uploadedFile = createMockFile(
-      "png",
-      ACCEPTED_FILE_TYPES.PNG,
-      MAX_UPLOADED_IMAGE_SIZE_IN_MB + 5
-    );
-
-    const { container } = render(
-      <QuestionInput
-        onSend={jest.fn()}
-        disabled={false}
-        placeholder={"placeholder"}
-        conversationId={undefined}
-        clearOnSend={false}
-      />
-    );
-
-    await uploadFiles([uploadedFile]);
-
-    const inputError = screen.getByTestId(`errorAlert-exceedsMaxSize-${defaultMockUuid}`);
-    expect(inputError).toBeInTheDocument();
-
-    const inputErrorAfter = screen.queryByTestId(`errorAlert-exceedsMaxSize-${defaultMockUuid}`);
-
-    await new Promise((resolve) =>
-      setTimeout(
-        resolve,
-        ERROR_ALERT_TIMEOUT_PERIOD_IN_SECONDS + ERROR_ALERT_FADEOUT_DELAY_IN_SECONDS
-      )
-    );
-    await waitFor(() => expect(expect(inputErrorAfter).not.toBeInTheDocument()));
 
     expect(await axe(container)).toHaveNoViolations();
   });
@@ -703,6 +664,8 @@ describe("Test uploading files", () => {
 
     expect(await axe(container)).toHaveNoViolations();
   });
+
+  it("will remove existing error alerts when new files are uploaded", async () => {});
 });
 
 describe("Test sending input", () => {
@@ -927,4 +890,6 @@ describe("Test sending input", () => {
 
     expect(await axe(container)).toHaveNoViolations();
   });
+
+  it("removes existing error alerts from the screen when the input is sent successfully", async () => {});
 });

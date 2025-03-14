@@ -170,10 +170,11 @@ export const QuestionInput = ({
 
     onSend(question, conversationId, uploadedFiles);
 
+    setInputErrors([]);
+
     if (clearOnSend) {
       setQuestion("");
       setSelectedFiles([]);
-      setInputErrors([]);
       if (fileInputRef?.current?.value) {
         fileInputRef.current.value = "";
       }
@@ -279,6 +280,7 @@ export const QuestionInput = ({
     const files = event.target.files;
 
     if (files != null) {
+      setInputErrors([]);
       const validFiles = filterUploadedFilesBySize(files);
 
       if (validFiles.length === 0 && fileInputRef?.current?.value) {
