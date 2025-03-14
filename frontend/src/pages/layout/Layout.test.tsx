@@ -9,27 +9,17 @@ import Layout from "./Layout";
 
 describe("<Layout>", () => {
   describe("conditionally renders the alert banner based on the AppState's alert_banner_message UI setting", () => {
-    const FRONTEND_SETTINGS = {
-      auth_enabled: "false",
-      conversation_id_header: "",
-      feedback_enabled: null,
-      sanitize_answer: false,
-      ui: {
-        chat_description: "<p>Chat description</p>",
-        chat_logo: "https://innovation.nj.gov/assets/images/nj-logo.svg",
-        chat_title: "NJ AI Assistant",
-        logo: "https://innovation.nj.gov/assets/images/nj-logo.svg",
-        show_chat_history_button: true,
-        show_share_button: false,
-        title: "NJ AI Assistant",
-      },
-    } as const satisfies FrontendSettings;
+    const DEFAULT_UI: FrontendSettings["ui"] = {
+      title: "NJ AI Assistant",
+      chat_title: "NJ AI Assistant",
+      chat_description: "<p>Chat description</p>",
+    };
 
     const renderLayoutComponentWithUISettings = (uiSettings: UI) => {
       const appState: AppState = {
         ...initialState,
         frontendSettings: {
-          ...FRONTEND_SETTINGS,
+          ...initialState.frontendSettings,
           ui: uiSettings,
         },
       };
@@ -49,7 +39,7 @@ describe("<Layout>", () => {
     it("renders the alert banner when the alert_banner_message is a non-empty string", () => {
       const alertMessage = "Alert!";
       renderLayoutComponentWithUISettings({
-        ...FRONTEND_SETTINGS.ui,
+        ...DEFAULT_UI,
         alert_banner_message: alertMessage,
       });
       const alertBanner = screen.getByTestId("alert-banner");
@@ -57,24 +47,25 @@ describe("<Layout>", () => {
       expect(within(alertBanner).getByText(alertMessage)).toBeInTheDocument();
     });
 
-    describe("does NOT render the alert banner when the alert_banner_message is", () => {
-      it.each([
-        ["null", null],
-        ["an empty string", ""],
-        ["a string with only whitespace", "  \t"],
-      ])("%s", (_testCase, alertMessage) => {
+    it.each([
+      ["null", null],
+      ["an empty string", ""],
+      ["a string with only whitespace", "  \t"],
+    ])(
+      "does NOT render the alert banner when the alert_banner_message is %s",
+      (_testCase, alertMessage) => {
         renderLayoutComponentWithUISettings({
-          ...FRONTEND_SETTINGS.ui,
+          ...DEFAULT_UI,
           alert_banner_message: alertMessage as string | undefined,
         });
         expect(screen.queryByTestId("alert-banner")).not.toBeInTheDocument();
-      });
+      }
+    );
 
-      it("undefined", () => {
-        expect("alert_banner_message" in FRONTEND_SETTINGS.ui).toBe(false);
-        renderLayoutComponentWithUISettings({ ...FRONTEND_SETTINGS.ui });
-        expect(screen.queryByTestId("alert-banner")).not.toBeInTheDocument();
-      });
+    it("does NOT render the alert banner when the alert_banner_message is undefined", () => {
+      expect(DEFAULT_UI?.alert_banner_message).toBe(undefined);
+      renderLayoutComponentWithUISettings({ ...DEFAULT_UI });
+      expect(screen.queryByTestId("alert-banner")).not.toBeInTheDocument();
     });
   });
 });
