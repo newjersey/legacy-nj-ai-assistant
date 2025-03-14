@@ -64,7 +64,7 @@ describe("<Layout>", () => {
 
     it("does NOT render the alert banner when the alert_banner_message is undefined", () => {
       expect(DEFAULT_UI?.alert_banner_message).toBe(undefined);
-      renderLayoutComponentWithUISettings({ ...DEFAULT_UI });
+      renderLayoutComponentWithUISettings(DEFAULT_UI);
       expect(screen.queryByTestId("alert-banner")).not.toBeInTheDocument();
     });
   });
