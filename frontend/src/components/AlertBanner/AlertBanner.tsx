@@ -16,7 +16,7 @@ interface Props {
 }
 
 export const AlertBanner = (props: Props) => {
-  const alertType: AlertType = props.alertType ?? "info";
+  const alertType: AlertType = props.alertType ?? AlertType.INFO;
 
   return (
     <div
