@@ -50,6 +50,7 @@ class _UiSettings(BaseSettings):
     show_share_button: bool = True
     show_chat_history_button: bool = True
     alert_banner_message: Optional[str] = None
+    alert_banner_type: str = "info"
 
 
 class _ChatHistorySettings(BaseSettings):
