@@ -23,12 +23,10 @@ describe("<AlertBanner>", () => {
     }
   });
 
-  describe("alertType prop", () => {
-    describe("sets the USWDS alert type based on the 'alertType' prop", () => {
-      it.each(Object.values(AlertType))("alert type: %s", (alertType) => {
-        render(<AlertBanner message="" alertType={alertType} />);
-        expect(screen.getByTestId("alert-banner")).toHaveClass(`usa-alert--${alertType}`);
-      });
+  describe("sets the USWDS alert type based on the 'alertType' prop", () => {
+    it.each(Object.values(AlertType))("alert type: %s", (alertType) => {
+      render(<AlertBanner message="" alertType={alertType} />);
+      expect(screen.getByTestId("alert-banner")).toHaveClass(`usa-alert--${alertType}`);
     });
   });
 });
