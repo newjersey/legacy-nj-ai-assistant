@@ -2,7 +2,7 @@ import { useContext, useEffect, useLayoutEffect, useRef, useState } from "react"
 import ReactMarkdown from "react-markdown";
 import { Prism as SyntaxHighlighter } from "react-syntax-highlighter";
 import { nord } from "react-syntax-highlighter/dist/cjs/styles/prism";
-import { useFloatingRootContext } from "@floating-ui/react";
+import { useClick, useDismiss, useFloatingRootContext, useInteractions } from "@floating-ui/react";
 import { Dialog, DialogType, IconButton, Stack } from "@fluentui/react";
 import { useBoolean } from "@fluentui/react-hooks";
 import { ErrorCircleRegular, ShieldLockRegular, SquareRegular } from "@fluentui/react-icons";
@@ -93,18 +93,21 @@ export const Chat = () => {
     return appStateContext?.state.isCosmosDBAvailable?.status !== CosmosDBStatus.NotConfigured;
   };
 
-  const [reference, setReference] = useState<HTMLElement | null>(null);
+  const [isCoachMarkOpen, setIsCoachMarkOpen] = useState(true);
+  const [coachMarkReference, setCoachMarkReference] = useState<HTMLElement | null>(null);
   const [coachMark, setCoachMark] = useState<HTMLElement | null>(null);
 
-  const context = useFloatingRootContext({
-    open: true,
-    // Required: both elements must be passed externally.
-    // Store them in state.
+  const coachMarkContext = useFloatingRootContext({
+    open: isCoachMarkOpen,
+    onOpenChange: setIsCoachMarkOpen,
     elements: {
-      reference: reference,
+      reference: coachMarkReference,
       floating: coachMark,
     },
   });
+
+  const coachMarkDismiss = useDismiss(coachMarkContext);
+  const { getReferenceProps, getFloatingProps } = useInteractions([coachMarkDismiss]);
 
   useEffect(() => {
     if (
@@ -878,7 +881,14 @@ export const Chat = () => {
 
   return (
     <div className={styles.container} role="main">
-      <CoachMark rootContext={context} setCoachMark={setCoachMark} />
+      {isCoachMarkOpen && (
+        <CoachMark
+          rootContext={coachMarkContext}
+          setCoachMark={setCoachMark}
+          setIsOpen={setIsCoachMarkOpen}
+          getFloatingProps={getFloatingProps}
+        />
+      )}
       {showAuthMessage ? (
         <Stack className={styles.chatEmptyState}>
           <ShieldLockRegular
@@ -1057,7 +1067,8 @@ export const Chat = () => {
                     id={styles.chatHistoryButton}
                     onClick={isCosmosDbConfigured() ? clearChat : newChat}
                     aria-label="clear chat button"
-                    ref={setReference}
+                    ref={setCoachMarkReference}
+                    {...getReferenceProps()}
                   >
                     <svg
                       className="usa-icon margin-right-05"
