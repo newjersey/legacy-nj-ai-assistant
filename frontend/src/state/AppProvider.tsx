@@ -47,7 +47,7 @@ export type Action =
     }
   | { type: "GET_FEEDBACK_STATE"; payload: string };
 
-const initialState: AppState = {
+export const initialState: AppState = {
   isChatHistoryOpen: false,
   chatHistoryLoadingState: ChatHistoryLoadingState.Loading,
   chatHistory: null,
