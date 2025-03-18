@@ -4,7 +4,7 @@ import { axe, toHaveNoViolations } from "jest-axe";
 import "@testing-library/jest-dom";
 
 import type { AlertsMap } from "../../utils/alertUtils";
-import { defaultAlertsMap, AlertTypes } from "../../utils/alertUtils";
+import { AlertTypes, defaultAlertsMap } from "../../utils/alertUtils";
 
 import { ErrorAlertContainer } from "./ErrorAlertContainer";
 expect.extend(toHaveNoViolations);

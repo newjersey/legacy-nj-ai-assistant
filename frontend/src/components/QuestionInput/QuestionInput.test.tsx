@@ -5,9 +5,9 @@ import { axe, toHaveNoViolations } from "jest-axe";
 import "@testing-library/jest-dom";
 
 import { createMockFile } from "../../test/factories";
+import { AlertTypes } from "../../utils/alertUtils";
 import type { UploadedFile } from "../../utils/fileUploadUtils";
 import { ACCEPTED_FILE_TYPES } from "../../utils/fileUploadUtils";
-import { AlertTypes } from "../../utils/alertUtils";
 
 import {
   MAX_INPUT_LENGTH,
@@ -676,17 +676,13 @@ describe("Test uploading files", () => {
     await uploadFiles([invalidUploadedFile]);
 
     await waitFor(() => {
-      expect(
-        screen.getByText(/exceeds .* MB and cannot be uploaded/)
-      ).toBeInTheDocument();
+      expect(screen.getByText(/exceeds .* MB and cannot be uploaded/)).toBeInTheDocument();
     });
 
     await uploadFiles([validUploadedFile]);
 
     await waitFor(() => {
-      expect(
-        screen.queryByText(/exceeds .* MB and cannot be uploaded./)
-      ).not.toBeInTheDocument();
+      expect(screen.queryByText(/exceeds .* MB and cannot be uploaded./)).not.toBeInTheDocument();
     });
 
     expect(await axe(container)).toHaveNoViolations();

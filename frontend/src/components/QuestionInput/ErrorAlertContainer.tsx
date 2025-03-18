@@ -16,7 +16,14 @@ export const ErrorAlertContainer = ({ onRemove, alerts }: AlertContainerProps) =
     >
       {Object.entries(alerts).map(([alertType, alertMessage]) => {
         if (alertMessage != null) {
-          return <ErrorAlert onRemove={onRemove} message={alertMessage} alertType={alertType} key={alertType} />;
+          return (
+            <ErrorAlert
+              onRemove={onRemove}
+              message={alertMessage}
+              alertType={alertType}
+              key={alertType}
+            />
+          );
         }
       })}
     </div>

@@ -1,12 +1,8 @@
 import {
-  getImageExceedsMaxSizeErrorMessage,
   getFileExceedsMaxSizeErrorMessage,
+  getImageExceedsMaxSizeErrorMessage,
 } from "./alertUtils";
-
-import {
-  MAX_UPLOADED_FILE_SIZE_IN_MB,
-  MAX_UPLOADED_IMAGE_SIZE_IN_MB,
-} from "./fileUploadUtils";
+import { MAX_UPLOADED_FILE_SIZE_IN_MB, MAX_UPLOADED_IMAGE_SIZE_IN_MB } from "./fileUploadUtils";
 
 describe("Test the getImageExceedsMaxSizeErrorMessage function", () => {
   it("returns the expected error message when one filename is passed in", () => {

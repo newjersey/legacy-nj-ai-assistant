@@ -6,23 +6,22 @@ import { v4 as uuidv4 } from "uuid";
 
 import type { Alert, AlertsMap } from "../../utils/alertUtils";
 import {
-  defaultAlertsMap,
   AlertTypes,
-  getImageExceedsMaxSizeErrorMessage,
+  defaultAlertsMap,
   getFileExceedsMaxSizeErrorMessage,
+  getImageExceedsMaxSizeErrorMessage,
 } from "../../utils/alertUtils";
-
 import type { SelectedFile, UploadedFile } from "../../utils/fileUploadUtils";
 import { ACCEPTED_FILE_TYPES, isImageFile, truncateFilename } from "../../utils/fileUploadUtils";
 import { logEvent } from "../../utils/logEvent";
 
-import { ErrorAlertContainer } from "./ErrorAlertContainer";
 import {
   MAX_INPUT_LENGTH,
   MAX_UPLOADED_FILE_COUNT,
   MAX_UPLOADED_FILE_SIZE_IN_MB,
   MAX_UPLOADED_IMAGE_SIZE_IN_MB,
 } from "./constants";
+import { ErrorAlertContainer } from "./ErrorAlertContainer";
 import { FileUploadPreviewContainer } from "./FileUploadPreviewContainer";
 
 import styles from "./QuestionInput.module.css";
@@ -282,7 +281,7 @@ export const QuestionInput = ({
     const files = event.target.files;
 
     if (files != null) {
-      console.log("okokok")
+      console.log("okokok");
       setInputErrors(defaultAlertsMap);
       const validFiles = filterUploadedFilesBySize(files);
 
