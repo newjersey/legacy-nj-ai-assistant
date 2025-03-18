@@ -242,7 +242,6 @@ export const QuestionInput = ({
           };
         }
       } catch (err) {
-        console.log("okokok");
         setInputErrors((prevInputErrors) => ({
           ...prevInputErrors,
           [AlertTypes.FAILED_TO_READ_DOCX]: `Could not read text from .docx file: ${truncateFilename(selectedFile.name)}. Please try uploading a different file.`,
@@ -280,7 +279,6 @@ export const QuestionInput = ({
     const files = event.target.files;
 
     if (files != null) {
-      console.log("okokok");
       setInputErrors(defaultAlertsMap);
       const validFiles = filterUploadedFilesBySize(files);
 
