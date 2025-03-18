@@ -4,12 +4,6 @@ import {
   truncateFilename,
 } from "./fileUploadUtils";
 
-export interface Alert {
-  message: string;
-  id?: string;
-  closeButtonLabel?: string;
-}
-
 export enum AlertTypes {
   IMAGE_EXCEEDS_MAX_SIZE = "image-exceeds-max-size",
   FILE_EXCEEDS_MAX_SIZE = "file-exceeds-max-size",

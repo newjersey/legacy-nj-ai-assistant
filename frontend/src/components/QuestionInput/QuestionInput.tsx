@@ -4,7 +4,7 @@ import icons from "@newjersey/njwds/dist/img/sprite.svg";
 import { extractRawText } from "mammoth";
 import { v4 as uuidv4 } from "uuid";
 
-import type { Alert, AlertsMap } from "../../utils/alertUtils";
+import type { AlertsMap } from "../../utils/alertUtils";
 import {
   AlertTypes,
   defaultAlertsMap,
