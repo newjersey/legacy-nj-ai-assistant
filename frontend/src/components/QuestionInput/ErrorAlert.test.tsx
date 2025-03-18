@@ -28,7 +28,7 @@ describe("Test the ErrorAlert component", () => {
 
     expect(alertCloseButton).toHaveAttribute(
       "aria-label",
-      `Close error alert: ${alertType.replace("-", " ")}`
+      `Close error alert: ${alertType.replaceAll("-", " ")}`
     );
 
     expect(await axe(container)).toHaveNoViolations();

@@ -9,7 +9,7 @@ interface ErrorAlertProps {
 }
 
 export const ErrorAlert = ({ onRemove, message, alertType }: ErrorAlertProps) => {
-  const formattedAlertType = alertType.replace("-", " ");
+  const formattedAlertType = alertType.replaceAll("-", " ");
 
   return (
     <div
