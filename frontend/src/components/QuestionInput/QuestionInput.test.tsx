@@ -7,6 +7,7 @@ import "@testing-library/jest-dom";
 import { createMockFile } from "../../test/factories";
 import type { UploadedFile } from "../../utils/fileUploadUtils";
 import { ACCEPTED_FILE_TYPES } from "../../utils/fileUploadUtils";
+import { AlertTypes } from "../../utils/alertUtils";
 
 import {
   MAX_INPUT_LENGTH,
@@ -232,7 +233,7 @@ describe("Test error alerts", () => {
 
     await uploadFiles([uploadedFile]);
 
-    const inputError = screen.getByTestId(`errorAlert-exceedsMaxSize-${defaultMockUuid}`);
+    const inputError = screen.getByTestId(`${AlertTypes.IMAGE_EXCEEDS_MAX_SIZE}`);
 
     expect(inputError).toBeInTheDocument();
 
@@ -258,7 +259,7 @@ describe("Test error alerts", () => {
 
     await uploadFiles([uploadedFile]);
 
-    const inputError = screen.getByTestId(`errorAlert-exceedsMaxSize-${defaultMockUuid}`);
+    const inputError = screen.getByTestId(`${AlertTypes.IMAGE_EXCEEDS_MAX_SIZE}`);
     expect(inputError).toBeInTheDocument();
 
     const inputErrorCloseButton = within(inputError!).getByRole("button");
@@ -266,7 +267,7 @@ describe("Test error alerts", () => {
 
     await userEvent.click(inputErrorCloseButton);
 
-    const inputErrorAfter = screen.queryByTestId(`errorAlert-exceedsMaxSize-${defaultMockUuid}`);
+    const inputErrorAfter = screen.queryByTestId(`${AlertTypes.IMAGE_EXCEEDS_MAX_SIZE}`);
 
     expect(inputErrorAfter).not.toBeInTheDocument();
 
@@ -307,9 +308,9 @@ describe("Test error alerts", () => {
 
     await uploadFiles([uploadedFileOne, uploadedFileTwo]);
 
-    const inputErrorOne = screen.getByTestId(`errorAlert-exceedsMaxSize-${mockUuidOne}`);
+    const inputErrorOne = screen.getByTestId(`${AlertTypes.IMAGE_EXCEEDS_MAX_SIZE}`);
     expect(inputErrorOne).toBeInTheDocument();
-    const inputErrorTwo = screen.getByTestId(`errorAlert-exceedsMaxSize-${mockUuidTwo}`);
+    const inputErrorTwo = screen.getByTestId(`${AlertTypes.FILE_EXCEEDS_MAX_SIZE}`);
     expect(inputErrorTwo).toBeInTheDocument();
 
     expect(await axe(container)).toHaveNoViolations();
@@ -321,21 +322,11 @@ describe("Test error alerts", () => {
       ACCEPTED_FILE_TYPES.PNG,
       MAX_UPLOADED_IMAGE_SIZE_IN_MB + 5
     );
-    const mockUuidOne = "mockUuidOne";
     const uploadedFileTwo = createMockFile(
       "pdf",
       ACCEPTED_FILE_TYPES.PDF,
       MAX_UPLOADED_FILE_SIZE_IN_MB + 5
     );
-    const mockUuidTwo = "mockUuidTwo";
-
-    uuidv4Mock
-      .mockImplementationOnce(() => {
-        return mockUuidOne;
-      })
-      .mockImplementationOnce(() => {
-        return mockUuidTwo;
-      });
 
     const { container } = render(
       <QuestionInput
@@ -349,9 +340,9 @@ describe("Test error alerts", () => {
 
     await uploadFiles([uploadedFileOne, uploadedFileTwo]);
 
-    const inputErrorOne = screen.getByTestId(`errorAlert-exceedsMaxSize-${mockUuidOne}`);
+    const inputErrorOne = screen.getByTestId(`${AlertTypes.IMAGE_EXCEEDS_MAX_SIZE}`);
     expect(inputErrorOne).toBeInTheDocument();
-    const inputErrorTwo = screen.getByTestId(`errorAlert-exceedsMaxSize-${mockUuidTwo}`);
+    const inputErrorTwo = screen.getByTestId(`${AlertTypes.FILE_EXCEEDS_MAX_SIZE}`);
     expect(inputErrorTwo).toBeInTheDocument();
 
     expect(await axe(container)).toHaveNoViolations();
@@ -362,8 +353,8 @@ describe("Test error alerts", () => {
 
     await userEvent.click(inputErrorOneCloseButton);
 
-    const inputErrorOneAfter = screen.queryByTestId(`errorAlert-exceedsMaxSize-${mockUuidOne}`);
-    const inputErrorTwoAfter = screen.queryByTestId(`errorAlert-exceedsMaxSize-${mockUuidTwo}`);
+    const inputErrorOneAfter = screen.queryByTestId(`${AlertTypes.IMAGE_EXCEEDS_MAX_SIZE}`);
+    const inputErrorTwoAfter = screen.queryByTestId(`${AlertTypes.FILE_EXCEEDS_MAX_SIZE}`);
 
     expect(inputErrorOneAfter).not.toBeInTheDocument();
     expect(inputErrorTwoAfter).toBeInTheDocument();
@@ -631,18 +622,17 @@ describe("Test uploading files", () => {
   );
 
   it("will display an error but upload other files if one file uploaded in a batch causes errors", async () => {
-    const invalidUploadedFile = createMockFile("png", ACCEPTED_FILE_TYPES.PNG, 100);
-    const mockInvalidFileUuid = "invalidFileUuid";
+    const invalidUploadedFile = createMockFile(
+      "png",
+      ACCEPTED_FILE_TYPES.PNG,
+      MAX_UPLOADED_IMAGE_SIZE_IN_MB + 5
+    );
     const validUploadedFile = createMockFile("png", ACCEPTED_FILE_TYPES.PNG);
     const mockValidFileUuid = "validFileUuid";
 
-    uuidv4Mock
-      .mockImplementationOnce(() => {
-        return mockInvalidFileUuid;
-      })
-      .mockImplementationOnce(() => {
-        return mockValidFileUuid;
-      });
+    uuidv4Mock.mockImplementationOnce(() => {
+      return mockValidFileUuid;
+    });
 
     const { container } = render(
       <QuestionInput
@@ -656,7 +646,7 @@ describe("Test uploading files", () => {
 
     await uploadFiles([invalidUploadedFile, validUploadedFile]);
 
-    const inputError = screen.getByTestId(`errorAlert-exceedsMaxSize-${mockInvalidFileUuid}`);
+    const inputError = screen.getByTestId(`${AlertTypes.IMAGE_EXCEEDS_MAX_SIZE}`);
     expect(inputError).toBeInTheDocument();
 
     const validFileUploadPreview = screen.getByTestId(`filePreview-${mockValidFileUuid}`);
@@ -665,7 +655,42 @@ describe("Test uploading files", () => {
     expect(await axe(container)).toHaveNoViolations();
   });
 
-  it("will remove existing error alerts when new files are uploaded", async () => {});
+  it("will remove existing error alerts when new files are uploaded", async () => {
+    const invalidUploadedFile = createMockFile(
+      "png",
+      ACCEPTED_FILE_TYPES.PNG,
+      MAX_UPLOADED_IMAGE_SIZE_IN_MB + 5
+    );
+    const validUploadedFile = createMockFile("png", ACCEPTED_FILE_TYPES.PNG);
+
+    const { container } = render(
+      <QuestionInput
+        onSend={jest.fn()}
+        disabled={false}
+        placeholder={"placeholder"}
+        conversationId={undefined}
+        clearOnSend={false}
+      />
+    );
+
+    await uploadFiles([invalidUploadedFile]);
+
+    await waitFor(() => {
+      expect(
+        screen.getByText(/exceeds .* MB and cannot be uploaded/)
+      ).toBeInTheDocument();
+    });
+
+    await uploadFiles([validUploadedFile]);
+
+    await waitFor(() => {
+      expect(
+        screen.queryByText(/exceeds .* MB and cannot be uploaded./)
+      ).not.toBeInTheDocument();
+    });
+
+    expect(await axe(container)).toHaveNoViolations();
+  });
 });
 
 describe("Test sending input", () => {
@@ -891,5 +916,40 @@ describe("Test sending input", () => {
     expect(await axe(container)).toHaveNoViolations();
   });
 
-  it("removes existing error alerts from the screen when the input is sent successfully", async () => {});
+  it("removes existing error alerts from the screen when the input is sent", async () => {
+    const mockOnSend = jest.fn();
+
+    const { container } = render(
+      <QuestionInput
+        onSend={mockOnSend}
+        disabled={false}
+        placeholder={"placeholder"}
+        conversationId={undefined}
+        clearOnSend={false}
+      />
+    );
+
+    await clickSubmitButton();
+
+    await waitFor(() => {
+      expect(
+        screen.getByText(/Please enter a prompt into the text field to continue./)
+      ).toBeInTheDocument();
+    });
+
+    expect(mockOnSend).toHaveBeenCalledTimes(0);
+
+    await inputChatMessage();
+    await clickSubmitButton();
+
+    await waitFor(() => {
+      expect(
+        screen.queryByText(/Please enter a prompt into the text field to continue./)
+      ).not.toBeInTheDocument();
+    });
+
+    expect(mockOnSend).toHaveBeenCalledTimes(1);
+
+    expect(await axe(container)).toHaveNoViolations();
+  });
 });
