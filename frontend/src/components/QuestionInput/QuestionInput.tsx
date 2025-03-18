@@ -52,7 +52,6 @@ export const QuestionInput = ({
   const [inputErrors, setInputErrors] = useState<AlertsMap>(defaultAlertsMap);
 
   const filterUploadedFilesBySize = (files: FileList): File[] => {
-    const inputSizeErrors: Alert[] = [];
     const oversizeImageFileNames: string[] = [];
     const oversizeNonImageFileNames: string[] = [];
     const validFiles = [...files].filter((file) => {
