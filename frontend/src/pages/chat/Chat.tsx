@@ -2,6 +2,7 @@ import { useContext, useEffect, useLayoutEffect, useRef, useState } from "react"
 import ReactMarkdown from "react-markdown";
 import { Prism as SyntaxHighlighter } from "react-syntax-highlighter";
 import { nord } from "react-syntax-highlighter/dist/cjs/styles/prism";
+import { autoUpdate, shift, useFloating } from "@floating-ui/react";
 import { Dialog, DialogType, IconButton, Stack } from "@fluentui/react";
 import { useBoolean } from "@fluentui/react-hooks";
 import { ErrorCircleRegular, ShieldLockRegular, SquareRegular } from "@fluentui/react-icons";
@@ -35,6 +36,7 @@ import {
 import NjLogo from "../../assets/nj-logo.svg";
 import { Answer } from "../../components/Answer";
 import { ChatHistoryPanel } from "../../components/ChatHistory/ChatHistoryPanel";
+import { CoachMark } from "../../components/CoachMark/CoachMark";
 import { QuestionInput } from "../../components/QuestionInput";
 import { DEFAULT_CHAT_DESCRIPTION, DEFAULT_CHAT_TITLE } from "../../constants/defaultAppState";
 import { XSSAllowTags } from "../../constants/sanatizeAllowables";
@@ -90,6 +92,12 @@ export const Chat = () => {
   const isCosmosDbConfigured = () => {
     return appStateContext?.state.isCosmosDBAvailable?.status !== CosmosDBStatus.NotConfigured;
   };
+
+  const { refs, floatingStyles } = useFloating({
+    placement: "top",
+    whileElementsMounted: autoUpdate,
+    middleware: [shift()],
+  });
 
   useEffect(() => {
     if (
@@ -863,6 +871,7 @@ export const Chat = () => {
 
   return (
     <div className={styles.container} role="main">
+      <CoachMark setFloatingElement={refs.setFloating} floatingStyles={floatingStyles} />
       {showAuthMessage ? (
         <Stack className={styles.chatEmptyState}>
           <ShieldLockRegular
@@ -1041,6 +1050,7 @@ export const Chat = () => {
                     id={styles.chatHistoryButton}
                     onClick={isCosmosDbConfigured() ? clearChat : newChat}
                     aria-label="clear chat button"
+                    ref={refs.setReference}
                   >
                     <svg
                       className="usa-icon margin-right-05"
