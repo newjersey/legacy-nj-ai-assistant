@@ -7,7 +7,7 @@ import { MAX_UPLOADED_FILE_SIZE_IN_MB, MAX_UPLOADED_IMAGE_SIZE_IN_MB } from "./f
 describe("Test the getImageExceedsMaxSizeErrorMessage function", () => {
   it("returns the expected error message when one filename is passed in", () => {
     const fileNames = ["oversizeFile.jpg"];
-    const expectedErrorMessage = `${fileNames[0]} exceeds ${MAX_UPLOADED_IMAGE_SIZE_IN_MB} MB and cannot be uploaded`;
+    const expectedErrorMessage = `Image file ${fileNames[0]} exceeds ${MAX_UPLOADED_IMAGE_SIZE_IN_MB} MB and cannot be uploaded`;
 
     const result = getImageExceedsMaxSizeErrorMessage(fileNames);
 
@@ -16,7 +16,7 @@ describe("Test the getImageExceedsMaxSizeErrorMessage function", () => {
 
   it("returns the expected error message when multiple filenames are passed in", () => {
     const fileNames = ["oversizeFile.jpg", "oversizeFile2.jpg"];
-    const expectedErrorMessage = `The following files exceed ${MAX_UPLOADED_IMAGE_SIZE_IN_MB} MB and cannot be uploaded: ${fileNames[0]}, ${fileNames[1]}`;
+    const expectedErrorMessage = `The following image files exceed ${MAX_UPLOADED_IMAGE_SIZE_IN_MB} MB and cannot be uploaded: ${fileNames[0]}, ${fileNames[1]}`;
 
     const result = getImageExceedsMaxSizeErrorMessage(fileNames);
 
@@ -27,7 +27,7 @@ describe("Test the getImageExceedsMaxSizeErrorMessage function", () => {
 describe("Test the getFileExceedsMaxSizeErrorMessage function", () => {
   it("returns the expected error message when one filename is passed in", () => {
     const fileNames = ["oversizeFile.csv"];
-    const expectedErrorMessage = `${fileNames[0]} exceeds ${MAX_UPLOADED_FILE_SIZE_IN_MB} MB and cannot be uploaded`;
+    const expectedErrorMessage = `File ${fileNames[0]} exceeds ${MAX_UPLOADED_FILE_SIZE_IN_MB} MB and cannot be uploaded`;
 
     const result = getFileExceedsMaxSizeErrorMessage(fileNames);
 

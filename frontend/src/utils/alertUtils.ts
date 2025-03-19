@@ -17,7 +17,7 @@ export enum AlertTypes {
 
 export const getImageExceedsMaxSizeErrorMessage = (filenames: string[]): string => {
   if (filenames.length === 1) {
-    return `${truncateFilename(filenames[0])} exceeds ${MAX_UPLOADED_IMAGE_SIZE_IN_MB} MB and cannot be uploaded`;
+    return `Image file ${truncateFilename(filenames[0])} exceeds ${MAX_UPLOADED_IMAGE_SIZE_IN_MB} MB and cannot be uploaded`;
   } else {
     const filenamesString = filenames
       .map((fileName) => {
@@ -25,13 +25,13 @@ export const getImageExceedsMaxSizeErrorMessage = (filenames: string[]): string 
       })
       .join(", ");
 
-    return `The following files exceed ${MAX_UPLOADED_IMAGE_SIZE_IN_MB} MB and cannot be uploaded: ${filenamesString}`;
+    return `The following image files exceed ${MAX_UPLOADED_IMAGE_SIZE_IN_MB} MB and cannot be uploaded: ${filenamesString}`;
   }
 };
 
 export const getFileExceedsMaxSizeErrorMessage = (filenames: string[]): string => {
   if (filenames.length === 1) {
-    return `${truncateFilename(filenames[0])} exceeds ${MAX_UPLOADED_FILE_SIZE_IN_MB} MB and cannot be uploaded`;
+    return `File ${truncateFilename(filenames[0])} exceeds ${MAX_UPLOADED_FILE_SIZE_IN_MB} MB and cannot be uploaded`;
   } else {
     const filenamesString = filenames
       .map((fileName) => {
