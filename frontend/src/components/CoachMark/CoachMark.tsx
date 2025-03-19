@@ -26,7 +26,7 @@ const coachMarks = [
 */
 
 interface CoachMarkOptions {
-  initialReferenceRef: RefObject<HTMLElement>;
+  referenceRef: RefObject<HTMLElement>;
 }
 
 export const useCoachMark = (options: CoachMarkOptions) => {
@@ -35,10 +35,10 @@ export const useCoachMark = (options: CoachMarkOptions) => {
   const [referenceElement, setReferenceElement] = useState<HTMLElement | null>(null);
 
   useEffect(() => {
-    if (options.initialReferenceRef.current !== null) {
-      setReferenceElement(options.initialReferenceRef.current);
+    if (options.referenceRef.current !== null) {
+      setReferenceElement(options.referenceRef.current);
     }
-  }, [options.initialReferenceRef]);
+  }, [options.referenceRef]);
 
   const floatingRootContext = useFloatingRootContext({
     open: isOpen,
@@ -81,12 +81,16 @@ export const useCoachMarkContext = () => {
 
 interface CoachMarkRootProps {
   coachMark: ReturnType<typeof useCoachMark>;
+  coachMarkContent: ReactNode;
   children: ReactNode;
 }
 
 const CoachMarkRoot = (props: CoachMarkRootProps) => {
   return (
-    <CoachMarkContext.Provider value={props.coachMark}>{props.children}</CoachMarkContext.Provider>
+    <CoachMarkContext.Provider value={props.coachMark}>
+      <CoachMarkContent>{props.coachMarkContent}</CoachMarkContent>
+      {props.children}
+    </CoachMarkContext.Provider>
   );
 };
 
