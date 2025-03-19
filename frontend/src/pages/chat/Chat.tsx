@@ -864,14 +864,13 @@ export const Chat = () => {
 
   const coachMarkReferenceRef = useRef(null);
 
-  const coachMarkContent = <p>Some tooltip text</p>;
-
   const coachMark = CoachMark.useCoachMark({
     referenceRef: coachMarkReferenceRef,
+    coachMarkContent: <p>Some tooltip text</p>,
   });
 
   return (
-    <CoachMark.Root coachMark={coachMark} coachMarkContent={coachMarkContent}>
+    <CoachMark.Root coachMark={coachMark}>
       <div className={styles.container} role="main">
         {showAuthMessage ? (
           <Stack className={styles.chatEmptyState}>

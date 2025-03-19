@@ -27,6 +27,7 @@ const coachMarks = [
 
 interface CoachMarkOptions {
   referenceRef: RefObject<HTMLElement>;
+  coachMarkContent: ReactNode;
 }
 
 export const useCoachMark = (options: CoachMarkOptions) => {
@@ -59,10 +60,11 @@ export const useCoachMark = (options: CoachMarkOptions) => {
       setReferenceElement,
       isOpen,
       setIsOpen,
+      coachMarkContent: options.coachMarkContent,
       ...interactions,
       ...floatingRootContext,
     }),
-    [setCoachMark, setReferenceElement, isOpen, setIsOpen, interactions, floatingRootContext]
+    [isOpen, options.coachMarkContent, interactions, floatingRootContext]
   );
 };
 
@@ -81,14 +83,13 @@ export const useCoachMarkContext = () => {
 
 interface CoachMarkRootProps {
   coachMark: ReturnType<typeof useCoachMark>;
-  coachMarkContent: ReactNode;
   children: ReactNode;
 }
 
 const CoachMarkRoot = (props: CoachMarkRootProps) => {
   return (
     <CoachMarkContext.Provider value={props.coachMark}>
-      <CoachMarkContent>{props.coachMarkContent}</CoachMarkContent>
+      <CoachMarkPortal>{props.coachMark.coachMarkContent}</CoachMarkPortal>
       {props.children}
     </CoachMarkContext.Provider>
   );
@@ -112,11 +113,11 @@ const CoachMarkRoot = (props: CoachMarkRootProps) => {
 //   });
 // };
 
-interface CoachMarkContentProps {
+interface CoachMarkPortalProps {
   children: ReactNode;
 }
 
-const CoachMarkContent = (props: CoachMarkContentProps) => {
+const CoachMarkPortal = (props: CoachMarkPortalProps) => {
   const coachMarkContext = useCoachMarkContext();
 
   const { floatingStyles } = useFloating({
@@ -145,6 +146,6 @@ const CoachMarkContent = (props: CoachMarkContentProps) => {
 
 const Root = CoachMarkRoot;
 // const Reference = CoachMarkReference;
-const Content = CoachMarkContent;
+const Portal = CoachMarkPortal;
 
-export { Content, Root };
+export { Portal, Root };
