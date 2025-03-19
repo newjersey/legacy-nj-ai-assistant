@@ -862,15 +862,9 @@ export const Chat = () => {
     return "";
   };
 
-  const coachMark = CoachMark.useCoachMark();
+  const coachMarkReferenceRef = useRef(null);
 
-  const coachMarkReferenceRef = useRef<HTMLButtonElement | null>(null);
-
-  useEffect(() => {
-    if (coachMarkReferenceRef.current !== null) {
-      coachMark.setReferenceElement(coachMarkReferenceRef.current);
-    }
-  }, [coachMark]);
+  const coachMark = CoachMark.useCoachMark({ initialReferenceRef: coachMarkReferenceRef });
 
   return (
     <CoachMark.Root coachMark={coachMark}>

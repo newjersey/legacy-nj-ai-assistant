@@ -1,8 +1,9 @@
-import type { ReactNode } from "react";
-import { createContext, useContext, useMemo, useState } from "react";
+import type { ReactNode, RefObject } from "react";
+import { createContext, useContext, useEffect, useMemo, useState } from "react";
 import {
   FloatingFocusManager,
   FloatingOverlay,
+  useDismiss,
   useFloating,
   useFloatingRootContext,
   useInteractions,
@@ -24,12 +25,20 @@ const coachMarks = [
 ]
 */
 
-interface CoachMarkOptions {}
+interface CoachMarkOptions {
+  initialReferenceRef: RefObject<HTMLElement>;
+}
 
-export const useCoachMark = (_options?: CoachMarkOptions) => {
+export const useCoachMark = (options: CoachMarkOptions) => {
   const [isOpen, setIsOpen] = useState(true);
   const [coachMark, setCoachMark] = useState<HTMLElement | null>(null);
   const [referenceElement, setReferenceElement] = useState<HTMLElement | null>(null);
+
+  useEffect(() => {
+    if (options.initialReferenceRef.current !== null) {
+      setReferenceElement(options.initialReferenceRef.current);
+    }
+  }, [options.initialReferenceRef]);
 
   const floatingRootContext = useFloatingRootContext({
     open: isOpen,
@@ -40,7 +49,9 @@ export const useCoachMark = (_options?: CoachMarkOptions) => {
     },
   });
 
-  const interactions = useInteractions([]);
+  const dismiss = useDismiss(floatingRootContext);
+
+  const interactions = useInteractions([dismiss]);
 
   return useMemo(
     () => ({
