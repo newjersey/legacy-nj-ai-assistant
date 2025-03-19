@@ -862,8 +862,18 @@ export const Chat = () => {
     return "";
   };
 
+  const coachMark = CoachMark.useCoachMark();
+
+  const coachMarkReferenceRef = useRef<HTMLButtonElement | null>(null);
+
+  useEffect(() => {
+    if (coachMarkReferenceRef.current !== null) {
+      coachMark.setReferenceElement(coachMarkReferenceRef.current);
+    }
+  }, [coachMark]);
+
   return (
-    <CoachMark.Root placement="top">
+    <CoachMark.Root coachMark={coachMark}>
       <CoachMark.Content>
         <p>Some tooltip text</p>
       </CoachMark.Content>
@@ -1043,23 +1053,23 @@ export const Chat = () => {
                         </svg>
                       </button>
                     )}
-                    <CoachMark.Reference>
-                      <button
-                        className={`usa-button width-7 display-flex flex-row flex-justify-center flex-align-center ${additionalClearChatStyles}`}
-                        id={styles.chatHistoryButton}
-                        onClick={isCosmosDbConfigured() ? clearChat : newChat}
-                        aria-label="clear chat button"
+                    <button
+                      ref={coachMarkReferenceRef}
+                      {...coachMark.getReferenceProps()}
+                      className={`usa-button width-7 display-flex flex-row flex-justify-center flex-align-center ${additionalClearChatStyles}`}
+                      id={styles.chatHistoryButton}
+                      onClick={isCosmosDbConfigured() ? clearChat : newChat}
+                      aria-label="clear chat button"
+                    >
+                      <svg
+                        className="usa-icon margin-right-05"
+                        aria-hidden="true"
+                        focusable="false"
+                        role="img"
                       >
-                        <svg
-                          className="usa-icon margin-right-05"
-                          aria-hidden="true"
-                          focusable="false"
-                          role="img"
-                        >
-                          <use href={`${icons}#history`} />
-                        </svg>
-                      </button>
-                    </CoachMark.Reference>
+                        <use href={`${icons}#history`} />
+                      </svg>
+                    </button>
                     <Dialog
                       hidden={hideErrorDialog}
                       onDismiss={handleErrorDialogClose}
