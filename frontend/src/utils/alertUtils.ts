@@ -47,13 +47,6 @@ export type AlertsMap = {
   [key in AlertTypes]?: string | null;
 };
 
-export const defaultAlertsMap: AlertsMap = {
-  [AlertTypes.IMAGE_EXCEEDS_MAX_SIZE]: null,
-  [AlertTypes.FILE_EXCEEDS_MAX_SIZE]: null,
-  [AlertTypes.PROMPT_NOT_ENTERED]: null,
-  [AlertTypes.EXCEEDED_FILE_CONTENT_CHARACTER_LIMIT]: null,
-  [AlertTypes.EXCEEDED_PROMPT_CHARACTER_LIMIT]: null,
-  [AlertTypes.FAILED_TO_READ_PDF]: null,
-  [AlertTypes.FAILED_TO_READ_DOCX]: null,
-  [AlertTypes.EXCEEDED_MAX_FILE_COUNT]: null,
-};
+export const defaultAlertsMap: AlertsMap = Object.fromEntries(
+  Object.values(AlertTypes).map((alertType) => [alertType, null])
+);

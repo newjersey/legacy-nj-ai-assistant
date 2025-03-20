@@ -13,6 +13,7 @@ export const ErrorAlertContainer = ({ onRemove, alerts }: AlertContainerProps) =
   return (
     <div
       className={`alertContainer display-flex flex-column width-full  ${styles.errorAlertContainer}`}
+      data-testid="error-alert-container"
     >
       {Object.entries(alerts).map(([alertType, alertMessage]) => {
         if (alertMessage != null) {
