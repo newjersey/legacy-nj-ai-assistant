@@ -1,9 +1,10 @@
+import { AlertType } from "../../utils/alertUtils";
 import icons from "@newjersey/njwds/dist/img/sprite.svg";
 
 import styles from "./QuestionInput.module.css";
 
 interface ErrorAlertProps {
-  onRemove: (id: string) => void;
+  onRemove: (id: keyof typeof AlertType) => void;
   message: string;
   alertType: string;
 }
@@ -25,7 +26,7 @@ export const ErrorAlert = ({ onRemove, message, alertType }: ErrorAlertProps) =>
         className={`usa-button usa-button--unstyled height-auto margin-right-1 ${styles.closeButton}`}
         aria-label={`Close error alert: ${formattedAlertType}`}
         onClick={() => {
-          onRemove(alertType);
+          onRemove(alertType as keyof typeof AlertType);
         }}
       >
         <svg className="usa-icon" aria-hidden="true" focusable="false" role="img">

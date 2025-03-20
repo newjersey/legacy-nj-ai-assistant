@@ -4,7 +4,7 @@ import {
   truncateFilename,
 } from "./fileUploadUtils";
 
-export enum AlertTypes {
+export enum AlertType {
   IMAGE_EXCEEDS_MAX_SIZE = "image-exceeds-max-size",
   FILE_EXCEEDS_MAX_SIZE = "file-exceeds-max-size",
   PROMPT_NOT_ENTERED = "prompt-not-entered",
@@ -44,9 +44,9 @@ export const getFileExceedsMaxSizeErrorMessage = (filenames: string[]): string =
 };
 
 export type AlertsMap = {
-  [key in AlertTypes]?: string | null;
+  [key in AlertType]?: string | null;
 };
 
 export const defaultAlertsMap: AlertsMap = Object.fromEntries(
-  Object.values(AlertTypes).map((alertType) => [alertType, null])
+  Object.values(AlertType).map((alertType) => [alertType, null])
 );

@@ -6,7 +6,7 @@ import { v4 as uuidv4 } from "uuid";
 
 import type { AlertsMap } from "../../utils/alertUtils";
 import {
-  AlertTypes,
+  AlertType,
   defaultAlertsMap,
   getFileExceedsMaxSizeErrorMessage,
   getImageExceedsMaxSizeErrorMessage,
@@ -88,14 +88,14 @@ export const QuestionInput = ({
     if (oversizeImageFileNames.length > 0) {
       setInputErrors((prevInputErrors) => ({
         ...prevInputErrors,
-        [AlertTypes.IMAGE_EXCEEDS_MAX_SIZE]:
+        [AlertType.IMAGE_EXCEEDS_MAX_SIZE]:
           getImageExceedsMaxSizeErrorMessage(oversizeImageFileNames),
       }));
     }
     if (oversizeNonImageFileNames.length > 0) {
       setInputErrors((prevInputErrors) => ({
         ...prevInputErrors,
-        [AlertTypes.FILE_EXCEEDS_MAX_SIZE]:
+        [AlertType.FILE_EXCEEDS_MAX_SIZE]:
           getFileExceedsMaxSizeErrorMessage(oversizeNonImageFileNames),
       }));
     }
@@ -121,7 +121,7 @@ export const QuestionInput = ({
     if (!question.trim()) {
       setInputErrors((prevInputErrors) => ({
         ...prevInputErrors,
-        [AlertTypes.PROMPT_NOT_ENTERED]: `Please enter a prompt into the text field to continue.`,
+        [AlertType.PROMPT_NOT_ENTERED]: `Please enter a prompt into the text field to continue.`,
       }));
 
       return;
@@ -143,7 +143,7 @@ export const QuestionInput = ({
       if (getTotalFileContentLength(uploadedFiles) > MAX_INPUT_LENGTH) {
         setInputErrors((prevInputErrors) => ({
           ...prevInputErrors,
-          [AlertTypes.EXCEEDED_FILE_CONTENT_CHARACTER_LIMIT]: `Total file contents cannot exceed ${MAX_INPUT_LENGTH} characters. Please try a smaller file.`,
+          [AlertType.EXCEEDED_FILE_CONTENT_CHARACTER_LIMIT]: `Total file contents cannot exceed ${MAX_INPUT_LENGTH} characters. Please try a smaller file.`,
         }));
 
         setSelectedFiles([]);
@@ -165,7 +165,7 @@ export const QuestionInput = ({
     if (!isValidLength(question)) {
       setInputErrors((prevInputErrors) => ({
         ...prevInputErrors,
-        [AlertTypes.EXCEEDED_PROMPT_CHARACTER_LIMIT]: `Prompt cannot exceed ${MAX_INPUT_LENGTH} characters. Please try a smaller prompt.`,
+        [AlertType.EXCEEDED_PROMPT_CHARACTER_LIMIT]: `Prompt cannot exceed ${MAX_INPUT_LENGTH} characters. Please try a smaller prompt.`,
       }));
 
       logEvent("submit_prompt_client_error_prompt_length", {
@@ -206,7 +206,7 @@ export const QuestionInput = ({
       } catch (e) {
         setInputErrors((prevInputErrors) => ({
           ...prevInputErrors,
-          [AlertTypes.FAILED_TO_READ_PDF]: `Could not read text from PDF: ${truncateFilename(selectedFile.name)}. Please try uploading a different file.`,
+          [AlertType.FAILED_TO_READ_PDF]: `Could not read text from PDF: ${truncateFilename(selectedFile.name)}. Please try uploading a different file.`,
         }));
       }
     } else if (selectedFile.type === ACCEPTED_FILE_TYPES.CSV) {
@@ -244,7 +244,7 @@ export const QuestionInput = ({
       } catch (err) {
         setInputErrors((prevInputErrors) => ({
           ...prevInputErrors,
-          [AlertTypes.FAILED_TO_READ_DOCX]: `Could not read text from .docx file: ${truncateFilename(selectedFile.name)}. Please try uploading a different file.`,
+          [AlertType.FAILED_TO_READ_DOCX]: `Could not read text from .docx file: ${truncateFilename(selectedFile.name)}. Please try uploading a different file.`,
         }));
       }
     } else {
@@ -301,7 +301,7 @@ export const QuestionInput = ({
 
         setInputErrors((prevInputErrors) => ({
           ...prevInputErrors,
-          [AlertTypes.EXCEEDED_MAX_FILE_COUNT]: `A maximum of ${MAX_UPLOADED_FILE_COUNT} files can be uploaded.`,
+          [AlertType.EXCEEDED_MAX_FILE_COUNT]: `A maximum of ${MAX_UPLOADED_FILE_COUNT} files can be uploaded.`,
         }));
       } else {
         setSelectedFiles([...selectedFiles, ...filesWithIds]);
@@ -325,7 +325,7 @@ export const QuestionInput = ({
     setSelectedFiles((selectedFiles) => selectedFiles.filter((file) => file.fileId !== idToClose));
   };
 
-  const removeError = (alertTypeToRemove: string): void => {
+  const removeError = (alertTypeToRemove: keyof typeof AlertType): void => {
     setInputErrors((prevInputErrors) => ({
       ...prevInputErrors,
       [alertTypeToRemove]: null,

@@ -4,7 +4,7 @@ import { axe, toHaveNoViolations } from "jest-axe";
 import "@testing-library/jest-dom";
 
 import type { AlertsMap } from "../../utils/alertUtils";
-import { AlertTypes } from "../../utils/alertUtils";
+import { AlertType } from "../../utils/alertUtils";
 
 import { ErrorAlertContainer } from "./ErrorAlertContainer";
 expect.extend(toHaveNoViolations);
@@ -23,7 +23,7 @@ describe("Test the ErrorAlertContainer component", () => {
 
   it("correctly renders an alert container containing one error alert", async () => {
     const mockAlerts: AlertsMap = {
-      [AlertTypes.IMAGE_EXCEEDS_MAX_SIZE]: "alert message",
+      [AlertType.IMAGE_EXCEEDS_MAX_SIZE]: "alert message",
     };
 
     const { container } = render(<ErrorAlertContainer onRemove={jest.fn()} alerts={mockAlerts} />);
@@ -41,9 +41,9 @@ describe("Test the ErrorAlertContainer component", () => {
 
   it("correctly renders an alert container containing multiple error alerts", async () => {
     const mockAlerts: AlertsMap = {
-      [AlertTypes.IMAGE_EXCEEDS_MAX_SIZE]: "alert message 1",
-      [AlertTypes.FILE_EXCEEDS_MAX_SIZE]: "alert message 2",
-      [AlertTypes.PROMPT_NOT_ENTERED]: "alert message 3",
+      [AlertType.IMAGE_EXCEEDS_MAX_SIZE]: "alert message 1",
+      [AlertType.FILE_EXCEEDS_MAX_SIZE]: "alert message 2",
+      [AlertType.PROMPT_NOT_ENTERED]: "alert message 3",
     };
 
     const { container } = render(<ErrorAlertContainer onRemove={jest.fn()} alerts={mockAlerts} />);
