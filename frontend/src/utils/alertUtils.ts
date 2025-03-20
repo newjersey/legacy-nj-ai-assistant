@@ -39,7 +39,7 @@ export const getFileExceedsMaxSizeErrorMessage = (filenames: string[]): string =
       })
       .join(", ");
 
-    return `The following files exceed ${MAX_UPLOADED_FILE_SIZE_IN_MB} MB and cannot be uploaded: ${filenamesString}`;
+    return `The following files exceed ${MAX_UPLOADED_FILE_SIZE_IN_MB} MB and cannot be uploaded: ${filenamesString}.`;
   }
 };
 

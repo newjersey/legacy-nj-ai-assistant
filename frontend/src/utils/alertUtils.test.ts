@@ -16,7 +16,7 @@ describe("Test the getImageExceedsMaxSizeErrorMessage function", () => {
 
   it("returns the expected error message when multiple filenames are passed in", () => {
     const fileNames = ["oversizeFile.jpg", "oversizeFile2.jpg"];
-    const expectedErrorMessage = `The following image files exceed ${MAX_UPLOADED_IMAGE_SIZE_IN_MB} MB and cannot be uploaded: ${fileNames[0]}, ${fileNames[1]}`;
+    const expectedErrorMessage = `The following image files exceed ${MAX_UPLOADED_IMAGE_SIZE_IN_MB} MB and cannot be uploaded: ${fileNames[0]}, ${fileNames[1]}.`;
 
     const result = getImageExceedsMaxSizeErrorMessage(fileNames);
 
@@ -36,7 +36,7 @@ describe("Test the getFileExceedsMaxSizeErrorMessage function", () => {
 
   it("returns the expected error message when multiple filenames are passed in", () => {
     const fileNames = ["oversizeFile.csv", "oversizeFile2.csv"];
-    const expectedErrorMessage = `The following files exceed ${MAX_UPLOADED_FILE_SIZE_IN_MB} MB and cannot be uploaded: ${fileNames[0]}, ${fileNames[1]}`;
+    const expectedErrorMessage = `The following files exceed ${MAX_UPLOADED_FILE_SIZE_IN_MB} MB and cannot be uploaded: ${fileNames[0]}, ${fileNames[1]}.`;
 
     const result = getFileExceedsMaxSizeErrorMessage(fileNames);
 
