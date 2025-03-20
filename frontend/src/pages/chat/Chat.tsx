@@ -105,6 +105,7 @@ export const Chat = () => {
       });
       toggleErrorDialog();
     }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [
     appStateContext?.state.isCosmosDBAvailable,
     isCosmosDbConfigured,
@@ -764,6 +765,7 @@ export const Chat = () => {
 
   useEffect(() => {
     if (AUTH_ENABLED !== undefined) getUserInfoList();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [AUTH_ENABLED]);
 
   useLayoutEffect(() => {

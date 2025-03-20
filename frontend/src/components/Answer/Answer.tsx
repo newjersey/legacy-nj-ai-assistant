@@ -72,6 +72,7 @@ export const Answer = ({ answer, onCitationClicked, onExectResultClicked }: Prop
       currentFeedbackState = initializeAnswerFeedback(answer);
     }
     setFeedbackState(currentFeedbackState);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [appStateContext?.state.feedbackState, feedbackState, answer.message_id]);
 
   const createCitationFilepath = (citation: Citation, index: number, truncate: boolean = false) => {
