@@ -1,5 +1,5 @@
 import type { AlertsMap } from "../../utils/alertUtils";
-import { AlertType } from "../../utils/alertUtils";
+import type { AlertType } from "../../utils/alertUtils";
 
 import { ErrorAlert } from "./ErrorAlert";
 

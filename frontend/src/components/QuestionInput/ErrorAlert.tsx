@@ -1,5 +1,6 @@
-import { AlertType } from "../../utils/alertUtils";
 import icons from "@newjersey/njwds/dist/img/sprite.svg";
+
+import type { AlertType } from "../../utils/alertUtils";
 
 import styles from "./QuestionInput.module.css";
 
