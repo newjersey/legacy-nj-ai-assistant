@@ -25,7 +25,7 @@ export const getImageExceedsMaxSizeErrorMessage = (filenames: string[]): string 
       })
       .join(", ");
 
-    return `The following image files exceed ${MAX_UPLOADED_IMAGE_SIZE_IN_MB} MB and cannot be uploaded: ${filenamesString}`;
+    return `The following image files exceed ${MAX_UPLOADED_IMAGE_SIZE_IN_MB} MB and cannot be uploaded: ${filenamesString}.`;
   }
 };
 
