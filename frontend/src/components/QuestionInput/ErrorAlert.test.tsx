@@ -21,13 +21,12 @@ describe("Test the ErrorAlert component", () => {
 
     const alertText = within(errorAlert).getByText(alertMessage);
     expect(alertText).toBeInTheDocument();
-    expect(alertText).toHaveAttribute("role", "alert");
+    expect(alertText).toHaveRole("alert");
 
     const alertCloseButton = within(errorAlert).getByRole("button");
     expect(alertCloseButton).toBeInTheDocument();
 
-    expect(alertCloseButton).toHaveAttribute(
-      "aria-label",
+    expect(alertCloseButton).toHaveAccessibleName(
       `Close error alert: ${alertType.replaceAll("-", " ")}`
     );
 
@@ -38,7 +37,7 @@ describe("Test the ErrorAlert component", () => {
 describe("Test the onRemove function", () => {
   afterEach(jest.clearAllMocks);
 
-  it("calls the onRemove function with the file upload preview ID when the close button is clicked", async () => {
+  it("calls the onRemove function with the alertType when the close button is clicked", async () => {
     const mockOnRemove = jest.fn();
     const alertMessage = "alert message!";
     const alertType = "alert-type";
