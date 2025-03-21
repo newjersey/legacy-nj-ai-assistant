@@ -1,12 +1,12 @@
 import type { AlertsMap } from "../../utils/alertUtils";
-import type { AlertType } from "../../utils/alertUtils";
+import type { ErrorAlertType } from "../../utils/alertUtils";
 
 import { ErrorAlert } from "./ErrorAlert";
 
 import styles from "./QuestionInput.module.css";
 
 interface AlertContainerProps {
-  onRemove: (id: keyof typeof AlertType) => void;
+  onRemove: (id: keyof typeof ErrorAlertType) => void;
   alerts: AlertsMap;
 }
 
@@ -22,7 +22,7 @@ export const ErrorAlertContainer = ({ onRemove, alerts }: AlertContainerProps) =
             <ErrorAlert
               onRemove={onRemove}
               message={alertMessage}
-              alertType={alertType}
+              alertType={alertType as keyof typeof ErrorAlertType}
               key={alertType}
             />
           );

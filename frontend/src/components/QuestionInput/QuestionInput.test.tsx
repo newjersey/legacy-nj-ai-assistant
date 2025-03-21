@@ -5,7 +5,7 @@ import { axe, toHaveNoViolations } from "jest-axe";
 import "@testing-library/jest-dom";
 
 import { createMockFile } from "../../test/factories";
-import { AlertType } from "../../utils/alertUtils";
+import { ErrorAlertType } from "../../utils/alertUtils";
 import type { UploadedFile } from "../../utils/fileUploadUtils";
 import { ACCEPTED_FILE_TYPES } from "../../utils/fileUploadUtils";
 
@@ -233,7 +233,7 @@ describe("Test error alerts", () => {
 
     await uploadFiles([uploadedFile]);
 
-    const inputError = screen.getByTestId(AlertType.IMAGE_EXCEEDS_MAX_SIZE);
+    const inputError = screen.getByTestId(ErrorAlertType.IMAGE_EXCEEDS_MAX_SIZE);
 
     expect(inputError).toBeInTheDocument();
 
@@ -259,7 +259,7 @@ describe("Test error alerts", () => {
 
     await uploadFiles([uploadedFile]);
 
-    const inputError = screen.getByTestId(AlertType.IMAGE_EXCEEDS_MAX_SIZE);
+    const inputError = screen.getByTestId(ErrorAlertType.IMAGE_EXCEEDS_MAX_SIZE);
     expect(inputError).toBeInTheDocument();
 
     const inputErrorCloseButton = within(inputError!).getByRole("button");
@@ -267,7 +267,7 @@ describe("Test error alerts", () => {
 
     await userEvent.click(inputErrorCloseButton);
 
-    const inputErrorAfter = screen.queryByTestId(AlertType.IMAGE_EXCEEDS_MAX_SIZE);
+    const inputErrorAfter = screen.queryByTestId(ErrorAlertType.IMAGE_EXCEEDS_MAX_SIZE);
 
     expect(inputErrorAfter).not.toBeInTheDocument();
 
@@ -308,9 +308,9 @@ describe("Test error alerts", () => {
 
     await uploadFiles([uploadedFileOne, uploadedFileTwo]);
 
-    const inputErrorOne = screen.getByTestId(AlertType.IMAGE_EXCEEDS_MAX_SIZE);
+    const inputErrorOne = screen.getByTestId(ErrorAlertType.IMAGE_EXCEEDS_MAX_SIZE);
     expect(inputErrorOne).toBeInTheDocument();
-    const inputErrorTwo = screen.getByTestId(AlertType.FILE_EXCEEDS_MAX_SIZE);
+    const inputErrorTwo = screen.getByTestId(ErrorAlertType.FILE_EXCEEDS_MAX_SIZE);
     expect(inputErrorTwo).toBeInTheDocument();
 
     expect(await axe(container)).toHaveNoViolations();
@@ -340,9 +340,9 @@ describe("Test error alerts", () => {
 
     await uploadFiles([uploadedFileOne, uploadedFileTwo]);
 
-    const inputErrorOne = screen.getByTestId(AlertType.IMAGE_EXCEEDS_MAX_SIZE);
+    const inputErrorOne = screen.getByTestId(ErrorAlertType.IMAGE_EXCEEDS_MAX_SIZE);
     expect(inputErrorOne).toBeInTheDocument();
-    const inputErrorTwo = screen.getByTestId(AlertType.FILE_EXCEEDS_MAX_SIZE);
+    const inputErrorTwo = screen.getByTestId(ErrorAlertType.FILE_EXCEEDS_MAX_SIZE);
     expect(inputErrorTwo).toBeInTheDocument();
 
     expect(await axe(container)).toHaveNoViolations();
@@ -353,8 +353,8 @@ describe("Test error alerts", () => {
 
     await userEvent.click(inputErrorOneCloseButton);
 
-    const inputErrorOneAfter = screen.queryByTestId(AlertType.IMAGE_EXCEEDS_MAX_SIZE);
-    const inputErrorTwoAfter = screen.queryByTestId(AlertType.FILE_EXCEEDS_MAX_SIZE);
+    const inputErrorOneAfter = screen.queryByTestId(ErrorAlertType.IMAGE_EXCEEDS_MAX_SIZE);
+    const inputErrorTwoAfter = screen.queryByTestId(ErrorAlertType.FILE_EXCEEDS_MAX_SIZE);
 
     expect(inputErrorOneAfter).not.toBeInTheDocument();
     expect(inputErrorTwoAfter).toBeInTheDocument();
@@ -646,7 +646,7 @@ describe("Test uploading files", () => {
 
     await uploadFiles([invalidUploadedFile, validUploadedFile]);
 
-    const inputError = screen.getByTestId(AlertType.IMAGE_EXCEEDS_MAX_SIZE);
+    const inputError = screen.getByTestId(ErrorAlertType.IMAGE_EXCEEDS_MAX_SIZE);
     expect(inputError).toBeInTheDocument();
 
     const validFileUploadPreview = screen.getByTestId(`filePreview-${mockValidFileUuid}`);
