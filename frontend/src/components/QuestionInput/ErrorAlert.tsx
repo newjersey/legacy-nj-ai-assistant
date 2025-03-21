@@ -7,7 +7,7 @@ import styles from "./QuestionInput.module.css";
 interface ErrorAlertProps {
   onRemove: (id: keyof typeof ErrorAlertType) => void;
   message: string;
-  alertType: keyof typeof ErrorAlertType;
+  alertType: string;
 }
 
 export const ErrorAlert = ({ onRemove, message, alertType }: ErrorAlertProps) => {

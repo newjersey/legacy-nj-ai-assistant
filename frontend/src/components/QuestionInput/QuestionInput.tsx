@@ -6,8 +6,8 @@ import { v4 as uuidv4 } from "uuid";
 
 import type { AlertsMap } from "../../utils/alertUtils";
 import {
-  ErrorAlertType,
   defaultAlertsMap,
+  ErrorAlertType,
   getFileExceedsMaxSizeErrorMessage,
   getImageExceedsMaxSizeErrorMessage,
 } from "../../utils/alertUtils";
@@ -121,7 +121,7 @@ export const QuestionInput = ({
     if (!question.trim()) {
       setInputErrors((prevInputErrors) => ({
         ...prevInputErrors,
-        [ErrorAlertType.PROMPT_NOT_ENTERED]: `Please enter a prompt into the text field to continue.`,
+        [ErrorAlertType.PROMPT_NOT_ENTERED]: "Please enter a prompt into the text field to continue.",
       }));
 
       return;
@@ -143,7 +143,7 @@ export const QuestionInput = ({
       if (getTotalFileContentLength(uploadedFiles) > MAX_INPUT_LENGTH) {
         setInputErrors((prevInputErrors) => ({
           ...prevInputErrors,
-          [ErrorAlertType.EXCEEDED_FILE_CONTENT_CHARACTER_LIMIT]: `Total file contents cannot exceed ${MAX_INPUT_LENGTH} characters. Please try a smaller file.`,
+          [ErrorAlertType.EXCEEDED_FILE_CONTENT_CHARACTER_LIMIT]: "Total file contents cannot exceed ${MAX_INPUT_LENGTH} characters. Please try a smaller file.",
         }));
 
         setSelectedFiles([]);

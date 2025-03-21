@@ -16,7 +16,7 @@ describe("Test the ErrorAlert component", () => {
       <ErrorAlert onRemove={jest.fn()} message={alertMessage} alertType={alertType} />
     );
 
-    const errorAlert = screen.getByTestId(`${alertType}`);
+    const errorAlert = screen.getByTestId(alertType);
     expect(errorAlert).toBeInTheDocument();
 
     const alertText = within(errorAlert).getByText(alertMessage);
@@ -46,7 +46,7 @@ describe("Test the onRemove function", () => {
       <ErrorAlert onRemove={mockOnRemove} message={alertMessage} alertType={alertType} />
     );
 
-    const errorAlert = screen.getByTestId(`${alertType}`);
+    const errorAlert = screen.getByTestId(alertType);
     expect(errorAlert).toBeInTheDocument();
 
     const alertCloseButton = within(errorAlert).getByRole("button");

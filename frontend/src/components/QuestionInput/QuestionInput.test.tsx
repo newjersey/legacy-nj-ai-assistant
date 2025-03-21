@@ -440,11 +440,9 @@ describe("Test error alerts", () => {
     await uploadFiles([uploadedFile]);
     await clickSubmitButton();
 
-    await waitFor(() => {
-      expect(
-        screen.getByText(/Please enter a prompt into the text field to continue./)
-      ).toBeInTheDocument();
-    });
+    expect(
+      await screen.findByText(/Please enter a prompt into the text field to continue./)
+    ).toBeInTheDocument();
 
     expect(mockOnSend).toHaveBeenCalledTimes(0);
 
@@ -475,9 +473,7 @@ describe("Test error alerts", () => {
     await inputChatMessage();
     await clickSubmitButton();
 
-    await waitFor(() => {
-      expect(screen.getByText(/Please try a smaller file./)).toBeInTheDocument();
-    });
+    expect(await screen.findByText(/Please try a smaller file./)).toBeInTheDocument();
 
     expect(mockOnSend).toHaveBeenCalledTimes(0);
 
@@ -675,9 +671,7 @@ describe("Test uploading files", () => {
 
     await uploadFiles([invalidUploadedFile]);
 
-    await waitFor(() => {
-      expect(screen.getByText(/exceeds .* MB and cannot be uploaded/)).toBeInTheDocument();
-    });
+    expect(await screen.findByText(/exceeds .* MB and cannot be uploaded/)).toBeInTheDocument();
 
     await uploadFiles([validUploadedFile]);
 
@@ -927,11 +921,9 @@ describe("Test sending input", () => {
 
     await clickSubmitButton();
 
-    await waitFor(() => {
-      expect(
-        screen.getByText(/Please enter a prompt into the text field to continue./)
-      ).toBeInTheDocument();
-    });
+    expect(
+      await screen.findByText(/Please enter a prompt into the text field to continue./)
+    ).toBeInTheDocument();
 
     expect(mockOnSend).toHaveBeenCalledTimes(0);
 
