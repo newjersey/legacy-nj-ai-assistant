@@ -1,5 +1,6 @@
 import type { ReactNode, RefObject } from "react";
-import { createContext, useContext, useEffect, useMemo, useState } from "react";
+import { createContext, isValidElement, useContext, useEffect, useMemo, useState } from "react";
+import type { Placement } from "@floating-ui/react";
 import {
   FloatingFocusManager,
   FloatingOverlay,
@@ -11,26 +12,23 @@ import {
 
 import styles from "./CoachMark.module.css";
 
-/*
-
-const coachMarks = [
-  {
-    ref: ref1
-    content: <p>content1</p>
-  },
-   {
-    ref: ref2
-    content: <p>content2</p>
-  }
-]
-*/
+export interface CoachMarkContent {
+  placement: Placement;
+  ariaLabelledBy: string;
+  ariaDescribedBy: string;
+  element: ReactNode;
+}
 
 interface CoachMarkOptions {
   referenceRef: RefObject<HTMLElement>;
-  coachMarkContent: ReactNode;
+  coachMarkContent: CoachMarkContent;
 }
 
 export const useCoachMark = (options: CoachMarkOptions) => {
+  if (!isValidElement(options.coachMarkContent.element)) {
+    throw Error("useCoachMark's the element prop of coachMarkContent must be a valid element!");
+  }
+
   const [isOpen, setIsOpen] = useState(true);
   const [coachMark, setCoachMark] = useState<HTMLElement | null>(null);
   const [referenceElement, setReferenceElement] = useState<HTMLElement | null>(null);
@@ -89,39 +87,18 @@ interface CoachMarkRootProps {
 const CoachMarkRoot = (props: CoachMarkRootProps) => {
   return (
     <CoachMarkContext.Provider value={props.coachMark}>
-      <CoachMarkPortal>{props.coachMark.coachMarkContent}</CoachMarkPortal>
+      <CoachMarkPortal />
       {props.children}
     </CoachMarkContext.Provider>
   );
 };
 
-// interface CoachMarkReferenceProps {
-//   children: ReactNode;
-// }
-
-// export const CoachMarkReference = (props: CoachMarkReferenceProps) => {
-//   const coachMarkContext = useCoachMarkContext();
-
-//   if (!isValidElement(props.children)) {
-//     throw Error("CoachMarkReference's child must be a valid React element");
-//   }
-
-//   return cloneElement(props.children, {
-//     ref: coachMarkContext.refs.setReference,
-//     ...props.children.props,
-//     ...coachMarkContext.getReferenceProps(),
-//   });
-// };
-
-interface CoachMarkPortalProps {
-  children: ReactNode;
-}
-
-const CoachMarkPortal = (props: CoachMarkPortalProps) => {
+const CoachMarkPortal = () => {
   const coachMarkContext = useCoachMarkContext();
+  const coachMarkContent = coachMarkContext.coachMarkContent;
 
   const { floatingStyles } = useFloating({
-    placement: "top",
+    placement: coachMarkContent.placement,
     rootContext: coachMarkContext,
   });
 
@@ -131,12 +108,16 @@ const CoachMarkPortal = (props: CoachMarkPortalProps) => {
     <FloatingOverlay lockScroll className={styles.dialogOverlay}>
       <FloatingFocusManager context={coachMarkContext}>
         <div
+          role="dialog"
+          // TODO: add aria-modal=true
+          aria-labelledby={coachMarkContent.ariaLabelledBy}
+          aria-describedby={coachMarkContent.ariaDescribedBy}
           className="padding-2 bg-primary-lightest radius-2 shadow-2"
           ref={coachMarkContext.setCoachMark}
           style={floatingStyles}
           {...coachMarkContext.getFloatingProps()}
         >
-          {props.children}
+          {coachMarkContent.element}
           <button onClick={() => coachMarkContext.setIsOpen(false)}>Done</button>
         </div>
       </FloatingFocusManager>
@@ -145,7 +126,5 @@ const CoachMarkPortal = (props: CoachMarkPortalProps) => {
 };
 
 const Root = CoachMarkRoot;
-// const Reference = CoachMarkReference;
-const Portal = CoachMarkPortal;
 
-export { Portal, Root };
+export { Root };
