@@ -70,7 +70,7 @@ describe("Test file upload previews", () => {
     });
   });
 
-  afterEach(jest.clearAllMocks);
+  afterEach(uuidv4Mock.mockReset());
 
   it("displays the file upload preview when a file is uploaded", async () => {
     const uploadedFile = createMockFile("jpg", ACCEPTED_FILE_TYPES.JPEG);
@@ -217,7 +217,7 @@ describe("Test error alerts", () => {
       });
   });
 
-  afterEach(jest.clearAllMocks);
+  afterEach(uuidv4Mock.mockReset());
 
   it("displays an error alert when there is an error uploading a file", async () => {
     const uploadedFile = createMockFile(
@@ -625,7 +625,7 @@ describe("Test uploading files", () => {
     });
   });
 
-  afterEach(jest.clearAllMocks);
+  afterEach(uuidv4Mock.mockReset());
 
   it.each([
     ["jpg", ACCEPTED_FILE_TYPES.JPEG],
