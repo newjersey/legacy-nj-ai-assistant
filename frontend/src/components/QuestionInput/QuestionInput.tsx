@@ -13,7 +13,7 @@ import {
   getImageExceedsMaxSizeErrorMessage,
 } from "../../utils/alertUtils";
 import type { SelectedFile, UploadedFile } from "../../utils/fileUploadUtils";
-import { ACCEPTED_FILE_TYPES, isImageFile, truncateFilename } from "../../utils/fileUploadUtils";
+import { ACCEPTED_FILE_TYPES, isImageFile } from "../../utils/fileUploadUtils";
 import { logEvent } from "../../utils/logEvent";
 
 import {

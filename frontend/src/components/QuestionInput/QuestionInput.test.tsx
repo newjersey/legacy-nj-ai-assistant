@@ -592,28 +592,28 @@ describe("Test error alerts", () => {
     expect(await axe(container)).toHaveNoViolations();
   });
 
-  // it("displays the appropriate input error if more than 10 files are uploaded", async () => {
-  //   const mockFilesToUpload = Array.from({ length: MAX_UPLOADED_FILE_COUNT + 5 }, (_, _i) => {
-  //     return createMockFile("png", ACCEPTED_FILE_TYPES.PNG);
-  //   });
+  it("displays the appropriate input error if more than 10 files are uploaded", async () => {
+    const mockFilesToUpload = Array.from({ length: MAX_UPLOADED_FILE_COUNT + 5 }, (_, _i) => {
+      return createMockFile("png", ACCEPTED_FILE_TYPES.PNG);
+    });
 
-  //   const { container } = render(
-  //     <QuestionInput
-  //       onSend={jest.fn()}
-  //       disabled={false}
-  //       placeholder={"placeholder"}
-  //       conversationId={undefined}
-  //       clearOnSend={false}
-  //     />
-  //   );
+    const { container } = render(
+      <QuestionInput
+        onSend={jest.fn()}
+        disabled={false}
+        placeholder={"placeholder"}
+        conversationId={undefined}
+        clearOnSend={false}
+      />
+    );
 
-  //   await uploadFiles(mockFilesToUpload);
+    await uploadFiles(mockFilesToUpload);
 
-  //   const inputError = screen.queryByText(/A maximum of 10 files can be uploaded/);
-  //   expect(inputError).toBeInTheDocument();
+    const inputError = screen.queryByText(/A maximum of 10 files can be uploaded/);
+    expect(inputError).toBeInTheDocument();
 
-  //   expect(await axe(container)).toHaveNoViolations();
-  // });
+    expect(await axe(container)).toHaveNoViolations();
+  });
 });
 
 describe("Test uploading files", () => {
