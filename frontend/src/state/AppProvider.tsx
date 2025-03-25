@@ -1,12 +1,11 @@
-import React, { createContext, ReactNode, useEffect, useReducer } from "react";
+import type { ReactNode } from "react";
+import type React from "react";
+import { createContext, useEffect, useReducer } from "react";
 
+import type { Conversation, CosmosDBHealth, Feedback, FrontendSettings } from "../api";
 import {
   ChatHistoryLoadingState,
-  Conversation,
-  CosmosDBHealth,
   CosmosDBStatus,
-  Feedback,
-  FrontendSettings,
   frontendSettings,
   historyEnsure,
   historyList,
@@ -48,7 +47,7 @@ export type Action =
     }
   | { type: "GET_FEEDBACK_STATE"; payload: string };
 
-const initialState: AppState = {
+export const initialState: AppState = {
   isChatHistoryOpen: false,
   chatHistoryLoadingState: ChatHistoryLoadingState.Loading,
   chatHistory: null,

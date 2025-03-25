@@ -1,6 +1,6 @@
 import { cloneDeep } from "lodash";
 
-import { AskResponse, AzureSqlServerCodeExecResult, Citation } from "../../api";
+import type { AskResponse, AzureSqlServerCodeExecResult, Citation } from "../../api";
 
 export type ParsedAnswer = {
   citations: Citation[];

@@ -4,8 +4,8 @@ import { Dialog, Stack, TextField } from "@fluentui/react";
 import { CopyRegular } from "@fluentui/react-icons";
 
 import { CosmosDBStatus } from "../../api";
-import Contoso from "../../assets/Contoso.svg";
-import { AlertBanner } from "../../components/AlertBanner/AlertBanner";
+import NjLogo from "../../assets/nj-logo.svg";
+import { AlertBanner, AlertType } from "../../components/AlertBanner/AlertBanner";
 import { HistoryButton, ShareButton } from "../../components/common/Button";
 import { AppStateContext } from "../../state/AppProvider";
 
@@ -43,9 +43,9 @@ const Layout = () => {
 
   useEffect(() => {
     if (!appStateContext?.state.isLoading) {
-      setLogo(ui?.logo || Contoso);
+      setLogo(NjLogo);
     }
-  }, [appStateContext?.state.isLoading, ui?.logo]);
+  }, [appStateContext?.state.isLoading]);
 
   useEffect(() => {
     if (copyClicked) {
@@ -74,12 +74,25 @@ const Layout = () => {
     return () => window.removeEventListener("resize", handleResize);
   }, []);
 
+  const isValidAlertType = (alertType: string | undefined): alertType is AlertType => {
+    return (
+      alertType != null &&
+      alertType.trim().length > 0 &&
+      Object.values(AlertType).includes(alertType as AlertType)
+    );
+  };
+
+  const lowerCaseAlertTypeFromSettings = ui?.alert_banner_type?.toLowerCase();
+  const alertType = isValidAlertType(lowerCaseAlertTypeFromSettings)
+    ? lowerCaseAlertTypeFromSettings
+    : AlertType.INFO;
+
   return (
     <div className={styles.layout}>
       <header className={styles.header} role={"banner"}>
-        {ui?.alert_banner_message !== undefined &&
-          ui.alert_banner_message !== null &&
-          ui.alert_banner_message !== "" && <AlertBanner messageHtml={ui.alert_banner_message} />}
+        {ui?.alert_banner_message != null && ui.alert_banner_message.trim().length > 0 && (
+          <AlertBanner message={ui.alert_banner_message} alertType={alertType} />
+        )}
         <Stack horizontal verticalAlign="center" horizontalAlign="space-between">
           <Stack horizontal verticalAlign="center">
             <img src={logo} className={styles.headerIcon} aria-hidden="true" alt="" />

@@ -1,4 +1,5 @@
-import { CommandBarButton, DefaultButton, IButtonProps } from "@fluentui/react";
+import type { IButtonProps } from "@fluentui/react";
+import { CommandBarButton, DefaultButton } from "@fluentui/react";
 
 import styles from "./Button.module.css";
 

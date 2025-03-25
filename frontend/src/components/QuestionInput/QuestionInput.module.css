@@ -2,6 +2,7 @@
 :root {
   --base-ink: #1c1d1f;
   --primary-lightest: #e8f5ff;
+  --primary-dark: #005ea2;
 }
 
 .questionInput {
@@ -13,9 +14,8 @@
 }
 
 textarea.questionInputTextArea {
-  line-height: 40px;
-  padding-top: 10px;
-  padding-bottom: 10px;
+  padding-top: 24px;
+  padding-bottom: 24px;
   resize: none;
   outline: none;
 }
@@ -56,15 +56,22 @@ textarea.questionInputTextArea {
   display: flex;
   justify-content: space-between;
   align-items: center;
-  gap: 12px;
 }
 
 /* alert styling */
-
-.errorAlert {
-  top: -50px;
+.errorAlertContainer {
+  bottom: 190px;
   z-index: 1;
   gap: 12px;
+  background-color: #ffffff;
+}
+
+.errorAlert {
+  outline: none;
+}
+
+.errorAlertText {
+  width: 95%;
 }
 
 button.closeButton {
@@ -72,10 +79,10 @@ button.closeButton {
 }
 
 /* file input styling */
-
-label.fileInputLabel {
+button.fileInputButton {
   z-index: 1;
   outline: none;
+  align-items: center;
 }
 
 .fileInput {
@@ -87,11 +94,13 @@ label.fileInputLabel {
 }
 
 div.fileUploadPreview {
-  height: 3rem;
-  min-width: 176px;
   border-radius: 0.25rem;
   text-align: center;
   justify-content: space-between;
   display: inline-flex;
   background: var(--primary-lightest);
+}
+
+svg.filePreviewIcon {
+  color: var(--primary-dark);
 }

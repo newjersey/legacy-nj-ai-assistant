@@ -53,6 +53,7 @@
     "react/react-in-jsx-scope": 0,
     "react/jsx-filename-extension": 0,
     "@typescript-eslint/no-explicit-any": "off",
+    "@typescript-eslint/consistent-type-imports": "error",
     "simple-import-sort/exports": "error",
     "simple-import-sort/imports": [
       "error",
@@ -74,9 +75,18 @@
       }
     ]
   },
-  // Ignore files related to ChatHistory until this feature is 
-  // enabled + we have a deeper understanding of how to handle 
+  // Ignore files related to ChatHistory until this feature is
+  // enabled + we have a deeper understanding of how to handle
   // lint errors and warnings here
 
-  "ignorePatterns": ["node_modules/", "build/", "dist/", "public/", "*.config.ts", "src/components/ChatHistory/"]
+  "ignorePatterns": [
+    "node_modules/",
+    "build/",
+    "dist/",
+    "public/",
+    "*.config.ts",
+    "polyfills.js",
+    "jest.setup.tsx",
+    "src/components/ChatHistory/"
+  ]
 }

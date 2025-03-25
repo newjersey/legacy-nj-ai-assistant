@@ -1,8 +1,9 @@
-import { FormEvent, useContext, useEffect, useMemo, useState } from "react";
+import type { FormEvent } from "react";
+import { useContext, useEffect, useMemo, useState } from "react";
 import ReactMarkdown from "react-markdown";
 import Plot from "react-plotly.js";
 import { Prism as SyntaxHighlighter } from "react-syntax-highlighter";
-import { nord } from "react-syntax-highlighter/dist/esm/styles/prism";
+import { nord } from "react-syntax-highlighter/dist/cjs/styles/prism";
 import { Checkbox, DefaultButton, Dialog, FontIcon, Stack, Text } from "@fluentui/react";
 import { useBoolean } from "@fluentui/react-hooks";
 import { ThumbDislike20Filled, ThumbLike20Filled } from "@fluentui/react-icons";
@@ -10,7 +11,8 @@ import DOMPurify from "dompurify";
 import remarkGfm from "remark-gfm";
 import supersub from "remark-supersub";
 
-import { AskResponse, Citation, Feedback, historyMessageFeedback } from "../../api";
+import type { AskResponse, Citation } from "../../api";
+import { Feedback, historyMessageFeedback } from "../../api";
 import { XSSAllowAttributes, XSSAllowTags } from "../../constants/sanatizeAllowables";
 import { AppStateContext } from "../../state/AppProvider";
 
@@ -70,6 +72,7 @@ export const Answer = ({ answer, onCitationClicked, onExectResultClicked }: Prop
       currentFeedbackState = initializeAnswerFeedback(answer);
     }
     setFeedbackState(currentFeedbackState);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [appStateContext?.state.feedbackState, feedbackState, answer.message_id]);
 
   const createCitationFilepath = (citation: Citation, index: number, truncate: boolean = false) => {

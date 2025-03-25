@@ -1,53 +1,56 @@
 import { chatHistorySampleData } from "../constants/chatHistory";
-import { ACCEPTED_FILE_TYPES, isImageFile, UploadedFile } from "../custom/fileUploadUtils";
+import type { UploadedFile } from "../utils/fileUploadUtils";
+import { ACCEPTED_FILE_TYPES, isImageFile } from "../utils/fileUploadUtils";
 
-import {
+import type {
   ChatMessage,
   Conversation,
   ConversationRequest,
   CosmosDBHealth,
-  CosmosDBStatus,
   UserInfo,
 } from "./models";
+import { CosmosDBStatus } from "./models";
 
-export async function conversationApi(
+export const conversationApi = async (
   options: ConversationRequest,
   abortSignal: AbortSignal,
   conversationIdHeader: string | null | undefined
-): Promise<Response> {
+): Promise<Response> => {
   const formatContent = (message: any) => {
-    const uploadedFile = message.uploaded_file as UploadedFile | undefined | null;
+    const uploadedFiles = message.uploaded_files as UploadedFile[] | undefined | null;
 
     const apiMessage = structuredClone(message);
-    delete apiMessage.uploaded_file;
+    delete apiMessage.uploaded_files;
 
-    if (uploadedFile != null && uploadedFile.contents) {
-      if (isImageFile(uploadedFile)) {
-        apiMessage.content = [
-          { type: "image_url", image_url: { url: uploadedFile.contents } },
-          { type: "text", text: apiMessage.content },
-        ];
-      } else if (
-        uploadedFile.extension === ACCEPTED_FILE_TYPES.PDF ||
-        uploadedFile.extension === ACCEPTED_FILE_TYPES.DOCX
-      ) {
-        apiMessage.content = [
-          {
+    if (Array.isArray(uploadedFiles) && uploadedFiles.length > 0) {
+      const fileContents: any[] = [];
+
+      uploadedFiles.forEach((uploadedFile) => {
+        if (uploadedFile.contents == null) {
+          return;
+        }
+
+        if (isImageFile(uploadedFile)) {
+          fileContents.push({ type: "image_url", image_url: { url: uploadedFile.contents } });
+        } else if (
+          uploadedFile.extension === ACCEPTED_FILE_TYPES.PDF ||
+          uploadedFile.extension === ACCEPTED_FILE_TYPES.DOCX
+        ) {
+          fileContents.push({
             type: "text",
             text: `Use the following document in your responses:\n ---BEGIN DOCUMENT---${uploadedFile.contents}---END DOCUMENT---`,
-          },
-          { type: "text", text: apiMessage.content },
-        ];
-      } else if (uploadedFile.extension === ACCEPTED_FILE_TYPES.CSV) {
-        apiMessage.content = [
-          {
+          });
+        } else if (uploadedFile.extension === ACCEPTED_FILE_TYPES.CSV) {
+          fileContents.push({
             type: "text",
             text: `The following document is in CSV format. Use the following document in your responses:\n ---BEGIN DOCUMENT---${uploadedFile.contents}---END DOCUMENT---`,
-          },
-          { type: "text", text: apiMessage.content },
-        ];
-      }
+          });
+        }
+      });
+
+      apiMessage.content = [...fileContents, { type: "text", text: apiMessage.content }];
     }
+
     return apiMessage;
   };
 
@@ -64,7 +67,7 @@ export async function conversationApi(
   });
 
   return response;
-}
+};
 
 export async function getUserInfo(): Promise<UserInfo[]> {
   const response = await fetch("/.auth/me");
@@ -323,6 +326,7 @@ export const historyRename = async (convId: string, title: string): Promise<Resp
 
 export const historyEnsure = async (): Promise<CosmosDBHealth> => {
   // Hard-coded response to avoid extra API call and 404 errors
+  // See when enabling chat history: https://github.com/microsoft/sample-app-aoai-chatGPT/blob/bbf4197c401c88339a262fa966a1829bd4e93a0a/frontend/src/api/api.ts#L274
   return {
     cosmosDB: false,
     status: CosmosDBStatus.NotConfigured,
