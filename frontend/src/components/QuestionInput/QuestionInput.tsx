@@ -140,7 +140,7 @@ export const QuestionInput = ({
         try {
           return await extractDataFromFile(selectedFile);
         } catch (e) {
-          if(e instanceof Error) {
+          if (e instanceof Error) {
             filesWithProcessingErrors.push(e.message);
             return null;
           }
