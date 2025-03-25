@@ -4,18 +4,25 @@ import icons from "@newjersey/njwds/dist/img/sprite.svg";
 import { extractRawText } from "mammoth";
 import { v4 as uuidv4 } from "uuid";
 
-import type { Alert } from "../../utils/alertUtils";
+import type { AlertsMap } from "../../utils/alertUtils";
+import {
+  defaultAlertsMap,
+  ErrorAlertType,
+  getFailedToReadFileErrorMessage,
+  getFileExceedsMaxSizeErrorMessage,
+  getImageExceedsMaxSizeErrorMessage,
+} from "../../utils/alertUtils";
 import type { SelectedFile, UploadedFile } from "../../utils/fileUploadUtils";
-import { ACCEPTED_FILE_TYPES, isImageFile, truncateFilename } from "../../utils/fileUploadUtils";
+import { ACCEPTED_FILE_TYPES, isImageFile } from "../../utils/fileUploadUtils";
 import { logEvent } from "../../utils/logEvent";
 
-import { AlertContainer } from "./AlertContainer";
 import {
   MAX_INPUT_LENGTH,
   MAX_UPLOADED_FILE_COUNT,
   MAX_UPLOADED_FILE_SIZE_IN_MB,
   MAX_UPLOADED_IMAGE_SIZE_IN_MB,
 } from "./constants";
+import { ErrorAlertContainer } from "./ErrorAlertContainer";
 import { FileUploadPreviewContainer } from "./FileUploadPreviewContainer";
 
 import styles from "./QuestionInput.module.css";
@@ -43,16 +50,14 @@ export const QuestionInput = ({
   const fileInputRef = useRef<HTMLInputElement | null>(null);
 
   const [selectedFiles, setSelectedFiles] = useState<SelectedFile[]>([]);
-  const [inputErrors, setInputErrors] = useState<Alert[]>([]);
+  const [inputErrors, setInputErrors] = useState<AlertsMap>(defaultAlertsMap);
 
   const filterUploadedFilesBySize = (files: FileList): File[] => {
-    const inputSizeErrors: Alert[] = [];
+    const oversizeImageFileNames: string[] = [];
+    const oversizeNonImageFileNames: string[] = [];
     const validFiles = [...files].filter((file) => {
       if (file.type.includes("image") && file.size > MAX_UPLOADED_IMAGE_SIZE_IN_MB * 1024 * 1024) {
-        inputSizeErrors.push({
-          message: `${truncateFilename(file.name)} exceeds ${MAX_UPLOADED_IMAGE_SIZE_IN_MB} MB and cannot be uploaded`,
-          id: `exceedsMaxSize-${uuidv4()}`,
-        });
+        oversizeImageFileNames.push(file.name);
 
         if (fileInputRef?.current?.value) {
           fileInputRef.current.value = "";
@@ -65,10 +70,7 @@ export const QuestionInput = ({
 
         return;
       } else if (file.size > MAX_UPLOADED_FILE_SIZE_IN_MB * 1024 * 1024) {
-        inputSizeErrors.push({
-          message: `${truncateFilename(file.name)} exceeds ${MAX_UPLOADED_FILE_SIZE_IN_MB} MB and cannot be uploaded`,
-          id: `exceedsMaxSize-${uuidv4()}`,
-        });
+        oversizeNonImageFileNames.push(file.name);
 
         if (fileInputRef?.current?.value) {
           fileInputRef.current.value = "";
@@ -84,7 +86,20 @@ export const QuestionInput = ({
       return file;
     });
 
-    setInputErrors([...inputErrors, ...inputSizeErrors]);
+    if (oversizeImageFileNames.length > 0) {
+      setInputErrors((prevInputErrors) => ({
+        ...prevInputErrors,
+        [ErrorAlertType.IMAGE_EXCEEDS_MAX_SIZE]:
+          getImageExceedsMaxSizeErrorMessage(oversizeImageFileNames),
+      }));
+    }
+    if (oversizeNonImageFileNames.length > 0) {
+      setInputErrors((prevInputErrors) => ({
+        ...prevInputErrors,
+        [ErrorAlertType.FILE_EXCEEDS_MAX_SIZE]:
+          getFileExceedsMaxSizeErrorMessage(oversizeNonImageFileNames),
+      }));
+    }
 
     return validFiles;
   };
@@ -102,14 +117,14 @@ export const QuestionInput = ({
   };
 
   const sendQuestion = async () => {
+    setInputErrors(defaultAlertsMap);
+
     if (!question.trim()) {
-      setInputErrors([
-        ...inputErrors,
-        {
-          message: `Please enter a prompt into the text field to continue.`,
-          id: `promptNotEnteredError-${uuidv4()}`,
-        },
-      ]);
+      setInputErrors((prevInputErrors) => ({
+        ...prevInputErrors,
+        [ErrorAlertType.PROMPT_NOT_ENTERED]:
+          "Please enter a prompt into the text field to continue.",
+      }));
 
       return;
     }
@@ -118,23 +133,49 @@ export const QuestionInput = ({
       return;
     }
 
+    const filesWithProcessingErrors: string[] = [];
+
     const uploadedFiles = await Promise.all(
-      selectedFiles.map(async (selectedFile): Promise<UploadedFile> => {
-        const uploadedFile = await extractDataFromFile(selectedFile);
-
-        return uploadedFile;
+      selectedFiles.map(async (selectedFile) => {
+        try {
+          return await extractDataFromFile(selectedFile);
+        } catch (e) {
+          if (e instanceof Error) {
+            filesWithProcessingErrors.push(e.message);
+            return null;
+          }
+        }
       })
-    );
+    ).then((files) => files.filter((file): file is UploadedFile => file !== null));
 
-    if (Array.isArray(uploadedFiles) && uploadedFiles.length > 0) {
-      if (getTotalFileContentLength(uploadedFiles) > MAX_INPUT_LENGTH) {
-        setInputErrors([
-          ...inputErrors,
-          {
-            message: `Total file contents cannot exceed ${MAX_INPUT_LENGTH} characters. Please try a smaller file.`,
-            id: `exceededFileContentCharacterLimitError-${uuidv4()}`,
-          },
-        ]);
+    if (filesWithProcessingErrors.length > 0) {
+      setInputErrors((prevInputErrors) => ({
+        ...prevInputErrors,
+        [ErrorAlertType.FAILED_TO_READ_FILE]:
+          getFailedToReadFileErrorMessage(filesWithProcessingErrors),
+      }));
+    }
+
+    if (!isValidLength(question)) {
+      setInputErrors((prevInputErrors) => ({
+        ...prevInputErrors,
+        [ErrorAlertType.EXCEEDED_PROMPT_CHARACTER_LIMIT]: `Prompt cannot exceed ${MAX_INPUT_LENGTH} characters. Please try a smaller prompt.`,
+      }));
+
+      logEvent("submit_prompt_client_error_prompt_length", {
+        input_length: question.length,
+      });
+
+      return;
+    }
+
+    if (Array.isArray(uploadedFiles)) {
+      if (uploadedFiles.length > 0 && getTotalFileContentLength(uploadedFiles) > MAX_INPUT_LENGTH) {
+        setInputErrors((prevInputErrors) => ({
+          ...prevInputErrors,
+          [ErrorAlertType.EXCEEDED_FILE_CONTENT_CHARACTER_LIMIT]:
+            "Total file contents cannot exceed ${MAX_INPUT_LENGTH} characters. Please try a smaller file.",
+        }));
 
         setSelectedFiles([]);
 
@@ -150,30 +191,13 @@ export const QuestionInput = ({
 
         return;
       }
+
+      onSend(question, conversationId, uploadedFiles);
     }
-
-    if (!isValidLength(question)) {
-      setInputErrors([
-        ...inputErrors,
-        {
-          message: `Prompt cannot exceed ${MAX_INPUT_LENGTH} characters. Please try a smaller prompt.`,
-          id: `exceededPromptCharacterLimitError-${uuidv4()}`,
-        },
-      ]);
-
-      logEvent("submit_prompt_client_error_prompt_length", {
-        input_length: question.length,
-      });
-
-      return;
-    }
-
-    onSend(question, conversationId, uploadedFiles);
 
     if (clearOnSend) {
       setQuestion("");
       setSelectedFiles([]);
-      setInputErrors([]);
       if (fileInputRef?.current?.value) {
         fileInputRef.current.value = "";
       }
@@ -183,8 +207,8 @@ export const QuestionInput = ({
   const extractDataFromFile = async (selectedFile: File): Promise<UploadedFile> => {
     let uploadedFile: UploadedFile = { name: "", contents: "", extension: "", size: 0 };
 
-    if (selectedFile.type === ACCEPTED_FILE_TYPES.PDF) {
-      try {
+    try {
+      if (selectedFile.type === ACCEPTED_FILE_TYPES.PDF) {
         const extractedText = await pdfToText(selectedFile);
 
         if (extractedText.length === 0) {
@@ -197,34 +221,24 @@ export const QuestionInput = ({
             size: selectedFile.size,
           };
         }
-      } catch (e) {
-        setInputErrors([
-          ...inputErrors,
-          {
-            message: `Could not read text from PDF: ${truncateFilename(selectedFile.name)}. Please try uploading a different file.`,
-            id: `${selectedFile.name}-failedToReadPdf-${uuidv4()}`,
-          },
-        ]);
-      }
-    } else if (selectedFile.type === ACCEPTED_FILE_TYPES.CSV) {
-      uploadedFile = await new Promise<UploadedFile>((resolve) => {
-        const reader = new FileReader();
+      } else if (selectedFile.type === ACCEPTED_FILE_TYPES.CSV) {
+        uploadedFile = await new Promise<UploadedFile>((resolve) => {
+          const reader = new FileReader();
 
-        reader.onload = () => {
-          const result = reader.result as string;
+          reader.onload = () => {
+            const result = reader.result as string;
 
-          resolve({
-            name: selectedFile.name,
-            contents: result,
-            extension: selectedFile.type,
-            size: selectedFile.size,
-          });
-        };
+            resolve({
+              name: selectedFile.name,
+              contents: result,
+              extension: selectedFile.type,
+              size: selectedFile.size,
+            });
+          };
 
-        reader.readAsText(selectedFile);
-      });
-    } else if (selectedFile.type === ACCEPTED_FILE_TYPES.DOCX) {
-      try {
+          reader.readAsText(selectedFile);
+        });
+      } else if (selectedFile.type === ACCEPTED_FILE_TYPES.DOCX) {
         const arrayBuffer = await selectedFile.arrayBuffer();
         const extractedText = (await extractRawText({ arrayBuffer })).value;
 
@@ -238,31 +252,25 @@ export const QuestionInput = ({
             size: selectedFile.size,
           };
         }
-      } catch (err) {
-        setInputErrors([
-          ...inputErrors,
-          {
-            message: `Could not read text from .docx file: ${truncateFilename(selectedFile.name)}. Please try uploading a different file.`,
-            id: `${selectedFile.name}-failedToReadDocx-${Date.now()}`,
-          },
-        ]);
+      } else {
+        uploadedFile = await new Promise<UploadedFile>((resolve) => {
+          const reader = new FileReader();
+
+          reader.onload = () => {
+            const result = reader.result as string;
+            resolve({
+              name: selectedFile.name,
+              contents: result,
+              extension: selectedFile.type,
+              size: selectedFile.size,
+            });
+          };
+
+          reader.readAsDataURL(selectedFile);
+        });
       }
-    } else {
-      uploadedFile = await new Promise<UploadedFile>((resolve) => {
-        const reader = new FileReader();
-
-        reader.onload = () => {
-          const result = reader.result as string;
-          resolve({
-            name: selectedFile.name,
-            contents: result,
-            extension: selectedFile.type,
-            size: selectedFile.size,
-          });
-        };
-
-        reader.readAsDataURL(selectedFile);
-      });
+    } catch (e) {
+      throw new Error(selectedFile.name);
     }
 
     return uploadedFile;
@@ -279,6 +287,7 @@ export const QuestionInput = ({
     const files = event.target.files;
 
     if (files != null) {
+      setInputErrors(defaultAlertsMap);
       const validFiles = filterUploadedFilesBySize(files);
 
       if (validFiles.length === 0 && fileInputRef?.current?.value) {
@@ -298,13 +307,10 @@ export const QuestionInput = ({
       if (selectedFilesToSet.length > MAX_UPLOADED_FILE_COUNT) {
         setSelectedFiles(selectedFilesToSet.slice(0, MAX_UPLOADED_FILE_COUNT));
 
-        setInputErrors([
-          ...inputErrors,
-          {
-            message: `A maximum of ${MAX_UPLOADED_FILE_COUNT} files can be uploaded.`,
-            id: `exceededMaxFileCount-${uuidv4()}`,
-          },
-        ]);
+        setInputErrors((prevInputErrors) => ({
+          ...prevInputErrors,
+          [ErrorAlertType.EXCEEDED_MAX_FILE_COUNT]: `A maximum of ${MAX_UPLOADED_FILE_COUNT} files can be uploaded.`,
+        }));
       } else {
         setSelectedFiles([...selectedFiles, ...filesWithIds]);
       }
@@ -327,13 +333,16 @@ export const QuestionInput = ({
     setSelectedFiles((selectedFiles) => selectedFiles.filter((file) => file.fileId !== idToClose));
   };
 
-  const removeError = (idToRemove: string): void => {
-    setInputErrors((inputErrors) => inputErrors.filter((error) => error.id !== idToRemove));
+  const removeError = (alertTypeToRemove: keyof typeof ErrorAlertType): void => {
+    setInputErrors((prevInputErrors) => ({
+      ...prevInputErrors,
+      [alertTypeToRemove]: null,
+    }));
   };
 
   return (
     <div className="width-full">
-      {inputErrors.length > 0 && <AlertContainer onRemove={removeError} alerts={inputErrors} />}
+      <ErrorAlertContainer onRemove={removeError} alerts={inputErrors} />
 
       <div className={styles.questionInput}>
         <textarea
