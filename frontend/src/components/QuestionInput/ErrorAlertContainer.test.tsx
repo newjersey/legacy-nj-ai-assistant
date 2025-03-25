@@ -38,7 +38,7 @@ describe("Test the ErrorAlertContainer component", () => {
     const alertType = ErrorAlertType.IMAGE_EXCEEDS_MAX_SIZE;
     const alertMessage = "message";
     const mockAlerts: AlertsMap = {
-      [alertType]: "alert message",
+      [alertType]: alertMessage,
     };
 
     const { container } = render(<ErrorAlertContainer onRemove={jest.fn()} alerts={mockAlerts} />);

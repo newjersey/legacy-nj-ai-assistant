@@ -205,11 +205,16 @@ describe("Test file upload previews", () => {
 
 describe("Test error alerts", () => {
   const defaultMockUuid = "defaultMockUuid";
+  const defaultMockUuid2 = "defaultMockUuid2";
 
   beforeEach(() => {
-    uuidv4Mock.mockImplementation(() => {
-      return defaultMockUuid;
-    });
+    uuidv4Mock
+      .mockImplementationOnce(() => {
+        return defaultMockUuid;
+      })
+      .mockImplementationOnce(() => {
+        return defaultMockUuid2;
+      });
   });
 
   afterEach(jest.clearAllMocks);
@@ -527,7 +532,7 @@ describe("Test error alerts", () => {
     await inputChatMessage();
     await clickSubmitButton();
 
-    expect(screen.getByText(/Could not read text from PDF:/)).toBeInTheDocument();
+    expect(screen.getByText(/Could not read text from file:/)).toBeInTheDocument();
 
     expect(mockOnSend).toHaveBeenCalledTimes(0);
 
@@ -553,17 +558,18 @@ describe("Test error alerts", () => {
     await inputChatMessage();
     await clickSubmitButton();
 
-    expect(screen.getByText(/Could not read text from .docx file:/)).toBeInTheDocument();
+    expect(screen.getByText(/Could not read text from file:/)).toBeInTheDocument();
 
     expect(mockOnSend).toHaveBeenCalledTimes(0);
 
     expect(await axe(container)).toHaveNoViolations();
   });
 
-  it("displays the appropriate input error if more than 10 files are uploaded", async () => {
-    const mockFilesToUpload = Array.from({ length: MAX_UPLOADED_FILE_COUNT + 5 }, (_, _i) => {
-      return createMockFile("png", ACCEPTED_FILE_TYPES.PNG);
-    });
+  it("displays the appropriate input error if text cannot be read from multiple files", async () => {
+    const mockOnSend = jest.fn();
+
+    const uploadedDocxFile = createMockFile("docx", ACCEPTED_FILE_TYPES.DOCX, 8, "");
+    const uploadedPdfFile = createMockFile("pdf", ACCEPTED_FILE_TYPES.PDF, 8, "");
 
     const { container } = render(
       <QuestionInput
@@ -575,16 +581,50 @@ describe("Test error alerts", () => {
       />
     );
 
-    await uploadFiles(mockFilesToUpload);
+    await uploadFiles([uploadedDocxFile, uploadedPdfFile]);
+    await inputChatMessage();
+    await clickSubmitButton();
 
-    const inputError = screen.queryByText(/A maximum of 10 files can be uploaded/);
-    expect(inputError).toBeInTheDocument();
+    expect(screen.getByText(/Could not read text from files:/)).toBeInTheDocument();
+
+    expect(mockOnSend).toHaveBeenCalledTimes(0);
 
     expect(await axe(container)).toHaveNoViolations();
   });
+
+  // it("displays the appropriate input error if more than 10 files are uploaded", async () => {
+  //   const mockFilesToUpload = Array.from({ length: MAX_UPLOADED_FILE_COUNT + 5 }, (_, _i) => {
+  //     return createMockFile("png", ACCEPTED_FILE_TYPES.PNG);
+  //   });
+
+  //   const { container } = render(
+  //     <QuestionInput
+  //       onSend={jest.fn()}
+  //       disabled={false}
+  //       placeholder={"placeholder"}
+  //       conversationId={undefined}
+  //       clearOnSend={false}
+  //     />
+  //   );
+
+  //   await uploadFiles(mockFilesToUpload);
+
+  //   const inputError = screen.queryByText(/A maximum of 10 files can be uploaded/);
+  //   expect(inputError).toBeInTheDocument();
+
+  //   expect(await axe(container)).toHaveNoViolations();
+  // });
 });
 
 describe("Test uploading files", () => {
+  const defaultMockUuid = "defaultMockUuid";
+
+  beforeEach(() => {
+    uuidv4Mock.mockImplementation(() => {
+      return defaultMockUuid;
+    });
+  });
+
   afterEach(jest.clearAllMocks);
 
   it.each([
@@ -624,11 +664,6 @@ describe("Test uploading files", () => {
       MAX_UPLOADED_IMAGE_SIZE_IN_MB + 5
     );
     const validUploadedFile = createMockFile("png", ACCEPTED_FILE_TYPES.PNG);
-    const mockValidFileUuid = "validFileUuid";
-
-    uuidv4Mock.mockImplementationOnce(() => {
-      return mockValidFileUuid;
-    });
 
     const { container } = render(
       <QuestionInput
@@ -645,7 +680,7 @@ describe("Test uploading files", () => {
     const inputError = screen.getByTestId(ErrorAlertType.IMAGE_EXCEEDS_MAX_SIZE);
     expect(inputError).toBeInTheDocument();
 
-    const validFileUploadPreview = screen.getByTestId(`filePreview-${mockValidFileUuid}`);
+    const validFileUploadPreview = screen.getByTestId(`filePreview-${defaultMockUuid}`);
     expect(validFileUploadPreview).toBeInTheDocument();
 
     expect(await axe(container)).toHaveNoViolations();

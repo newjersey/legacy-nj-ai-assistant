@@ -8,6 +8,7 @@ import type { AlertsMap } from "../../utils/alertUtils";
 import {
   defaultAlertsMap,
   ErrorAlertType,
+  getFailedToReadFileErrorMessage,
   getFileExceedsMaxSizeErrorMessage,
   getImageExceedsMaxSizeErrorMessage,
 } from "../../utils/alertUtils";
@@ -121,7 +122,8 @@ export const QuestionInput = ({
     if (!question.trim()) {
       setInputErrors((prevInputErrors) => ({
         ...prevInputErrors,
-        [ErrorAlertType.PROMPT_NOT_ENTERED]: "Please enter a prompt into the text field to continue.",
+        [ErrorAlertType.PROMPT_NOT_ENTERED]:
+          "Please enter a prompt into the text field to continue.",
       }));
 
       return;
@@ -131,19 +133,48 @@ export const QuestionInput = ({
       return;
     }
 
+    const filesWithProcessingErrors: string[] = [];
+
     const uploadedFiles = await Promise.all(
-      selectedFiles.map(async (selectedFile): Promise<UploadedFile> => {
-        const uploadedFile = await extractDataFromFile(selectedFile);
-
-        return uploadedFile;
+      selectedFiles.map(async (selectedFile) => {
+        try {
+          return await extractDataFromFile(selectedFile);
+        } catch (e) {
+          if(e instanceof Error) {
+            filesWithProcessingErrors.push(e.message);
+            return null;
+          }
+        }
       })
-    );
+    ).then((files) => files.filter((file): file is UploadedFile => file !== null));
 
-    if (Array.isArray(uploadedFiles) && uploadedFiles.length > 0) {
-      if (getTotalFileContentLength(uploadedFiles) > MAX_INPUT_LENGTH) {
+    if (filesWithProcessingErrors.length > 0) {
+      setInputErrors((prevInputErrors) => ({
+        ...prevInputErrors,
+        [ErrorAlertType.FAILED_TO_READ_FILE]:
+          getFailedToReadFileErrorMessage(filesWithProcessingErrors),
+      }));
+    }
+
+    if (!isValidLength(question)) {
+      setInputErrors((prevInputErrors) => ({
+        ...prevInputErrors,
+        [ErrorAlertType.EXCEEDED_PROMPT_CHARACTER_LIMIT]: `Prompt cannot exceed ${MAX_INPUT_LENGTH} characters. Please try a smaller prompt.`,
+      }));
+
+      logEvent("submit_prompt_client_error_prompt_length", {
+        input_length: question.length,
+      });
+
+      return;
+    }
+
+    if (Array.isArray(uploadedFiles)) {
+      if (uploadedFiles.length > 0 && getTotalFileContentLength(uploadedFiles) > MAX_INPUT_LENGTH) {
         setInputErrors((prevInputErrors) => ({
           ...prevInputErrors,
-          [ErrorAlertType.EXCEEDED_FILE_CONTENT_CHARACTER_LIMIT]: "Total file contents cannot exceed ${MAX_INPUT_LENGTH} characters. Please try a smaller file.",
+          [ErrorAlertType.EXCEEDED_FILE_CONTENT_CHARACTER_LIMIT]:
+            "Total file contents cannot exceed ${MAX_INPUT_LENGTH} characters. Please try a smaller file.",
         }));
 
         setSelectedFiles([]);
@@ -160,22 +191,9 @@ export const QuestionInput = ({
 
         return;
       }
+
+      onSend(question, conversationId, uploadedFiles);
     }
-
-    if (!isValidLength(question)) {
-      setInputErrors((prevInputErrors) => ({
-        ...prevInputErrors,
-        [ErrorAlertType.EXCEEDED_PROMPT_CHARACTER_LIMIT]: `Prompt cannot exceed ${MAX_INPUT_LENGTH} characters. Please try a smaller prompt.`,
-      }));
-
-      logEvent("submit_prompt_client_error_prompt_length", {
-        input_length: question.length,
-      });
-
-      return;
-    }
-
-    onSend(question, conversationId, uploadedFiles);
 
     if (clearOnSend) {
       setQuestion("");
@@ -189,8 +207,8 @@ export const QuestionInput = ({
   const extractDataFromFile = async (selectedFile: File): Promise<UploadedFile> => {
     let uploadedFile: UploadedFile = { name: "", contents: "", extension: "", size: 0 };
 
-    if (selectedFile.type === ACCEPTED_FILE_TYPES.PDF) {
-      try {
+    try {
+      if (selectedFile.type === ACCEPTED_FILE_TYPES.PDF) {
         const extractedText = await pdfToText(selectedFile);
 
         if (extractedText.length === 0) {
@@ -203,31 +221,24 @@ export const QuestionInput = ({
             size: selectedFile.size,
           };
         }
-      } catch (e) {
-        setInputErrors((prevInputErrors) => ({
-          ...prevInputErrors,
-          [ErrorAlertType.FAILED_TO_READ_PDF]: `Could not read text from PDF: ${truncateFilename(selectedFile.name)}. Please try uploading a different file.`,
-        }));
-      }
-    } else if (selectedFile.type === ACCEPTED_FILE_TYPES.CSV) {
-      uploadedFile = await new Promise<UploadedFile>((resolve) => {
-        const reader = new FileReader();
+      } else if (selectedFile.type === ACCEPTED_FILE_TYPES.CSV) {
+        uploadedFile = await new Promise<UploadedFile>((resolve) => {
+          const reader = new FileReader();
 
-        reader.onload = () => {
-          const result = reader.result as string;
+          reader.onload = () => {
+            const result = reader.result as string;
 
-          resolve({
-            name: selectedFile.name,
-            contents: result,
-            extension: selectedFile.type,
-            size: selectedFile.size,
-          });
-        };
+            resolve({
+              name: selectedFile.name,
+              contents: result,
+              extension: selectedFile.type,
+              size: selectedFile.size,
+            });
+          };
 
-        reader.readAsText(selectedFile);
-      });
-    } else if (selectedFile.type === ACCEPTED_FILE_TYPES.DOCX) {
-      try {
+          reader.readAsText(selectedFile);
+        });
+      } else if (selectedFile.type === ACCEPTED_FILE_TYPES.DOCX) {
         const arrayBuffer = await selectedFile.arrayBuffer();
         const extractedText = (await extractRawText({ arrayBuffer })).value;
 
@@ -241,28 +252,25 @@ export const QuestionInput = ({
             size: selectedFile.size,
           };
         }
-      } catch (err) {
-        setInputErrors((prevInputErrors) => ({
-          ...prevInputErrors,
-          [ErrorAlertType.FAILED_TO_READ_DOCX]: `Could not read text from .docx file: ${truncateFilename(selectedFile.name)}. Please try uploading a different file.`,
-        }));
+      } else {
+        uploadedFile = await new Promise<UploadedFile>((resolve) => {
+          const reader = new FileReader();
+
+          reader.onload = () => {
+            const result = reader.result as string;
+            resolve({
+              name: selectedFile.name,
+              contents: result,
+              extension: selectedFile.type,
+              size: selectedFile.size,
+            });
+          };
+
+          reader.readAsDataURL(selectedFile);
+        });
       }
-    } else {
-      uploadedFile = await new Promise<UploadedFile>((resolve) => {
-        const reader = new FileReader();
-
-        reader.onload = () => {
-          const result = reader.result as string;
-          resolve({
-            name: selectedFile.name,
-            contents: result,
-            extension: selectedFile.type,
-            size: selectedFile.size,
-          });
-        };
-
-        reader.readAsDataURL(selectedFile);
-      });
+    } catch (e) {
+      throw new Error(selectedFile.name);
     }
 
     return uploadedFile;

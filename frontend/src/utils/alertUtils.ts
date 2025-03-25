@@ -10,10 +10,23 @@ export enum ErrorAlertType {
   PROMPT_NOT_ENTERED = "prompt-not-entered",
   EXCEEDED_FILE_CONTENT_CHARACTER_LIMIT = "exceeded-file-content-character-limit",
   EXCEEDED_PROMPT_CHARACTER_LIMIT = "exceeded-prompt-character-limit",
-  FAILED_TO_READ_PDF = "failed-to-read-PDF",
-  FAILED_TO_READ_DOCX = "failed-to-read-docx",
+  FAILED_TO_READ_FILE = "failed-to-read-file",
   EXCEEDED_MAX_FILE_COUNT = "exceeded-max-file-count",
 }
+
+export const getFailedToReadFileErrorMessage = (filenames: string[]): string => {
+  if (filenames.length === 1) {
+    return `Could not read text from file: ${truncateFilename(filenames[0])}. Please try uploading a different file.`;
+  } else {
+    const filenamesString = filenames
+      .map((fileName) => {
+        return truncateFilename(fileName);
+      })
+      .join(", ");
+
+    return `Could not read text from files: ${filenamesString}. Please try uploading different files.`;
+  }
+};
 
 export const getImageExceedsMaxSizeErrorMessage = (filenames: string[]): string => {
   if (filenames.length === 1) {
