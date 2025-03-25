@@ -533,6 +533,7 @@ describe("Test error alerts", () => {
     await clickSubmitButton();
 
     expect(screen.getByText(/Could not read text from file:/)).toBeInTheDocument();
+    expect(screen.getByText(uploadedPdfFile.name)).toBeInTheDocument();
 
     expect(mockOnSend).toHaveBeenCalledTimes(0);
 
@@ -559,6 +560,7 @@ describe("Test error alerts", () => {
     await clickSubmitButton();
 
     expect(screen.getByText(/Could not read text from file:/)).toBeInTheDocument();
+    expect(screen.getByText(uploadedDocxFile.name)).toBeInTheDocument();
 
     expect(mockOnSend).toHaveBeenCalledTimes(0);
 
@@ -586,6 +588,8 @@ describe("Test error alerts", () => {
     await clickSubmitButton();
 
     expect(screen.getByText(/Could not read text from files:/)).toBeInTheDocument();
+    expect(screen.getByText(uploadedDocxFile.name)).toBeInTheDocument();
+    expect(screen.getByText(uploadedPdfFile.name)).toBeInTheDocument();
 
     expect(mockOnSend).toHaveBeenCalledTimes(0);
 
