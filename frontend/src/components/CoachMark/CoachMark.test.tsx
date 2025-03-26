@@ -1,3 +1,4 @@
+import type { ReactElement } from "react";
 import { useRef } from "react";
 import { render, screen } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
@@ -5,19 +6,14 @@ import userEvent from "@testing-library/user-event";
 import * as CoachMark from "./CoachMark";
 
 interface ComponentWithCoachMarkProps {
-  coachMarkContent: CoachMark.CoachMarkContent;
+  coachMarkPortal: ReactElement;
 }
 
 const ComponentWithCoachMark = (props: ComponentWithCoachMarkProps) => {
   const coachMarkReferenceRef = useRef(null);
   const coachMark = CoachMark.useCoachMark({
     referenceRef: coachMarkReferenceRef,
-    coachMarkContent: {
-      placement: "top",
-      ariaLabelledBy: props.coachMarkContent.ariaLabelledBy,
-      ariaDescribedBy: props.coachMarkContent.ariaDescribedBy,
-      element: props.coachMarkContent.element,
-    },
+    coachMarkPortal: props.coachMarkPortal,
   });
 
   return (
@@ -33,17 +29,12 @@ describe(CoachMark.Root.name, () => {
   it("renders the component's children elements", () => {
     render(
       <ComponentWithCoachMark
-        coachMarkContent={{
-          placement: "top",
-          ariaLabelledBy: "coachMarkHeading",
-          ariaDescribedBy: "coachMarkDescription",
-          element: (
-            <>
-              <h1 id="coachMarkHeading">"Multiple file upload"</h1>
-              <p id="coachMarkDescription">You can now upload multiple files.</p>
-            </>
-          ),
-        }}
+        coachMarkPortal={
+          <CoachMark.Portal placement="top">
+            <h1 id="coachMarkHeading">Multiple file upload</h1>
+            <p id="coachMarkDescription">You can now upload multiple files.</p>
+          </CoachMark.Portal>
+        }
       />
     );
 
@@ -54,42 +45,33 @@ describe(CoachMark.Root.name, () => {
     const coachMarkHeading = "Multiple file upload";
     render(
       <ComponentWithCoachMark
-        coachMarkContent={{
-          placement: "top",
-          ariaLabelledBy: "coachMarkHeading",
-          ariaDescribedBy: "coachMarkDescription",
-          element: (
-            <>
-              <h1 id="coachMarkHeading">{coachMarkHeading}</h1>
-              <p id="coachMarkDescription">You can now upload multiple files.</p>
-            </>
-          ),
-        }}
+        coachMarkPortal={
+          <CoachMark.Portal placement="top">
+            <h1 id="coachMarkHeading">Multiple file upload</h1>
+            <p id="coachMarkDescription">You can now upload multiple files.</p>
+          </CoachMark.Portal>
+        }
       />
     );
 
     expect(screen.getByText(coachMarkHeading)).toBeInTheDocument();
   });
 
-  it("renders a dialog whose accessible name and description are set by the ariaLabelledBy and ariaDescribedBy values", async () => {
+  it("renders a modal dialog whose accessible name and description are set by the ariaLabelledBy and ariaDescribedBy values", async () => {
     const coachMarkHeading = "Multiple file upload";
     const coachMarkDescription = "You can now upload multiple files.";
     render(
       <ComponentWithCoachMark
-        coachMarkContent={{
-          placement: "top",
-          ariaLabelledBy: "coachMarkHeading",
-          ariaDescribedBy: "coachMarkDescription",
-          element: (
-            <>
-              <h1 id="coachMarkHeading">{coachMarkHeading}</h1>
-              <p id="coachMarkDescription">{coachMarkDescription}</p>
-            </>
-          ),
-        }}
+        coachMarkPortal={
+          <CoachMark.Portal placement="top">
+            <h1 id="coachMarkHeading">Multiple file upload</h1>
+            <p id="coachMarkDescription">You can now upload multiple files.</p>
+          </CoachMark.Portal>
+        }
       />
     );
     const coachMark = screen.getByRole("dialog");
+    expect(coachMark).toHaveAttribute("aria-modal", "true");
     expect(coachMark).toHaveAccessibleName(coachMarkHeading);
     expect(coachMark).toHaveAccessibleDescription(coachMarkDescription);
   });
@@ -98,17 +80,12 @@ describe(CoachMark.Root.name, () => {
     const coachMarkHeading = "Multiple file upload";
     render(
       <ComponentWithCoachMark
-        coachMarkContent={{
-          placement: "top",
-          ariaLabelledBy: "coachMarkHeading",
-          ariaDescribedBy: "coachMarkDescription",
-          element: (
-            <>
-              <h1 id="coachMarkHeading">{coachMarkHeading}</h1>
-              <p id="coachMarkDescription">You can now upload multiple files.</p>
-            </>
-          ),
-        }}
+        coachMarkPortal={
+          <CoachMark.Portal placement="top">
+            <h1 id="coachMarkHeading">Multiple file upload</h1>
+            <p id="coachMarkDescription">You can now upload multiple files.</p>
+          </CoachMark.Portal>
+        }
       />
     );
 
@@ -118,19 +95,9 @@ describe(CoachMark.Root.name, () => {
     expect(screen.queryByText(coachMarkHeading)).not.toBeInTheDocument();
   });
 
-  it("throws an error when the 'coachMarkContent' option is not a valid element", async () => {
-    const invalidElement = 24;
+  it("throws an error when the 'coachMarkPortal' option is not a coachMarkPortal component", async () => {
     expect(() =>
-      render(
-        <ComponentWithCoachMark
-          coachMarkContent={{
-            placement: "top",
-            ariaLabelledBy: "",
-            ariaDescribedBy: "",
-            element: invalidElement,
-          }}
-        />
-      )
+      render(<ComponentWithCoachMark coachMarkPortal={<p>I'm not a CoachMarkPortal</p>} />)
     ).toThrow();
   });
 });

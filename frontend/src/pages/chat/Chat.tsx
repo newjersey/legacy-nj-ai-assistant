@@ -866,17 +866,12 @@ export const Chat = () => {
 
   const coachMark = CoachMark.useCoachMark({
     referenceRef: coachMarkReferenceRef,
-    coachMarkContent: {
-      placement: "top",
-      ariaLabelledBy: "coachMarkHeading",
-      ariaDescribedBy: "coachMarkDescription",
-      element: (
-        <>
-          <h1 id="coachMarkHeading">Multiple file upload</h1>
-          <p id="coachMarkDescription">You can now upload multiple files.</p>
-        </>
-      ),
-    },
+    coachMarkPortal: (
+      <CoachMark.Portal placement="top">
+        <h1 id="coachMarkHeading">Multiple file upload</h1>
+        <p id="coachMarkDescription">You can now upload multiple files.</p>
+      </CoachMark.Portal>
+    ),
   });
 
   return (

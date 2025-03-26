@@ -1,9 +1,12 @@
-import type { ReactNode, RefObject } from "react";
-import { createContext, isValidElement, useContext, useEffect, useMemo, useState } from "react";
+import type { ReactElement, ReactNode, RefObject } from "react";
+import { createContext, useContext, useEffect, useId, useMemo, useState } from "react";
 import type { Placement } from "@floating-ui/react";
 import {
+  autoUpdate,
+  flip,
   FloatingFocusManager,
   FloatingOverlay,
+  shift,
   useDismiss,
   useFloating,
   useFloatingRootContext,
@@ -12,21 +15,14 @@ import {
 
 import styles from "./CoachMark.module.css";
 
-export interface CoachMarkContent {
-  placement: Placement;
-  ariaLabelledBy: string;
-  ariaDescribedBy: string;
-  element: ReactNode;
-}
-
 interface CoachMarkOptions {
   referenceRef: RefObject<HTMLElement>;
-  coachMarkContent: CoachMarkContent;
+  coachMarkPortal: ReactElement;
 }
 
 export const useCoachMark = (options: CoachMarkOptions) => {
-  if (!isValidElement(options.coachMarkContent.element)) {
-    throw Error("useCoachMark's the element prop of coachMarkContent must be a valid element!");
+  if (options.coachMarkPortal.type !== CoachMarkPortal) {
+    throw Error("useCoachMark's coachMarkPortal option must be a <CoachMark.Portal> component!");
   }
 
   const [isOpen, setIsOpen] = useState(true);
@@ -58,17 +54,17 @@ export const useCoachMark = (options: CoachMarkOptions) => {
       setReferenceElement,
       isOpen,
       setIsOpen,
-      coachMarkContent: options.coachMarkContent,
+      coachMarkPortal: options.coachMarkPortal,
       ...interactions,
       ...floatingRootContext,
     }),
-    [isOpen, options.coachMarkContent, interactions, floatingRootContext]
+    [isOpen, options.coachMarkPortal, interactions, floatingRootContext]
   );
 };
 
-type ContextType = ReturnType<typeof useCoachMark> | null;
+type CoachMarkContextType = ReturnType<typeof useCoachMark> | null;
 
-const CoachMarkContext = createContext<ContextType>(null);
+const CoachMarkContext = createContext<CoachMarkContextType>(null);
 
 export const useCoachMarkContext = () => {
   const context = useContext(CoachMarkContext);
@@ -87,44 +83,63 @@ interface CoachMarkRootProps {
 const CoachMarkRoot = (props: CoachMarkRootProps) => {
   return (
     <CoachMarkContext.Provider value={props.coachMark}>
-      <CoachMarkPortal />
+      {props.coachMark.coachMarkPortal}
       {props.children}
     </CoachMarkContext.Provider>
   );
 };
 
-const CoachMarkPortal = () => {
+type CoachMarkPortalContextType = {
+  labelId: string;
+  descriptionId: string;
+} | null;
+
+const CoachMarkPortalContext = createContext<CoachMarkPortalContextType>(null);
+
+interface CoachMarkPortalProps {
+  placement: Placement;
+  children: ReactNode;
+}
+
+const CoachMarkPortal = (props: CoachMarkPortalProps) => {
   const coachMarkContext = useCoachMarkContext();
-  const coachMarkContent = coachMarkContext.coachMarkContent;
+
+  const labelId = useId();
+  const descriptionId = useId();
 
   const { floatingStyles } = useFloating({
-    placement: coachMarkContent.placement,
+    placement: props.placement,
     rootContext: coachMarkContext,
+    whileElementsMounted: autoUpdate,
+    middleware: [shift(), flip()],
   });
 
   if (!coachMarkContext.open) return null;
 
   return (
-    <FloatingOverlay lockScroll className={styles.dialogOverlay}>
-      <FloatingFocusManager context={coachMarkContext}>
-        <div
-          role="dialog"
-          // TODO: add aria-modal=true
-          aria-labelledby={coachMarkContent.ariaLabelledBy}
-          aria-describedby={coachMarkContent.ariaDescribedBy}
-          className="padding-2 bg-primary-lightest radius-2 shadow-2"
-          ref={coachMarkContext.setCoachMark}
-          style={floatingStyles}
-          {...coachMarkContext.getFloatingProps()}
-        >
-          {coachMarkContent.element}
-          <button onClick={() => coachMarkContext.setIsOpen(false)}>Done</button>
-        </div>
-      </FloatingFocusManager>
-    </FloatingOverlay>
+    <CoachMarkPortalContext.Provider value={{ labelId, descriptionId }}>
+      <FloatingOverlay lockScroll className={styles.dialogOverlay}>
+        <FloatingFocusManager context={coachMarkContext}>
+          <div
+            role="dialog"
+            aria-modal="true"
+            aria-labelledby={labelId}
+            aria-describedby={descriptionId}
+            className="padding-2 bg-primary-lightest radius-2 shadow-2"
+            ref={coachMarkContext.setCoachMark}
+            style={floatingStyles}
+            {...coachMarkContext.getFloatingProps()}
+          >
+            {props.children}
+            <button onClick={() => coachMarkContext.setIsOpen(false)}>Done</button>
+          </div>
+        </FloatingFocusManager>
+      </FloatingOverlay>
+    </CoachMarkPortalContext.Provider>
   );
 };
 
 const Root = CoachMarkRoot;
+const Portal = CoachMarkPortal;
 
-export { Root };
+export { Portal, Root };
