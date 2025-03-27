@@ -2,7 +2,7 @@ azure-identity==1.21.0
 Flask[async]==3.0.3
 openai==1.55.3
 azure-search-documents==11.5.2
-azure-storage-blob==12.25.0
+azure-storage-blob==12.25.1
 python-dotenv==1.0.0
 azure-cosmos==4.9.0
 quart==0.20.0
