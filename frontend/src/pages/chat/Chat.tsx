@@ -868,7 +868,7 @@ export const Chat = () => {
     referenceRef: coachMarkReferenceRef,
     coachMarkPortal: (
       <CoachMark.Portal placement="top">
-        <h1 id="coachMarkHeading">Multiple file upload</h1>
+        <CoachMark.Heading>Multiple file upload</CoachMark.Heading>
         <p id="coachMarkDescription">You can now upload multiple files.</p>
       </CoachMark.Portal>
     ),

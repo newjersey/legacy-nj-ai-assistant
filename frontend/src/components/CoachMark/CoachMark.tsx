@@ -29,6 +29,8 @@ export const useCoachMark = (options: CoachMarkOptions) => {
   const [coachMark, setCoachMark] = useState<HTMLElement | null>(null);
   const [referenceElement, setReferenceElement] = useState<HTMLElement | null>(null);
 
+  const coachMarkId = useId();
+
   useEffect(() => {
     if (options.referenceRef.current !== null) {
       setReferenceElement(options.referenceRef.current);
@@ -55,10 +57,12 @@ export const useCoachMark = (options: CoachMarkOptions) => {
       isOpen,
       setIsOpen,
       coachMarkPortal: options.coachMarkPortal,
+      headingId: `${coachMarkId}-heading`,
+      descriptionId: `${coachMarkId}-description`,
       ...interactions,
       ...floatingRootContext,
     }),
-    [isOpen, options.coachMarkPortal, interactions, floatingRootContext]
+    [isOpen, options.coachMarkPortal, coachMarkId, interactions, floatingRootContext]
   );
 };
 
@@ -89,12 +93,12 @@ const CoachMarkRoot = (props: CoachMarkRootProps) => {
   );
 };
 
-type CoachMarkPortalContextType = {
-  labelId: string;
-  descriptionId: string;
-} | null;
+// type CoachMarkPortalContextType = {
+//   labelId: string;
+//   descriptionId: string;
+// } | null;
 
-const CoachMarkPortalContext = createContext<CoachMarkPortalContextType>(null);
+// const CoachMarkPortalContext = createContext<CoachMarkPortalContextType>(null);
 
 interface CoachMarkPortalProps {
   placement: Placement;
@@ -103,9 +107,6 @@ interface CoachMarkPortalProps {
 
 const CoachMarkPortal = (props: CoachMarkPortalProps) => {
   const coachMarkContext = useCoachMarkContext();
-
-  const labelId = useId();
-  const descriptionId = useId();
 
   const { floatingStyles } = useFloating({
     placement: props.placement,
@@ -117,29 +118,38 @@ const CoachMarkPortal = (props: CoachMarkPortalProps) => {
   if (!coachMarkContext.open) return null;
 
   return (
-    <CoachMarkPortalContext.Provider value={{ labelId, descriptionId }}>
-      <FloatingOverlay lockScroll className={styles.dialogOverlay}>
-        <FloatingFocusManager context={coachMarkContext}>
-          <div
-            role="dialog"
-            aria-modal="true"
-            aria-labelledby={labelId}
-            aria-describedby={descriptionId}
-            className="padding-2 bg-primary-lightest radius-2 shadow-2"
-            ref={coachMarkContext.setCoachMark}
-            style={floatingStyles}
-            {...coachMarkContext.getFloatingProps()}
-          >
-            {props.children}
-            <button onClick={() => coachMarkContext.setIsOpen(false)}>Done</button>
-          </div>
-        </FloatingFocusManager>
-      </FloatingOverlay>
-    </CoachMarkPortalContext.Provider>
+    <FloatingOverlay lockScroll className={styles.dialogOverlay}>
+      <FloatingFocusManager context={coachMarkContext}>
+        <div
+          role="dialog"
+          aria-modal="true"
+          aria-labelledby={coachMarkContext.headingId}
+          aria-describedby={coachMarkContext.descriptionId}
+          className="padding-2 bg-primary-lightest radius-2 shadow-2"
+          ref={coachMarkContext.setCoachMark}
+          style={floatingStyles}
+          {...coachMarkContext.getFloatingProps()}
+        >
+          {props.children}
+          <button onClick={() => coachMarkContext.setIsOpen(false)}>Done</button>
+        </div>
+      </FloatingFocusManager>
+    </FloatingOverlay>
   );
+};
+
+interface CoachMarkHeadingProps {
+  children: ReactNode;
+}
+
+const CoachMarkHeading = (props: CoachMarkHeadingProps) => {
+  const coachMarkContext = useCoachMarkContext();
+
+  return <h1 id={coachMarkContext.headingId}>{props.children}</h1>;
 };
 
 const Root = CoachMarkRoot;
 const Portal = CoachMarkPortal;
+const Heading = CoachMarkHeading;
 
-export { Portal, Root };
+export { Heading, Portal, Root };

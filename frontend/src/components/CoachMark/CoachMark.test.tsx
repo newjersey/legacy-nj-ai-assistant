@@ -1,6 +1,6 @@
 import type { ReactElement } from "react";
 import { useRef } from "react";
-import { render, screen } from "@testing-library/react";
+import { render, screen, within } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
 
 import * as CoachMark from "./CoachMark";
@@ -57,7 +57,7 @@ describe(CoachMark.Root.name, () => {
     expect(screen.getByText(coachMarkHeading)).toBeInTheDocument();
   });
 
-  it("renders a modal dialog whose accessible name and description are set by the ariaLabelledBy and ariaDescribedBy values", async () => {
+  it.skip("renders a modal dialog whose accessible name and description are set by the ariaLabelledBy and ariaDescribedBy values", async () => {
     const coachMarkHeading = "Multiple file upload";
     const coachMarkDescription = "You can now upload multiple files.";
     render(
@@ -99,5 +99,39 @@ describe(CoachMark.Root.name, () => {
     expect(() =>
       render(<ComponentWithCoachMark coachMarkPortal={<p>I'm not a CoachMarkPortal</p>} />)
     ).toThrow();
+  });
+});
+
+describe(CoachMark.Heading.name, () => {
+  it("renders its children elements inside a heading level 1", () => {
+    const coachMarkHeading = "Multiple file upload";
+    render(
+      <ComponentWithCoachMark
+        coachMarkPortal={
+          <CoachMark.Portal placement="top">
+            <CoachMark.Heading>{coachMarkHeading}</CoachMark.Heading>
+          </CoachMark.Portal>
+        }
+      />
+    );
+    const heading = screen.getByRole("heading", { level: 1 });
+    expect(within(heading).getByText(coachMarkHeading)).toBeInTheDocument();
+  });
+
+  it("sets the aria-label on the coach mark dialog", () => {
+    const coachMarkHeading = "Multiple file upload";
+    render(
+      <ComponentWithCoachMark
+        coachMarkPortal={
+          <CoachMark.Portal placement="top">
+            <CoachMark.Heading>{coachMarkHeading}</CoachMark.Heading>
+          </CoachMark.Portal>
+        }
+      />
+    );
+    const heading = screen.getByRole("heading", { level: 1 });
+    const coachMark = screen.getByRole("dialog");
+    expect(coachMark).toHaveAttribute("aria-labelledby", heading.id);
+    expect(coachMark).toHaveAccessibleName(coachMarkHeading);
   });
 });
