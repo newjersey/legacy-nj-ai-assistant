@@ -41,14 +41,22 @@ describe(CoachMark.Root.name, () => {
     expect(screen.getByText("Reference element")).toBeInTheDocument();
   });
 
-  it("renders the coach mark content on component load", () => {
+  it("throws an error when the 'coachMarkPortal' option is not a coachMarkPortal component", async () => {
+    expect(() =>
+      render(<ComponentWithCoachMark coachMarkPortal={<p>I'm not a CoachMarkPortal</p>} />)
+    ).toThrow();
+  });
+});
+
+describe(CoachMark.Portal.name, () => {
+  it("renders its children on load (is open by default)", () => {
     const coachMarkHeading = "Multiple file upload";
     render(
       <ComponentWithCoachMark
         coachMarkPortal={
           <CoachMark.Portal placement="top">
-            <h1 id="coachMarkHeading">Multiple file upload</h1>
-            <p id="coachMarkDescription">You can now upload multiple files.</p>
+            <CoachMark.Heading>{coachMarkHeading}</CoachMark.Heading>
+            <CoachMark.Description>You can now upload multiple files.</CoachMark.Description>
           </CoachMark.Portal>
         }
       />
@@ -57,15 +65,15 @@ describe(CoachMark.Root.name, () => {
     expect(screen.getByText(coachMarkHeading)).toBeInTheDocument();
   });
 
-  it.skip("renders a modal dialog whose accessible name and description are set by the ariaLabelledBy and ariaDescribedBy values", async () => {
+  it("renders a modal dialog whose accessible name and description are set by the CoachMarkHeading and CoachMarkDescription components", async () => {
     const coachMarkHeading = "Multiple file upload";
     const coachMarkDescription = "You can now upload multiple files.";
     render(
       <ComponentWithCoachMark
         coachMarkPortal={
           <CoachMark.Portal placement="top">
-            <h1 id="coachMarkHeading">Multiple file upload</h1>
-            <p id="coachMarkDescription">You can now upload multiple files.</p>
+            <CoachMark.Heading>{coachMarkHeading}</CoachMark.Heading>
+            <CoachMark.Description>{coachMarkDescription}</CoachMark.Description>
           </CoachMark.Portal>
         }
       />
@@ -82,8 +90,8 @@ describe(CoachMark.Root.name, () => {
       <ComponentWithCoachMark
         coachMarkPortal={
           <CoachMark.Portal placement="top">
-            <h1 id="coachMarkHeading">Multiple file upload</h1>
-            <p id="coachMarkDescription">You can now upload multiple files.</p>
+            <CoachMark.Heading>{coachMarkHeading}</CoachMark.Heading>
+            <CoachMark.Description>You can now upload multiple files.</CoachMark.Description>
           </CoachMark.Portal>
         }
       />
@@ -94,37 +102,31 @@ describe(CoachMark.Root.name, () => {
     await userEvent.click(doneButton);
     expect(screen.queryByText(coachMarkHeading)).not.toBeInTheDocument();
   });
-
-  it("throws an error when the 'coachMarkPortal' option is not a coachMarkPortal component", async () => {
-    expect(() =>
-      render(<ComponentWithCoachMark coachMarkPortal={<p>I'm not a CoachMarkPortal</p>} />)
-    ).toThrow();
-  });
 });
 
 describe(CoachMark.Heading.name, () => {
-  it("renders its children elements inside a heading level 1", () => {
-    const coachMarkHeading = "Multiple file upload";
+  it("renders its children inside a heading level 1", () => {
+    const coachMarkHeadingText = "Multiple file upload";
     render(
       <ComponentWithCoachMark
         coachMarkPortal={
           <CoachMark.Portal placement="top">
-            <CoachMark.Heading>{coachMarkHeading}</CoachMark.Heading>
+            <CoachMark.Heading>{coachMarkHeadingText}</CoachMark.Heading>
           </CoachMark.Portal>
         }
       />
     );
     const heading = screen.getByRole("heading", { level: 1 });
-    expect(within(heading).getByText(coachMarkHeading)).toBeInTheDocument();
+    expect(within(heading).getByText(coachMarkHeadingText)).toBeInTheDocument();
   });
 
-  it("sets the aria-label on the coach mark dialog", () => {
-    const coachMarkHeading = "Multiple file upload";
+  it("serves as the dialog's accessible name (via the aria-labelledby attribute)", () => {
+    const coachMarkHeadingText = "Multiple file upload";
     render(
       <ComponentWithCoachMark
         coachMarkPortal={
           <CoachMark.Portal placement="top">
-            <CoachMark.Heading>{coachMarkHeading}</CoachMark.Heading>
+            <CoachMark.Heading>{coachMarkHeadingText}</CoachMark.Heading>
           </CoachMark.Portal>
         }
       />
@@ -132,6 +134,58 @@ describe(CoachMark.Heading.name, () => {
     const heading = screen.getByRole("heading", { level: 1 });
     const coachMark = screen.getByRole("dialog");
     expect(coachMark).toHaveAttribute("aria-labelledby", heading.id);
-    expect(coachMark).toHaveAccessibleName(coachMarkHeading);
+    expect(coachMark).toHaveAccessibleName(coachMarkHeadingText);
+  });
+
+  it("renders a close button that closes the dialog", async () => {
+    const coachMarkHeading = "Multiple file upload";
+    render(
+      <ComponentWithCoachMark
+        coachMarkPortal={
+          <CoachMark.Portal placement="top">
+            <CoachMark.Heading>{coachMarkHeading}</CoachMark.Heading>
+            <CoachMark.Description>You can now upload multiple files.</CoachMark.Description>
+          </CoachMark.Portal>
+        }
+      />
+    );
+
+    expect(screen.getByText(coachMarkHeading)).toBeInTheDocument();
+    const closeButton = screen.getByRole("button", { name: "Close" });
+    await userEvent.click(closeButton);
+    expect(screen.queryByText(coachMarkHeading)).not.toBeInTheDocument();
+  });
+});
+
+describe(CoachMark.Description.name, () => {
+  it("renders its children inside a paragraph", () => {
+    const description = "You can now upload multiple files";
+    render(
+      <ComponentWithCoachMark
+        coachMarkPortal={
+          <CoachMark.Portal placement="top">
+            <CoachMark.Description>{description}</CoachMark.Description>
+          </CoachMark.Portal>
+        }
+      />
+    );
+    expect(screen.getByText(description)).toHaveRole("paragraph");
+  });
+
+  it("serves as the dialog's accessible description (via the aria-describedby attribute)", () => {
+    const description = "You can now upload multiple files";
+    render(
+      <ComponentWithCoachMark
+        coachMarkPortal={
+          <CoachMark.Portal placement="top">
+            <CoachMark.Description>{description}</CoachMark.Description>
+          </CoachMark.Portal>
+        }
+      />
+    );
+    const descriptionElement = screen.getByText(description);
+    const coachMark = screen.getByRole("dialog");
+    expect(coachMark).toHaveAttribute("aria-describedby", descriptionElement.id);
+    expect(coachMark).toHaveAccessibleDescription(description);
   });
 });

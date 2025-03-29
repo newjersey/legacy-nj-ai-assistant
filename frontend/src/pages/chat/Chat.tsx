@@ -869,7 +869,7 @@ export const Chat = () => {
     coachMarkPortal: (
       <CoachMark.Portal placement="top">
         <CoachMark.Heading>Multiple file upload</CoachMark.Heading>
-        <p id="coachMarkDescription">You can now upload multiple files.</p>
+        <CoachMark.Description>You can now upload multiple files.</CoachMark.Description>
       </CoachMark.Portal>
     ),
   });

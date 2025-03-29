@@ -1,19 +1,26 @@
 import type { ReactElement, ReactNode, RefObject } from "react";
-import { createContext, useContext, useEffect, useId, useMemo, useState } from "react";
+import { createContext, useContext, useEffect, useId, useMemo, useRef, useState } from "react";
 import type { Placement } from "@floating-ui/react";
 import {
+  arrow,
   autoUpdate,
   flip,
+  FloatingArrow,
   FloatingFocusManager,
   FloatingOverlay,
+  offset,
   shift,
   useDismiss,
   useFloating,
   useFloatingRootContext,
   useInteractions,
 } from "@floating-ui/react";
+import icons from "@newjersey/njwds/dist/img/sprite.svg";
 
 import styles from "./CoachMark.module.css";
+
+const ARROW_HEIGHT = 7;
+const GAP = 8;
 
 interface CoachMarkOptions {
   referenceRef: RefObject<HTMLElement>;
@@ -108,11 +115,13 @@ interface CoachMarkPortalProps {
 const CoachMarkPortal = (props: CoachMarkPortalProps) => {
   const coachMarkContext = useCoachMarkContext();
 
-  const { floatingStyles } = useFloating({
+  const arrowRef = useRef(null);
+
+  const { floatingStyles, context } = useFloating({
     placement: props.placement,
     rootContext: coachMarkContext,
     whileElementsMounted: autoUpdate,
-    middleware: [shift(), flip()],
+    middleware: [shift(), flip(), arrow({ element: arrowRef }), offset(ARROW_HEIGHT + GAP)],
   });
 
   if (!coachMarkContext.open) return null;
@@ -125,13 +134,18 @@ const CoachMarkPortal = (props: CoachMarkPortalProps) => {
           aria-modal="true"
           aria-labelledby={coachMarkContext.headingId}
           aria-describedby={coachMarkContext.descriptionId}
-          className="padding-2 bg-primary-lightest radius-2 shadow-2"
+          className="flex padding-2 bg-primary-lightest radius-lg shadow-2"
           ref={coachMarkContext.setCoachMark}
           style={floatingStyles}
           {...coachMarkContext.getFloatingProps()}
         >
           {props.children}
-          <button onClick={() => coachMarkContext.setIsOpen(false)}>Done</button>
+          <div className="display-flex flex-justify-end">
+            <button className="usa-button" onClick={() => coachMarkContext.setIsOpen(false)}>
+              Done
+            </button>
+          </div>
+          <FloatingArrow ref={arrowRef} context={context} fill="#e8f5ff" />
         </div>
       </FloatingFocusManager>
     </FloatingOverlay>
@@ -145,11 +159,56 @@ interface CoachMarkHeadingProps {
 const CoachMarkHeading = (props: CoachMarkHeadingProps) => {
   const coachMarkContext = useCoachMarkContext();
 
-  return <h1 id={coachMarkContext.headingId}>{props.children}</h1>;
+  return (
+    <div className="display-flex flex-justify">
+      <h1 id={coachMarkContext.headingId} className="font-sans-lg">
+        {props.children}
+      </h1>
+      <CloseButton
+        handleClick={() => {
+          coachMarkContext.setIsOpen(false);
+        }}
+      />
+    </div>
+  );
+};
+
+interface CoachMarkDescriptionProps {
+  children: ReactNode;
+}
+
+const CoachMarkDescription = (props: CoachMarkDescriptionProps) => {
+  const coachMarkContext = useCoachMarkContext();
+
+  return (
+    <p id={coachMarkContext.descriptionId} className="margin-top-0">
+      {props.children}
+    </p>
+  );
+};
+
+interface CloseButtonProps {
+  handleClick: () => void;
+}
+
+// TODO: Refactor with button in ErrorAlert
+const CloseButton = (props: CloseButtonProps) => {
+  return (
+    <button
+      className="usa-button usa-button--unstyled"
+      onClick={props.handleClick}
+      aria-label="Close"
+    >
+      <svg className="usa-icon text-ink" aria-hidden="true" focusable="false" role="img">
+        <use href={`${icons}#close`}></use>
+      </svg>
+    </button>
+  );
 };
 
 const Root = CoachMarkRoot;
 const Portal = CoachMarkPortal;
 const Heading = CoachMarkHeading;
+const Description = CoachMarkDescription;
 
-export { Heading, Portal, Root };
+export { Description, Heading, Portal, Root };
