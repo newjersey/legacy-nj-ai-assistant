@@ -173,8 +173,7 @@ export const QuestionInput = ({
       if (uploadedFiles.length > 0 && getTotalFileContentLength(uploadedFiles) > MAX_INPUT_LENGTH) {
         setInputErrors((prevInputErrors) => ({
           ...prevInputErrors,
-          [ErrorAlertType.EXCEEDED_FILE_CONTENT_CHARACTER_LIMIT]:
-            "Total file contents cannot exceed ${MAX_INPUT_LENGTH} characters. Please try a smaller file.",
+          [ErrorAlertType.EXCEEDED_FILE_CONTENT_CHARACTER_LIMIT]: `Total file contents cannot exceed ${MAX_INPUT_LENGTH} characters. Please try a smaller file.`,
         }));
 
         setSelectedFiles([]);
