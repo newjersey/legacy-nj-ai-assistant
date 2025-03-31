@@ -21,7 +21,6 @@ textarea.questionInputTextArea {
 }
 
 #questionInputSendButtonContainer {
-  z-index: 2;
   height: 2.5rem;
 }
 
@@ -76,7 +75,6 @@ button.closeButton {
 
 /* file input styling */
 button.fileInputButton {
-  z-index: 1;
   outline: none;
   align-items: center;
 }
