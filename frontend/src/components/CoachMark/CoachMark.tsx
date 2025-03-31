@@ -22,10 +22,42 @@ import styles from "./CoachMark.module.css";
 const ARROW_HEIGHT = 7;
 const GAP = 8;
 
-interface CoachMarkOptions {
+const SHOW_COACH_MARK_LOCAL_STORAGE_KEY_PREFIX = "show_coach_mark";
+
+interface ShowCoachMarkLocalStorageItem {
+  id: string;
+  expiresOn: Date;
+}
+
+/*
+in useCoachMark:
+key: show_coach_mark__multiple_file_upload
+value: { name: "multiple_file_upload", expire_in: <timestamp> }
+^ if current date is past expire_in, delete key
+
+when Done button is pressed, add the item: 
+key: hide_coach_mark__multiple_file_upload
+value: true 
+^ don't show CoachMark portal if hide_coach_mark__multiple_file_upload is
+present
+
+*/
+
+export interface CoachMarkOptions {
+  id: string;
+  expiresOn: Date;
   referenceRef: RefObject<HTMLElement>;
   coachMarkPortal: ReactElement;
 }
+
+const setShowCoachMarkItemInLocalStorage = (id: string, expiresOn: Date) => {
+  const showCoachMarkKey = `${SHOW_COACH_MARK_LOCAL_STORAGE_KEY_PREFIX}__${id}`;
+  const showCoachMarkValue: ShowCoachMarkLocalStorageItem = {
+    id: id,
+    expiresOn: expiresOn,
+  };
+  localStorage.setItem(showCoachMarkKey, JSON.stringify(showCoachMarkValue));
+};
 
 export const useCoachMark = (options: CoachMarkOptions) => {
   if (options.coachMarkPortal.type !== CoachMarkPortal) {

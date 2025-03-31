@@ -1,19 +1,31 @@
-import type { ReactElement } from "react";
 import { useRef } from "react";
 import { render, screen, within } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
 
 import * as CoachMark from "./CoachMark";
 
+const COACH_MARK_ID = "multiple_file_upload";
+const COACH_MARK_EXPIRES_ON = new Date("2026-01-02");
+
+const DEFAULT_COACH_MARK_OPTIONS: Omit<CoachMark.CoachMarkOptions, "referenceRef"> = {
+  id: COACH_MARK_ID,
+  expiresOn: COACH_MARK_EXPIRES_ON,
+  coachMarkPortal: (
+    <CoachMark.Portal placement="top">
+      <></>
+    </CoachMark.Portal>
+  ),
+};
+
 interface ComponentWithCoachMarkProps {
-  coachMarkPortal: ReactElement;
+  useCoachMarkOptions: Omit<CoachMark.CoachMarkOptions, "referenceRef">;
 }
 
 const ComponentWithCoachMark = (props: ComponentWithCoachMarkProps) => {
   const coachMarkReferenceRef = useRef(null);
   const coachMark = CoachMark.useCoachMark({
+    ...props.useCoachMarkOptions,
     referenceRef: coachMarkReferenceRef,
-    coachMarkPortal: props.coachMarkPortal,
   });
 
   return (
@@ -25,16 +37,20 @@ const ComponentWithCoachMark = (props: ComponentWithCoachMarkProps) => {
   );
 };
 
+describe(CoachMark.useCoachMark.name, () => {});
+
 describe(CoachMark.Root.name, () => {
   it("renders the component's children elements", () => {
     render(
       <ComponentWithCoachMark
-        coachMarkPortal={
-          <CoachMark.Portal placement="top">
-            <h1 id="coachMarkHeading">Multiple file upload</h1>
-            <p id="coachMarkDescription">You can now upload multiple files.</p>
-          </CoachMark.Portal>
-        }
+        useCoachMarkOptions={{
+          ...DEFAULT_COACH_MARK_OPTIONS,
+          coachMarkPortal: (
+            <CoachMark.Portal placement="top">
+              <CoachMark.Heading>Multiple file upload</CoachMark.Heading>
+            </CoachMark.Portal>
+          ),
+        }}
       />
     );
 
@@ -43,22 +59,33 @@ describe(CoachMark.Root.name, () => {
 
   it("throws an error when the 'coachMarkPortal' option is not a coachMarkPortal component", async () => {
     expect(() =>
-      render(<ComponentWithCoachMark coachMarkPortal={<p>I'm not a CoachMarkPortal</p>} />)
+      render(
+        <ComponentWithCoachMark
+          useCoachMarkOptions={{
+            ...DEFAULT_COACH_MARK_OPTIONS,
+            coachMarkPortal: <p>I'm not a CoachMarkPortal</p>,
+          }}
+        />
+      )
     ).toThrow();
   });
 });
 
+// TODO: test that aria-label/aria-described-by is only set if the heading and description elements are present
 describe(CoachMark.Portal.name, () => {
   it("renders its children on load (is open by default)", () => {
     const coachMarkHeading = "Multiple file upload";
     render(
       <ComponentWithCoachMark
-        coachMarkPortal={
-          <CoachMark.Portal placement="top">
-            <CoachMark.Heading>{coachMarkHeading}</CoachMark.Heading>
-            <CoachMark.Description>You can now upload multiple files.</CoachMark.Description>
-          </CoachMark.Portal>
-        }
+        useCoachMarkOptions={{
+          ...DEFAULT_COACH_MARK_OPTIONS,
+          coachMarkPortal: (
+            <CoachMark.Portal placement="top">
+              <CoachMark.Heading>{coachMarkHeading}</CoachMark.Heading>
+              <CoachMark.Description>You can now upload multiple files.</CoachMark.Description>
+            </CoachMark.Portal>
+          ),
+        }}
       />
     );
 
@@ -70,12 +97,15 @@ describe(CoachMark.Portal.name, () => {
     const coachMarkDescription = "You can now upload multiple files.";
     render(
       <ComponentWithCoachMark
-        coachMarkPortal={
-          <CoachMark.Portal placement="top">
-            <CoachMark.Heading>{coachMarkHeading}</CoachMark.Heading>
-            <CoachMark.Description>{coachMarkDescription}</CoachMark.Description>
-          </CoachMark.Portal>
-        }
+        useCoachMarkOptions={{
+          ...DEFAULT_COACH_MARK_OPTIONS,
+          coachMarkPortal: (
+            <CoachMark.Portal placement="top">
+              <CoachMark.Heading>{coachMarkHeading}</CoachMark.Heading>
+              <CoachMark.Description>{coachMarkDescription}</CoachMark.Description>
+            </CoachMark.Portal>
+          ),
+        }}
       />
     );
     const coachMark = screen.getByRole("dialog");
@@ -88,12 +118,15 @@ describe(CoachMark.Portal.name, () => {
     const coachMarkHeading = "Multiple file upload";
     render(
       <ComponentWithCoachMark
-        coachMarkPortal={
-          <CoachMark.Portal placement="top">
-            <CoachMark.Heading>{coachMarkHeading}</CoachMark.Heading>
-            <CoachMark.Description>You can now upload multiple files.</CoachMark.Description>
-          </CoachMark.Portal>
-        }
+        useCoachMarkOptions={{
+          ...DEFAULT_COACH_MARK_OPTIONS,
+          coachMarkPortal: (
+            <CoachMark.Portal placement="top">
+              <CoachMark.Heading>{coachMarkHeading}</CoachMark.Heading>
+              <CoachMark.Description>You can now upload multiple files.</CoachMark.Description>
+            </CoachMark.Portal>
+          ),
+        }}
       />
     );
 
@@ -109,11 +142,14 @@ describe(CoachMark.Heading.name, () => {
     const coachMarkHeadingText = "Multiple file upload";
     render(
       <ComponentWithCoachMark
-        coachMarkPortal={
-          <CoachMark.Portal placement="top">
-            <CoachMark.Heading>{coachMarkHeadingText}</CoachMark.Heading>
-          </CoachMark.Portal>
-        }
+        useCoachMarkOptions={{
+          ...DEFAULT_COACH_MARK_OPTIONS,
+          coachMarkPortal: (
+            <CoachMark.Portal placement="top">
+              <CoachMark.Heading>{coachMarkHeadingText}</CoachMark.Heading>
+            </CoachMark.Portal>
+          ),
+        }}
       />
     );
     const heading = screen.getByRole("heading", { level: 1 });
@@ -124,11 +160,14 @@ describe(CoachMark.Heading.name, () => {
     const coachMarkHeadingText = "Multiple file upload";
     render(
       <ComponentWithCoachMark
-        coachMarkPortal={
-          <CoachMark.Portal placement="top">
-            <CoachMark.Heading>{coachMarkHeadingText}</CoachMark.Heading>
-          </CoachMark.Portal>
-        }
+        useCoachMarkOptions={{
+          ...DEFAULT_COACH_MARK_OPTIONS,
+          coachMarkPortal: (
+            <CoachMark.Portal placement="top">
+              <CoachMark.Heading>{coachMarkHeadingText}</CoachMark.Heading>
+            </CoachMark.Portal>
+          ),
+        }}
       />
     );
     const heading = screen.getByRole("heading", { level: 1 });
@@ -141,12 +180,15 @@ describe(CoachMark.Heading.name, () => {
     const coachMarkHeading = "Multiple file upload";
     render(
       <ComponentWithCoachMark
-        coachMarkPortal={
-          <CoachMark.Portal placement="top">
-            <CoachMark.Heading>{coachMarkHeading}</CoachMark.Heading>
-            <CoachMark.Description>You can now upload multiple files.</CoachMark.Description>
-          </CoachMark.Portal>
-        }
+        useCoachMarkOptions={{
+          ...DEFAULT_COACH_MARK_OPTIONS,
+          coachMarkPortal: (
+            <CoachMark.Portal placement="top">
+              <CoachMark.Heading>{coachMarkHeading}</CoachMark.Heading>
+              <CoachMark.Description>You can now upload multiple files.</CoachMark.Description>
+            </CoachMark.Portal>
+          ),
+        }}
       />
     );
 
@@ -162,11 +204,14 @@ describe(CoachMark.Description.name, () => {
     const description = "You can now upload multiple files";
     render(
       <ComponentWithCoachMark
-        coachMarkPortal={
-          <CoachMark.Portal placement="top">
-            <CoachMark.Description>{description}</CoachMark.Description>
-          </CoachMark.Portal>
-        }
+        useCoachMarkOptions={{
+          ...DEFAULT_COACH_MARK_OPTIONS,
+          coachMarkPortal: (
+            <CoachMark.Portal placement="top">
+              <CoachMark.Description>{description}</CoachMark.Description>
+            </CoachMark.Portal>
+          ),
+        }}
       />
     );
     expect(screen.getByText(description)).toHaveRole("paragraph");
@@ -176,11 +221,14 @@ describe(CoachMark.Description.name, () => {
     const description = "You can now upload multiple files";
     render(
       <ComponentWithCoachMark
-        coachMarkPortal={
-          <CoachMark.Portal placement="top">
-            <CoachMark.Description>{description}</CoachMark.Description>
-          </CoachMark.Portal>
-        }
+        useCoachMarkOptions={{
+          ...DEFAULT_COACH_MARK_OPTIONS,
+          coachMarkPortal: (
+            <CoachMark.Portal placement="top">
+              <CoachMark.Description>{description}</CoachMark.Description>
+            </CoachMark.Portal>
+          ),
+        }}
       />
     );
     const descriptionElement = screen.getByText(description);
