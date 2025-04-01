@@ -9,7 +9,7 @@ bs4==0.0.2
 urllib3==2.3.0
 pytest==7.4.4
 pytest-asyncio==0.26.0
-PyMuPDF==1.25.4
+PyMuPDF==1.25.5
 azure-storage-blob
 chardet
 azure-keyvault-secrets
