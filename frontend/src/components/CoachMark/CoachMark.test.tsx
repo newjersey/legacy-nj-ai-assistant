@@ -4,12 +4,9 @@ import userEvent from "@testing-library/user-event";
 
 import * as CoachMark from "./CoachMark";
 
-const COACH_MARK_ID = "multiple_file_upload";
-const COACH_MARK_EXPIRES_ON = new Date("2026-01-02");
-
 const DEFAULT_COACH_MARK_OPTIONS: Omit<CoachMark.CoachMarkOptions, "referenceRef"> = {
-  id: COACH_MARK_ID,
-  expiresOn: COACH_MARK_EXPIRES_ON,
+  id: "",
+  expiresOn: "2025-01-02",
   coachMarkPortal: (
     <CoachMark.Portal placement="top">
       <></>
@@ -37,7 +34,39 @@ const ComponentWithCoachMark = (props: ComponentWithCoachMarkProps) => {
   );
 };
 
-describe(CoachMark.useCoachMark.name, () => {});
+describe(CoachMark.useCoachMark.name, () => {
+  beforeAll(() => localStorage.clear());
+
+  afterEach(() => localStorage.clear());
+  it("sets a localStorage item containing the coach mark's id and expiration time", () => {
+    const coachMarkId = "multiple-file-upload";
+    const expirationDate = "2026-01-02";
+    render(
+      <ComponentWithCoachMark
+        useCoachMarkOptions={{
+          ...DEFAULT_COACH_MARK_OPTIONS,
+          id: coachMarkId,
+          expiresOn: expirationDate,
+          coachMarkPortal: (
+            <CoachMark.Portal placement="top">
+              <CoachMark.Heading>Multiple file upload</CoachMark.Heading>
+            </CoachMark.Portal>
+          ),
+        }}
+      />
+    );
+
+    const localStorageKey = "show_coach_mark__multiple-file-upload";
+    const localStorageValue = localStorage.getItem(localStorageKey);
+
+    expect(localStorageValue).not.toBeNull();
+
+    expect(JSON.parse(localStorageValue as string)).toStrictEqual({
+      id: coachMarkId,
+      expiresOn: expirationDate,
+    });
+  });
+});
 
 describe(CoachMark.Root.name, () => {
   it("renders the component's children elements", () => {

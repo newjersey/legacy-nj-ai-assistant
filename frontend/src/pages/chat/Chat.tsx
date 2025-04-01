@@ -865,11 +865,18 @@ export const Chat = () => {
   const coachMarkReferenceRef = useRef(null);
 
   const coachMark = CoachMark.useCoachMark({
+    id: "multiple-file-upload",
+    expiresOn: "2025-05-01",
     referenceRef: coachMarkReferenceRef,
     coachMarkPortal: (
       <CoachMark.Portal placement="top">
-        <CoachMark.Heading>Multiple file upload</CoachMark.Heading>
-        <CoachMark.Description>You can now upload multiple files.</CoachMark.Description>
+        <CoachMark.Heading>New file upload features!</CoachMark.Heading>
+        <CoachMark.Description>
+          You can now upload up to 10 files at a time. You can also upload larger files (50MB for
+          documents and spreadsheets and 10MB for images). We now support .DOCX and .CSV files in
+          addition to PDFs and image files. We've also updated our content filtering so that more
+          files can be analyzed.
+        </CoachMark.Description>
       </CoachMark.Portal>
     ),
   });

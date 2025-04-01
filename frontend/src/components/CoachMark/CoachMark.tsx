@@ -22,11 +22,11 @@ import styles from "./CoachMark.module.css";
 const ARROW_HEIGHT = 7;
 const GAP = 8;
 
-const SHOW_COACH_MARK_LOCAL_STORAGE_KEY_PREFIX = "show_coach_mark";
+export const SHOW_COACH_MARK_LOCAL_STORAGE_KEY_PREFIX = "show_coach_mark";
 
 interface ShowCoachMarkLocalStorageItem {
   id: string;
-  expiresOn: Date;
+  expiresOn: string;
 }
 
 /*
@@ -45,12 +45,12 @@ present
 
 export interface CoachMarkOptions {
   id: string;
-  expiresOn: Date;
+  expiresOn: string;
   referenceRef: RefObject<HTMLElement>;
   coachMarkPortal: ReactElement;
 }
 
-const setShowCoachMarkItemInLocalStorage = (id: string, expiresOn: Date) => {
+const setShowCoachMarkItemInLocalStorage = (id: string, expiresOn: string) => {
   const showCoachMarkKey = `${SHOW_COACH_MARK_LOCAL_STORAGE_KEY_PREFIX}__${id}`;
   const showCoachMarkValue: ShowCoachMarkLocalStorageItem = {
     id: id,
@@ -63,6 +63,8 @@ export const useCoachMark = (options: CoachMarkOptions) => {
   if (options.coachMarkPortal.type !== CoachMarkPortal) {
     throw Error("useCoachMark's coachMarkPortal option must be a <CoachMark.Portal> component!");
   }
+
+  setShowCoachMarkItemInLocalStorage(options.id, options.expiresOn);
 
   const [isOpen, setIsOpen] = useState(true);
   const [coachMark, setCoachMark] = useState<HTMLElement | null>(null);
@@ -166,14 +168,17 @@ const CoachMarkPortal = (props: CoachMarkPortalProps) => {
           aria-modal="true"
           aria-labelledby={coachMarkContext.headingId}
           aria-describedby={coachMarkContext.descriptionId}
-          className="flex padding-2 bg-primary-lightest radius-lg shadow-2"
+          className="flex padding-2 bg-primary-lightest radius-lg shadow-2 maxw-mobile"
           ref={coachMarkContext.setCoachMark}
           style={floatingStyles}
           {...coachMarkContext.getFloatingProps()}
         >
           {props.children}
           <div className="display-flex flex-justify-end">
-            <button className="usa-button" onClick={() => coachMarkContext.setIsOpen(false)}>
+            <button
+              className="usa-button font-sans-2xs"
+              onClick={() => coachMarkContext.setIsOpen(false)}
+            >
               Done
             </button>
           </div>
@@ -193,7 +198,7 @@ const CoachMarkHeading = (props: CoachMarkHeadingProps) => {
 
   return (
     <div className="display-flex flex-justify">
-      <h1 id={coachMarkContext.headingId} className="font-sans-lg">
+      <h1 id={coachMarkContext.headingId} className="font-sans-md">
         {props.children}
       </h1>
       <CloseButton
@@ -213,7 +218,7 @@ const CoachMarkDescription = (props: CoachMarkDescriptionProps) => {
   const coachMarkContext = useCoachMarkContext();
 
   return (
-    <p id={coachMarkContext.descriptionId} className="margin-top-0">
+    <p id={coachMarkContext.descriptionId} className="margin-top-0 font-sans-2xs">
       {props.children}
     </p>
   );
