@@ -872,10 +872,12 @@ export const Chat = () => {
       <CoachMark.Portal placement="top">
         <CoachMark.Heading>New file upload features!</CoachMark.Heading>
         <CoachMark.Description>
-          You can now upload up to 10 files at a time. You can also upload larger files (50MB for
-          documents and spreadsheets and 10MB for images). We now support .DOCX and .CSV files in
-          addition to PDFs and image files. We've also updated our content filtering so that more
-          files can be analyzed.
+          <ul className="usa-list margin-top-0">
+            <li>Upload up to 10 files</li>
+            <li>File size limit increased to 50MB for files, 10MB for images</li>
+            <li>.DOCX and .CSV file types added</li>
+            <li>Updated content filtering</li>
+          </ul>
         </CoachMark.Description>
       </CoachMark.Portal>
     ),

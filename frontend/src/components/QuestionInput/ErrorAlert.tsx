@@ -1,5 +1,4 @@
 import { useEffect, useState } from "react";
-import icons from "@newjersey/njwds/dist/img/sprite.svg";
 import { AnimatePresence, motion } from "framer-motion";
 
 import type { Alert } from "../../utils/alertUtils";
@@ -7,6 +6,7 @@ import {
   ERROR_ALERT_FADEOUT_DELAY_IN_SECONDS,
   ERROR_ALERT_TIMEOUT_PERIOD_IN_SECONDS,
 } from "../../utils/alertUtils";
+import { CloseButton } from "../common/Button";
 
 import styles from "./QuestionInput.module.css";
 
@@ -49,17 +49,13 @@ export const ErrorAlert = ({ onRemove, alert }: ErrorAlertProps) => {
                 {alert.message}
               </p>
             </div>
-            <button
-              className={`usa-button usa-button--unstyled margin-right-1 ${styles.closeButton}`}
-              aria-label={`Close error alert: ${alert.message}`}
-              onClick={() => {
+            <CloseButton
+              buttonClasses={`margin-right-1 ${styles.closeButton}`}
+              ariaLabel={`Close error alert: ${alert.message}`}
+              handleClick={() => {
                 onRemove(alert.id);
               }}
-            >
-              <svg className="usa-icon" aria-hidden="true" focusable="false" role="img">
-                <use href={`${icons}#close`} />
-              </svg>
-            </button>
+            />
           </div>
         </motion.div>
       )}

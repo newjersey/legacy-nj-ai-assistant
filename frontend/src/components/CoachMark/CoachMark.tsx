@@ -1,5 +1,13 @@
 import type { ReactElement, ReactNode, RefObject } from "react";
-import { createContext, useContext, useEffect, useId, useMemo, useRef, useState } from "react";
+import {
+  createContext,
+  useContext,
+  useEffect,
+  useLayoutEffect,
+  useMemo,
+  useRef,
+  useState,
+} from "react";
 import type { Placement } from "@floating-ui/react";
 import {
   arrow,
@@ -15,33 +23,45 @@ import {
   useFloatingRootContext,
   useInteractions,
 } from "@floating-ui/react";
-import icons from "@newjersey/njwds/dist/img/sprite.svg";
+
+import { CloseButton } from "../common/Button";
 
 import styles from "./CoachMark.module.css";
 
 const ARROW_HEIGHT = 7;
 const GAP = 8;
 
-export const SHOW_COACH_MARK_LOCAL_STORAGE_KEY_PREFIX = "show_coach_mark";
+const COACH_MARK_STORAGE_KEY_PREFIX = "coach_mark";
+const HIDE_COACH_MARK_STORAGE_KEY_PREFIX = "hide_coach_mark";
 
-interface ShowCoachMarkLocalStorageItem {
-  id: string;
-  expiresOn: string;
-}
+export const getCoachMarkStorageKey = (id: string) => {
+  return `${COACH_MARK_STORAGE_KEY_PREFIX}__${id}`;
+};
 
-/*
-in useCoachMark:
-key: show_coach_mark__multiple_file_upload
-value: { name: "multiple_file_upload", expire_in: <timestamp> }
-^ if current date is past expire_in, delete key
+export const getHideCoachMarkStorageKey = (id: string) => {
+  return `${HIDE_COACH_MARK_STORAGE_KEY_PREFIX}__${id}`;
+};
 
-when Done button is pressed, add the item: 
-key: hide_coach_mark__multiple_file_upload
-value: true 
-^ don't show CoachMark portal if hide_coach_mark__multiple_file_upload is
-present
+const setCoachMarkStorageItem = (id: string, expiresOn: string) => {
+  const showCoachMarkValue: {
+    id: string;
+    expiresOn: string;
+  } = { id, expiresOn };
+  localStorage.setItem(getCoachMarkStorageKey(id), JSON.stringify(showCoachMarkValue));
+};
 
-*/
+const setHideCoachMarkStorageItem = (id: string) => {
+  localStorage.setItem(getHideCoachMarkStorageKey(id), JSON.stringify(true));
+};
+
+const isCoachMarkExpired = (expiresOnUtcString: string) => {
+  const today = new Date();
+  today.setHours(0, 0, 0, 0);
+
+  const expiresOn = new Date(expiresOnUtcString);
+  expiresOn.setHours(0, 0, 0, 0);
+  return today > expiresOn;
+};
 
 export interface CoachMarkOptions {
   id: string;
@@ -50,27 +70,28 @@ export interface CoachMarkOptions {
   coachMarkPortal: ReactElement;
 }
 
-const setShowCoachMarkItemInLocalStorage = (id: string, expiresOn: string) => {
-  const showCoachMarkKey = `${SHOW_COACH_MARK_LOCAL_STORAGE_KEY_PREFIX}__${id}`;
-  const showCoachMarkValue: ShowCoachMarkLocalStorageItem = {
-    id: id,
-    expiresOn: expiresOn,
-  };
-  localStorage.setItem(showCoachMarkKey, JSON.stringify(showCoachMarkValue));
-};
-
 export const useCoachMark = (options: CoachMarkOptions) => {
   if (options.coachMarkPortal.type !== CoachMarkPortal) {
     throw Error("useCoachMark's coachMarkPortal option must be a <CoachMark.Portal> component!");
   }
 
-  setShowCoachMarkItemInLocalStorage(options.id, options.expiresOn);
+  const hideCoachMarkStorageKey = getHideCoachMarkStorageKey(options.id);
+  const isDimissed = localStorage.getItem(hideCoachMarkStorageKey) != null;
 
-  const [isOpen, setIsOpen] = useState(true);
+  const isExpired = isCoachMarkExpired(options.expiresOn);
+  if (!isExpired) {
+    setCoachMarkStorageItem(options.id, options.expiresOn);
+  } else {
+    localStorage.removeItem(getCoachMarkStorageKey(options.id));
+    localStorage.removeItem(hideCoachMarkStorageKey);
+  }
+
+  const [isOpen, setIsOpen] = useState(!(isExpired || isDimissed));
   const [coachMark, setCoachMark] = useState<HTMLElement | null>(null);
   const [referenceElement, setReferenceElement] = useState<HTMLElement | null>(null);
 
-  const coachMarkId = useId();
+  const [labelId, setLabelId] = useState<string | undefined>();
+  const [descriptionId, setDescriptionId] = useState<string | undefined>();
 
   useEffect(() => {
     if (options.referenceRef.current !== null) {
@@ -98,12 +119,23 @@ export const useCoachMark = (options: CoachMarkOptions) => {
       isOpen,
       setIsOpen,
       coachMarkPortal: options.coachMarkPortal,
-      headingId: `${coachMarkId}-heading`,
-      descriptionId: `${coachMarkId}-description`,
+      coachMarkId: options.id,
+      labelId,
+      descriptionId,
+      setLabelId,
+      setDescriptionId,
       ...interactions,
       ...floatingRootContext,
     }),
-    [isOpen, options.coachMarkPortal, coachMarkId, interactions, floatingRootContext]
+    [
+      isOpen,
+      options.coachMarkPortal,
+      options.id,
+      labelId,
+      descriptionId,
+      interactions,
+      floatingRootContext,
+    ]
   );
 };
 
@@ -134,13 +166,6 @@ const CoachMarkRoot = (props: CoachMarkRootProps) => {
   );
 };
 
-// type CoachMarkPortalContextType = {
-//   labelId: string;
-//   descriptionId: string;
-// } | null;
-
-// const CoachMarkPortalContext = createContext<CoachMarkPortalContextType>(null);
-
 interface CoachMarkPortalProps {
   placement: Placement;
   children: ReactNode;
@@ -164,9 +189,10 @@ const CoachMarkPortal = (props: CoachMarkPortalProps) => {
     <FloatingOverlay lockScroll className={styles.dialogOverlay}>
       <FloatingFocusManager context={coachMarkContext}>
         <div
+          id={coachMarkContext.coachMarkId}
           role="dialog"
           aria-modal="true"
-          aria-labelledby={coachMarkContext.headingId}
+          aria-labelledby={coachMarkContext.labelId}
           aria-describedby={coachMarkContext.descriptionId}
           className="flex padding-2 bg-primary-lightest radius-lg shadow-2 maxw-mobile"
           ref={coachMarkContext.setCoachMark}
@@ -177,7 +203,10 @@ const CoachMarkPortal = (props: CoachMarkPortalProps) => {
           <div className="display-flex flex-justify-end">
             <button
               className="usa-button font-sans-2xs"
-              onClick={() => coachMarkContext.setIsOpen(false)}
+              onClick={() => {
+                setHideCoachMarkStorageItem(coachMarkContext.coachMarkId);
+                coachMarkContext.setIsOpen(false);
+              }}
             >
               Done
             </button>
@@ -194,16 +223,23 @@ interface CoachMarkHeadingProps {
 }
 
 const CoachMarkHeading = (props: CoachMarkHeadingProps) => {
-  const coachMarkContext = useCoachMarkContext();
+  const { coachMarkId, setLabelId, setIsOpen } = useCoachMarkContext();
+  const id = `${coachMarkId}-heading`;
+
+  useLayoutEffect(() => {
+    setLabelId(id);
+    return () => setLabelId(undefined);
+  }, [id, setLabelId]);
 
   return (
     <div className="display-flex flex-justify">
-      <h1 id={coachMarkContext.headingId} className="font-sans-md">
+      <h1 id={id} className="font-sans-md">
         {props.children}
       </h1>
       <CloseButton
+        ariaLabel="close"
         handleClick={() => {
-          coachMarkContext.setIsOpen(false);
+          setIsOpen(false);
         }}
       />
     </div>
@@ -211,35 +247,27 @@ const CoachMarkHeading = (props: CoachMarkHeadingProps) => {
 };
 
 interface CoachMarkDescriptionProps {
+  asChild?: boolean;
   children: ReactNode;
 }
 
 const CoachMarkDescription = (props: CoachMarkDescriptionProps) => {
-  const coachMarkContext = useCoachMarkContext();
+  const { coachMarkId, setDescriptionId } = useCoachMarkContext();
+  const id = `${coachMarkId}-description`;
+
+  useLayoutEffect(() => {
+    setDescriptionId(id);
+    return () => setDescriptionId(undefined);
+  }, [id, setDescriptionId]);
+
+  if (props.asChild) {
+    return <div id={id}>{props.children}</div>;
+  }
 
   return (
-    <p id={coachMarkContext.descriptionId} className="margin-top-0 font-sans-2xs">
+    <p id={id} className="margin-top-0 font-sans-2xs">
       {props.children}
     </p>
-  );
-};
-
-interface CloseButtonProps {
-  handleClick: () => void;
-}
-
-// TODO: Refactor with button in ErrorAlert
-const CloseButton = (props: CloseButtonProps) => {
-  return (
-    <button
-      className="usa-button usa-button--unstyled"
-      onClick={props.handleClick}
-      aria-label="Close"
-    >
-      <svg className="usa-icon text-ink" aria-hidden="true" focusable="false" role="img">
-        <use href={`${icons}#close`}></use>
-      </svg>
-    </button>
   );
 };
 
