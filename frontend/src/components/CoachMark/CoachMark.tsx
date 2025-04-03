@@ -1,6 +1,8 @@
 import type { ReactElement, ReactNode, RefObject } from "react";
 import {
+  cloneElement,
   createContext,
+  isValidElement,
   useContext,
   useEffect,
   useLayoutEffect,
@@ -101,7 +103,13 @@ export const useCoachMark = (options: CoachMarkOptions) => {
 
   const floatingRootContext = useFloatingRootContext({
     open: isOpen,
-    onOpenChange: setIsOpen,
+    onOpenChange(nextOpen) {
+      setIsOpen(nextOpen);
+
+      if (nextOpen === false) {
+        setHideCoachMarkStorageItem(options.id);
+      }
+    },
     elements: {
       reference: referenceElement,
       floating: coachMark,
@@ -109,7 +117,6 @@ export const useCoachMark = (options: CoachMarkOptions) => {
   });
 
   const dismiss = useDismiss(floatingRootContext);
-
   const interactions = useInteractions([dismiss]);
 
   return useMemo(
@@ -117,7 +124,10 @@ export const useCoachMark = (options: CoachMarkOptions) => {
       setCoachMark,
       setReferenceElement,
       isOpen,
-      setIsOpen,
+      handleDismiss: () => {
+        setIsOpen(false);
+        setHideCoachMarkStorageItem(options.id);
+      },
       coachMarkPortal: options.coachMarkPortal,
       coachMarkId: options.id,
       labelId,
@@ -201,13 +211,7 @@ const CoachMarkPortal = (props: CoachMarkPortalProps) => {
         >
           {props.children}
           <div className="display-flex flex-justify-end">
-            <button
-              className="usa-button font-sans-2xs"
-              onClick={() => {
-                setHideCoachMarkStorageItem(coachMarkContext.coachMarkId);
-                coachMarkContext.setIsOpen(false);
-              }}
-            >
+            <button className="usa-button font-sans-2xs" onClick={coachMarkContext.handleDismiss}>
               Done
             </button>
           </div>
@@ -223,7 +227,7 @@ interface CoachMarkHeadingProps {
 }
 
 const CoachMarkHeading = (props: CoachMarkHeadingProps) => {
-  const { coachMarkId, setLabelId, setIsOpen } = useCoachMarkContext();
+  const { coachMarkId, setLabelId, handleDismiss } = useCoachMarkContext();
   const id = `${coachMarkId}-heading`;
 
   useLayoutEffect(() => {
@@ -236,12 +240,7 @@ const CoachMarkHeading = (props: CoachMarkHeadingProps) => {
       <h1 id={id} className="font-sans-md">
         {props.children}
       </h1>
-      <CloseButton
-        ariaLabel="close"
-        handleClick={() => {
-          setIsOpen(false);
-        }}
-      />
+      <CloseButton ariaLabel="Close" handleClick={handleDismiss} />
     </div>
   );
 };
@@ -261,7 +260,12 @@ const CoachMarkDescription = (props: CoachMarkDescriptionProps) => {
   }, [id, setDescriptionId]);
 
   if (props.asChild) {
-    return <div id={id}>{props.children}</div>;
+    if (!isValidElement(props.children)) {
+      throw Error(
+        `When asChild is true, ${CoachMarkDescription.name}'s children must be a valid React element`
+      );
+    }
+    return cloneElement(props.children as ReactElement<{ id: string }>, { id });
   }
 
   return (

@@ -4,6 +4,8 @@ import userEvent from "@testing-library/user-event";
 
 import * as CoachMark from "./CoachMark";
 
+// TODO: implement asChild to not wrap in dev but put ID on child
+
 const DEFAULT_EXPIRATION_DATE = "2025-01-01";
 
 const DEFAULT_COACH_MARK_OPTIONS: Omit<CoachMark.CoachMarkOptions, "referenceRef"> = {
@@ -151,6 +153,33 @@ describe(CoachMark.Root.name, () => {
       )
     ).toThrow();
   });
+
+  it("sets the hideCoachMark localStorage item when the coach mark is dismissed by pressing the escape key", async () => {
+    const coachMarkId = "multiple-file-upload";
+    render(
+      <ComponentWithCoachMark
+        useCoachMarkOptions={{
+          ...DEFAULT_COACH_MARK_OPTIONS,
+          id: coachMarkId,
+          coachMarkPortal: (
+            <CoachMark.Portal placement="top">
+              <CoachMark.Heading>Multiple file upload</CoachMark.Heading>
+            </CoachMark.Portal>
+          ),
+        }}
+      />
+    );
+
+    expect(screen.getByRole("dialog")).toBeInTheDocument();
+
+    const hideCoachMarkKey = CoachMark.getHideCoachMarkStorageKey(coachMarkId);
+    expect(localStorage.getItem(hideCoachMarkKey)).toBeNull();
+
+    await userEvent.keyboard("{Escape}");
+    expect(screen.queryByRole("dialog")).not.toBeInTheDocument();
+
+    expect(localStorage.getItem(hideCoachMarkKey)).toBe("true");
+  });
 });
 
 describe(CoachMark.Portal.name, () => {
@@ -259,7 +288,7 @@ describe(CoachMark.Portal.name, () => {
       expect(screen.queryByRole("dialog", { name: coachMarkHeading })).not.toBeInTheDocument();
     });
 
-    it("sets the hideCoachMark localStorage item when the coach mark is dismissed", async () => {
+    it("sets the hideCoachMark localStorage item when the Done button is clicked", async () => {
       const coachMarkHeading = "Multiple file upload";
       const coachMarkId = "multiple_file_upload";
       render(
@@ -376,6 +405,32 @@ describe(CoachMark.Heading.name, () => {
     await userEvent.click(closeButton);
     expect(screen.queryByText(coachMarkHeading)).not.toBeInTheDocument();
   });
+
+  it("sets the hideCoachMark localStorage item when the Close button is clicked", async () => {
+    const coachMarkHeading = "Multiple file upload";
+    const coachMarkId = "multiple_file_upload";
+    render(
+      <ComponentWithCoachMark
+        useCoachMarkOptions={{
+          ...DEFAULT_COACH_MARK_OPTIONS,
+          id: coachMarkId,
+          coachMarkPortal: (
+            <CoachMark.Portal placement="top">
+              <CoachMark.Heading>{coachMarkHeading}</CoachMark.Heading>
+            </CoachMark.Portal>
+          ),
+        }}
+      />
+    );
+    const hideCoachMarkKey = CoachMark.getHideCoachMarkStorageKey(coachMarkId);
+    expect(localStorage.getItem(hideCoachMarkKey)).toBeNull();
+
+    const closeButton = screen.getByRole("button", { name: "Close" });
+    await userEvent.click(closeButton);
+    expect(closeButton).not.toBeInTheDocument();
+
+    expect(localStorage.getItem(hideCoachMarkKey)).toBe("true");
+  });
 });
 
 describe(CoachMark.Description.name, () => {
@@ -414,8 +469,29 @@ describe(CoachMark.Description.name, () => {
         }}
       />
     );
-    expect(screen.queryByRole("paragraph")).not.toBeInTheDocument();
+    const listElement = screen.getByRole("list");
     expect(screen.getByText(descriptionText)).toHaveRole("listitem");
+    expect(screen.getByRole("dialog")).toHaveAttribute("aria-describedby", listElement.id);
+  });
+
+  it("throws an error when the asChild prop is true and an invalid React element is passed a child", () => {
+    expect(() =>
+      render(
+        <ComponentWithCoachMark
+          useCoachMarkOptions={{
+            ...DEFAULT_COACH_MARK_OPTIONS,
+            coachMarkPortal: (
+              <CoachMark.Portal placement="top">
+                <CoachMark.Description asChild={true}>
+                  <p>Paragraph 1</p>
+                  <p>Paragraph 2</p>
+                </CoachMark.Description>
+              </CoachMark.Portal>
+            ),
+          }}
+        />
+      )
+    ).toThrow();
   });
 
   it("serves as the dialog's accessible description (via the aria-describedby attribute)", () => {
@@ -438,5 +514,3 @@ describe(CoachMark.Description.name, () => {
     expect(coachMark).toHaveAccessibleDescription(description);
   });
 });
-
-// TODO: add test for close button (including localstorage)

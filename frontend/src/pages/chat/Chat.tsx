@@ -871,12 +871,12 @@ export const Chat = () => {
     coachMarkPortal: (
       <CoachMark.Portal placement="top">
         <CoachMark.Heading>New file upload features!</CoachMark.Heading>
-        <CoachMark.Description>
+        <CoachMark.Description asChild>
           <ul className="usa-list margin-top-0">
-            <li>Upload up to 10 files</li>
-            <li>File size limit increased to 50MB for files, 10MB for images</li>
-            <li>.DOCX and .CSV file types added</li>
-            <li>Updated content filtering</li>
+            <li>Upload up to 10 files.</li>
+            <li>File size limit increased to 50MB for files, 10MB for images.</li>
+            <li>.DOCX and .CSV file types added.</li>
+            <li>Updated content filtering.</li>
           </ul>
         </CoachMark.Description>
       </CoachMark.Portal>
