@@ -9,10 +9,10 @@ jobs:
   changed_files:
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683 # v4
 
       - name: List changed frontend source files
-        uses: tj-actions/changed-files@v44
+        uses: tj-actions/changed-files@2d756ea4c53f7f6b397767d8723b3a10a9f35bf2 # v44
         id: changed-frontend-src-files
         with:
           files: |
@@ -22,7 +22,7 @@ jobs:
       - name: List changed frontend static files
         id: changed-frontend-static-files
         if: steps.changed-frontend-src-files.outputs.files_changed == 'true'
-        uses: tj-actions/changed-files@v44
+        uses: tj-actions/changed-files@2d756ea4c53f7f6b397767d8723b3a10a9f35bf2 # v44
         with:
           files: |
             static
@@ -32,7 +32,7 @@ jobs:
         run: echo "There were changes to the frontend code, but no corresponding changes to static files.  Please build the project locally, commit the static file changes and push the changes to try again." && exit 1
 
       - name: List logo customizations
-        uses: tj-actions/changed-files@v44
+        uses: tj-actions/changed-files@2d756ea4c53f7f6b397767d8723b3a10a9f35bf2 # v44
         id: changed-logo-files
         with:
           files: |
@@ -41,7 +41,7 @@ jobs:
 
       - name: Comment on logo customizations
         if: steps.changed-logo-files.outputs.any_changed == 'true'
-        uses: mshick/add-pr-comment@v2
+        uses: mshick/add-pr-comment@b8f338c590a895d50bcbfa6c5859251edc8952fc # v2
         with:
           message: |
             "Hello contributor, it appears that your pull request contains some customizations to branding. We are unable to approve your PR at this time. If you believe this message to be in error, please correct these unsupported changes and try again, or reach out to one of the maintainers of the repo to discuss the changes."
