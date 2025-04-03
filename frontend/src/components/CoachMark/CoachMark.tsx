@@ -3,6 +3,7 @@ import {
   cloneElement,
   createContext,
   isValidElement,
+  useCallback,
   useContext,
   useEffect,
   useLayoutEffect,
@@ -26,6 +27,7 @@ import {
   useInteractions,
 } from "@floating-ui/react";
 
+import { logEvent } from "../../utils/logEvent";
 import { CloseButton } from "../common/Button";
 
 import styles from "./CoachMark.module.css";
@@ -95,6 +97,14 @@ export const useCoachMark = (options: CoachMarkOptions) => {
   const [labelId, setLabelId] = useState<string | undefined>();
   const [descriptionId, setDescriptionId] = useState<string | undefined>();
 
+  const handleDismiss = useCallback(() => {
+    setIsOpen(false);
+    setHideCoachMarkStorageItem(options.id);
+    logEvent("click_close_coach_mark", {
+      coach_mark_id: options.id,
+    });
+  }, [options.id]);
+
   useEffect(() => {
     if (options.referenceRef.current !== null) {
       setReferenceElement(options.referenceRef.current);
@@ -104,10 +114,10 @@ export const useCoachMark = (options: CoachMarkOptions) => {
   const floatingRootContext = useFloatingRootContext({
     open: isOpen,
     onOpenChange(nextOpen) {
-      setIsOpen(nextOpen);
-
       if (nextOpen === false) {
-        setHideCoachMarkStorageItem(options.id);
+        handleDismiss();
+      } else {
+        setIsOpen(nextOpen);
       }
     },
     elements: {
@@ -124,10 +134,7 @@ export const useCoachMark = (options: CoachMarkOptions) => {
       setCoachMark,
       setReferenceElement,
       isOpen,
-      handleDismiss: () => {
-        setIsOpen(false);
-        setHideCoachMarkStorageItem(options.id);
-      },
+      handleDismiss,
       coachMarkPortal: options.coachMarkPortal,
       coachMarkId: options.id,
       labelId,
@@ -139,6 +146,7 @@ export const useCoachMark = (options: CoachMarkOptions) => {
     }),
     [
       isOpen,
+      handleDismiss,
       options.coachMarkPortal,
       options.id,
       labelId,

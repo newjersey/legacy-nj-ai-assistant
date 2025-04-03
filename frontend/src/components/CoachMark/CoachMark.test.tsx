@@ -2,9 +2,11 @@ import { useRef } from "react";
 import { render, screen, within } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
 
+import * as logEvent from "../../utils/logEvent";
+
 import * as CoachMark from "./CoachMark";
 
-// TODO: implement asChild to not wrap in dev but put ID on child
+//TODO: move dismissal tests together
 
 const DEFAULT_EXPIRATION_DATE = "2025-01-01";
 
@@ -17,6 +19,8 @@ const DEFAULT_COACH_MARK_OPTIONS: Omit<CoachMark.CoachMarkOptions, "referenceRef
     </CoachMark.Portal>
   ),
 };
+
+const logEventSpy = jest.spyOn(logEvent, "logEvent");
 
 interface ComponentWithCoachMarkProps {
   useCoachMarkOptions: Omit<CoachMark.CoachMarkOptions, "referenceRef">;
@@ -39,6 +43,7 @@ const ComponentWithCoachMark = (props: ComponentWithCoachMarkProps) => {
 };
 
 beforeEach(() => {
+  jest.clearAllMocks();
   localStorage.clear();
 
   jest.useFakeTimers({ advanceTimers: true });
@@ -153,33 +158,6 @@ describe(CoachMark.Root.name, () => {
       )
     ).toThrow();
   });
-
-  it("sets the hideCoachMark localStorage item when the coach mark is dismissed by pressing the escape key", async () => {
-    const coachMarkId = "multiple-file-upload";
-    render(
-      <ComponentWithCoachMark
-        useCoachMarkOptions={{
-          ...DEFAULT_COACH_MARK_OPTIONS,
-          id: coachMarkId,
-          coachMarkPortal: (
-            <CoachMark.Portal placement="top">
-              <CoachMark.Heading>Multiple file upload</CoachMark.Heading>
-            </CoachMark.Portal>
-          ),
-        }}
-      />
-    );
-
-    expect(screen.getByRole("dialog")).toBeInTheDocument();
-
-    const hideCoachMarkKey = CoachMark.getHideCoachMarkStorageKey(coachMarkId);
-    expect(localStorage.getItem(hideCoachMarkKey)).toBeNull();
-
-    await userEvent.keyboard("{Escape}");
-    expect(screen.queryByRole("dialog")).not.toBeInTheDocument();
-
-    expect(localStorage.getItem(hideCoachMarkKey)).toBe("true");
-  });
 });
 
 describe(CoachMark.Portal.name, () => {
@@ -200,28 +178,6 @@ describe(CoachMark.Portal.name, () => {
     );
 
     expect(screen.getByText(coachMarkHeading)).toBeInTheDocument();
-  });
-
-  it("closes the coach mark when the 'Done' button is pressed", async () => {
-    const coachMarkHeading = "Multiple file upload";
-    render(
-      <ComponentWithCoachMark
-        useCoachMarkOptions={{
-          ...DEFAULT_COACH_MARK_OPTIONS,
-          coachMarkPortal: (
-            <CoachMark.Portal placement="top">
-              <CoachMark.Heading>{coachMarkHeading}</CoachMark.Heading>
-              <CoachMark.Description>You can now upload multiple files.</CoachMark.Description>
-            </CoachMark.Portal>
-          ),
-        }}
-      />
-    );
-
-    expect(screen.getByText(coachMarkHeading)).toBeInTheDocument();
-    const doneButton = screen.getByRole("button", { name: "Done" });
-    await userEvent.click(doneButton);
-    expect(screen.queryByText(coachMarkHeading)).not.toBeInTheDocument();
   });
 
   it(`renders a modal dialog whose accessible name and description are set by the ${CoachMark.Heading.name} and ${CoachMark.Description.name} components`, async () => {
@@ -286,32 +242,6 @@ describe(CoachMark.Portal.name, () => {
       );
 
       expect(screen.queryByRole("dialog", { name: coachMarkHeading })).not.toBeInTheDocument();
-    });
-
-    it("sets the hideCoachMark localStorage item when the Done button is clicked", async () => {
-      const coachMarkHeading = "Multiple file upload";
-      const coachMarkId = "multiple_file_upload";
-      render(
-        <ComponentWithCoachMark
-          useCoachMarkOptions={{
-            ...DEFAULT_COACH_MARK_OPTIONS,
-            id: coachMarkId,
-            coachMarkPortal: (
-              <CoachMark.Portal placement="top">
-                <CoachMark.Heading>{coachMarkHeading}</CoachMark.Heading>
-              </CoachMark.Portal>
-            ),
-          }}
-        />
-      );
-      const hideCoachMarkKey = CoachMark.getHideCoachMarkStorageKey(coachMarkId);
-      expect(localStorage.getItem(hideCoachMarkKey)).toBeNull();
-
-      const doneButton = screen.getByRole("button", { name: "Done" });
-      await userEvent.click(doneButton);
-      expect(doneButton).not.toBeInTheDocument();
-
-      expect(localStorage.getItem(hideCoachMarkKey)).toBe("true");
     });
 
     it("does not render if the hideCoachMark localStorage item has been set", () => {
@@ -382,54 +312,6 @@ describe(CoachMark.Heading.name, () => {
     const coachMark = screen.getByRole("dialog");
     expect(coachMark).toHaveAttribute("aria-labelledby", heading.id);
     expect(coachMark).toHaveAccessibleName(coachMarkHeadingText);
-  });
-
-  it("renders a close button that closes the dialog", async () => {
-    const coachMarkHeading = "Multiple file upload";
-    render(
-      <ComponentWithCoachMark
-        useCoachMarkOptions={{
-          ...DEFAULT_COACH_MARK_OPTIONS,
-          coachMarkPortal: (
-            <CoachMark.Portal placement="top">
-              <CoachMark.Heading>{coachMarkHeading}</CoachMark.Heading>
-              <CoachMark.Description>You can now upload multiple files.</CoachMark.Description>
-            </CoachMark.Portal>
-          ),
-        }}
-      />
-    );
-
-    expect(screen.getByText(coachMarkHeading)).toBeInTheDocument();
-    const closeButton = screen.getByRole("button", { name: "Close" });
-    await userEvent.click(closeButton);
-    expect(screen.queryByText(coachMarkHeading)).not.toBeInTheDocument();
-  });
-
-  it("sets the hideCoachMark localStorage item when the Close button is clicked", async () => {
-    const coachMarkHeading = "Multiple file upload";
-    const coachMarkId = "multiple_file_upload";
-    render(
-      <ComponentWithCoachMark
-        useCoachMarkOptions={{
-          ...DEFAULT_COACH_MARK_OPTIONS,
-          id: coachMarkId,
-          coachMarkPortal: (
-            <CoachMark.Portal placement="top">
-              <CoachMark.Heading>{coachMarkHeading}</CoachMark.Heading>
-            </CoachMark.Portal>
-          ),
-        }}
-      />
-    );
-    const hideCoachMarkKey = CoachMark.getHideCoachMarkStorageKey(coachMarkId);
-    expect(localStorage.getItem(hideCoachMarkKey)).toBeNull();
-
-    const closeButton = screen.getByRole("button", { name: "Close" });
-    await userEvent.click(closeButton);
-    expect(closeButton).not.toBeInTheDocument();
-
-    expect(localStorage.getItem(hideCoachMarkKey)).toBe("true");
   });
 });
 
@@ -512,5 +394,96 @@ describe(CoachMark.Description.name, () => {
     const coachMark = screen.getByRole("dialog");
     expect(coachMark).toHaveAttribute("aria-describedby", descriptionElement.id);
     expect(coachMark).toHaveAccessibleDescription(description);
+  });
+});
+
+describe("dismissing the coach mark", () => {
+  it.each(["Done", "Close"])(
+    "renders a button with accessible name '%s' that closes the dialog",
+    async (accessibleName) => {
+      const coachMarkHeading = "Multiple file upload";
+      render(
+        <ComponentWithCoachMark
+          useCoachMarkOptions={{
+            ...DEFAULT_COACH_MARK_OPTIONS,
+            coachMarkPortal: (
+              <CoachMark.Portal placement="top">
+                <CoachMark.Heading>{coachMarkHeading}</CoachMark.Heading>
+                <CoachMark.Description>You can now upload multiple files.</CoachMark.Description>
+              </CoachMark.Portal>
+            ),
+          }}
+        />
+      );
+
+      expect(screen.getByText(coachMarkHeading)).toBeInTheDocument();
+      const button = screen.getByRole("button", { name: accessibleName });
+      await userEvent.click(button);
+      expect(screen.queryByText(coachMarkHeading)).not.toBeInTheDocument();
+    }
+  );
+
+  it.each(["Done", "Close"])(
+    "sets the hideCoachMark localStorage item and fires the 'click_close_coach_mark' GA event when the '%s' button is clicked",
+    async (accessibleName) => {
+      const coachMarkHeading = "Multiple file upload";
+      const coachMarkId = "multiple_file_upload";
+      render(
+        <ComponentWithCoachMark
+          useCoachMarkOptions={{
+            ...DEFAULT_COACH_MARK_OPTIONS,
+            id: coachMarkId,
+            coachMarkPortal: (
+              <CoachMark.Portal placement="top">
+                <CoachMark.Heading>{coachMarkHeading}</CoachMark.Heading>
+              </CoachMark.Portal>
+            ),
+          }}
+        />
+      );
+      const hideCoachMarkKey = CoachMark.getHideCoachMarkStorageKey(coachMarkId);
+      expect(localStorage.getItem(hideCoachMarkKey)).toBeNull();
+
+      const button = screen.getByRole("button", { name: accessibleName });
+      await userEvent.click(button);
+      expect(button).not.toBeInTheDocument();
+
+      expect(localStorage.getItem(hideCoachMarkKey)).toBe("true");
+      expect(logEventSpy).toHaveBeenCalledTimes(1);
+      expect(logEventSpy).toHaveBeenCalledWith("click_close_coach_mark", {
+        coach_mark_id: coachMarkId,
+      });
+    }
+  );
+
+  it("sets the hideCoachMark localStorage item and fires the 'click_close_coach_mark' GA event when the coach mark is dismissed via Floating UI's dismiss interaction (e.g. pressing the Escape key)", async () => {
+    const coachMarkId = "multiple-file-upload";
+    render(
+      <ComponentWithCoachMark
+        useCoachMarkOptions={{
+          ...DEFAULT_COACH_MARK_OPTIONS,
+          id: coachMarkId,
+          coachMarkPortal: (
+            <CoachMark.Portal placement="top">
+              <CoachMark.Heading>Multiple file upload</CoachMark.Heading>
+            </CoachMark.Portal>
+          ),
+        }}
+      />
+    );
+
+    expect(screen.getByRole("dialog")).toBeInTheDocument();
+
+    const hideCoachMarkKey = CoachMark.getHideCoachMarkStorageKey(coachMarkId);
+    expect(localStorage.getItem(hideCoachMarkKey)).toBeNull();
+
+    await userEvent.keyboard("{Escape}");
+    expect(screen.queryByRole("dialog")).not.toBeInTheDocument();
+
+    expect(localStorage.getItem(hideCoachMarkKey)).toBe("true");
+    expect(logEventSpy).toHaveBeenCalledTimes(1);
+    expect(logEventSpy).toHaveBeenCalledWith("click_close_coach_mark", {
+      coach_mark_id: coachMarkId,
+    });
   });
 });
