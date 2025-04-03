@@ -310,6 +310,10 @@ export const QuestionInput = ({
           ...prevInputErrors,
           [ErrorAlertType.EXCEEDED_MAX_FILE_COUNT]: `A maximum of ${MAX_UPLOADED_FILE_COUNT} files can be uploaded.`,
         }));
+
+        logEvent("upload_files_error_file_count", {
+          file_count: selectedFilesToSet.length,
+        });
       } else {
         setSelectedFiles([...selectedFiles, ...filesWithIds]);
       }
