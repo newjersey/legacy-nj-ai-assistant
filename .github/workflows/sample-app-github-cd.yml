@@ -18,7 +18,7 @@ jobs:
       - uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683 # v4
 
       - name: Set up Python version
-        uses: actions/setup-python@0f07f7f756721ebd886c2462646a35f78a8bc4de # v1
+        uses: actions/setup-python@8d9ed9ac5c53483de85588cdf95a591a75ab9f55 # v5
         with:
           python-version: '3.13'
 
@@ -70,7 +70,7 @@ jobs:
           subscription-id: ${{ secrets.AZUREAPPSERVICE_SUBSCRIPTIONID_07FF4A7ACD624D90ADE700FA7786CF46 }}
 
       - name: 'Deploy to Azure Web App'
-        uses: azure/webapps-deploy@4bfb30bef2c330e36be280cb1e5726d0fac06233 # v2
+        uses: azure/webapps-deploy@2fdd5c3ebb4e540834e86ecc1f6fdcd5539023ee # v3
         id: deploy-to-webapp
         with:
           app-name: 'sample-app-github-cd'
