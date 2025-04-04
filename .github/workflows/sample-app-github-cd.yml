@@ -70,7 +70,7 @@ jobs:
           subscription-id: ${{ secrets.AZUREAPPSERVICE_SUBSCRIPTIONID_07FF4A7ACD624D90ADE700FA7786CF46 }}
 
       - name: 'Deploy to Azure Web App'
-        uses: azure/webapps-deploy@4bfb30bef2c330e36be280cb1e5726d0fac06233 # v2
+        uses: azure/webapps-deploy@2fdd5c3ebb4e540834e86ecc1f6fdcd5539023ee # v3
         id: deploy-to-webapp
         with:
           app-name: 'sample-app-github-cd'
