@@ -19,7 +19,7 @@ jobs:
     steps:
     - uses: actions/checkout@f43a0e5ff2bd294095638e18286ca9a3d1956744 # v3
     - name: Set up Python 3.11
-      uses: actions/setup-python@3542bca2639a428e1796aaa6a2ffef0c0f575566 # v3
+      uses: actions/setup-python@8d9ed9ac5c53483de85588cdf95a591a75ab9f55 # v5
       with:
         python-version: "3.13"
     - name: Install dependencies
@@ -70,7 +70,7 @@ jobs:
     steps:
     - uses: actions/checkout@f43a0e5ff2bd294095638e18286ca9a3d1956744 # v3
     - name: Set up Python 3.11
-      uses: actions/setup-python@3542bca2639a428e1796aaa6a2ffef0c0f575566 # v3
+      uses: actions/setup-python@8d9ed9ac5c53483de85588cdf95a591a75ab9f55 # v5
       with:
         python-version: "3.13"
     - name: Install dependencies
