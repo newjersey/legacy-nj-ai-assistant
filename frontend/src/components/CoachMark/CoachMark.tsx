@@ -38,6 +38,8 @@ const GAP = 8;
 const COACH_MARK_STORAGE_KEY_PREFIX = "coach_mark";
 const HIDE_COACH_MARK_STORAGE_KEY_PREFIX = "hide_coach_mark";
 
+// TODO: reverse tab order of heading + close button
+
 export const getCoachMarkStorageKey = (id: string) => {
   return `${COACH_MARK_STORAGE_KEY_PREFIX}__${id}`;
 };
