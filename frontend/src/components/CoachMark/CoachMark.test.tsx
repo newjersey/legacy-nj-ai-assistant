@@ -6,15 +6,13 @@ import * as logEvent from "../../utils/logEvent";
 
 import * as CoachMark from "./CoachMark";
 
-//TODO: move dismissal tests together
-
 const DEFAULT_EXPIRATION_DATE = "2025-01-01";
 
 const DEFAULT_COACH_MARK_OPTIONS: Omit<CoachMark.CoachMarkOptions, "referenceRef"> = {
   id: "",
   expiresOn: DEFAULT_EXPIRATION_DATE,
   coachMarkPortal: (
-    <CoachMark.Portal placement="top">
+    <CoachMark.Portal allowedPlacements={["top"]}>
       <></>
     </CoachMark.Portal>
   ),
@@ -41,6 +39,8 @@ const ComponentWithCoachMark = (props: ComponentWithCoachMarkProps) => {
     </CoachMark.Root>
   );
 };
+
+const getReferenceElement = (): HTMLElement => screen.getByText("Reference element");
 
 beforeEach(() => {
   jest.clearAllMocks();
@@ -135,7 +135,7 @@ describe(CoachMark.Root.name, () => {
         useCoachMarkOptions={{
           ...DEFAULT_COACH_MARK_OPTIONS,
           coachMarkPortal: (
-            <CoachMark.Portal placement="top">
+            <CoachMark.Portal allowedPlacements={["top"]}>
               <CoachMark.Heading>Multiple file upload</CoachMark.Heading>
             </CoachMark.Portal>
           ),
@@ -143,7 +143,7 @@ describe(CoachMark.Root.name, () => {
       />
     );
 
-    expect(screen.getByText("Reference element")).toBeInTheDocument();
+    expect(getReferenceElement()).toBeInTheDocument();
   });
 
   it("throws an error when the 'coachMarkPortal' option is not a coachMarkPortal component", async () => {
@@ -168,7 +168,7 @@ describe(CoachMark.Portal.name, () => {
         useCoachMarkOptions={{
           ...DEFAULT_COACH_MARK_OPTIONS,
           coachMarkPortal: (
-            <CoachMark.Portal placement="top">
+            <CoachMark.Portal allowedPlacements={["top"]}>
               <CoachMark.Heading>{coachMarkHeading}</CoachMark.Heading>
               <CoachMark.Description>You can now upload multiple files.</CoachMark.Description>
             </CoachMark.Portal>
@@ -188,7 +188,7 @@ describe(CoachMark.Portal.name, () => {
         useCoachMarkOptions={{
           ...DEFAULT_COACH_MARK_OPTIONS,
           coachMarkPortal: (
-            <CoachMark.Portal placement="top">
+            <CoachMark.Portal allowedPlacements={["top"]}>
               <CoachMark.Heading>{coachMarkHeading}</CoachMark.Heading>
               <CoachMark.Description>{coachMarkDescription}</CoachMark.Description>
             </CoachMark.Portal>
@@ -208,7 +208,7 @@ describe(CoachMark.Portal.name, () => {
         useCoachMarkOptions={{
           ...DEFAULT_COACH_MARK_OPTIONS,
           coachMarkPortal: (
-            <CoachMark.Portal placement="top">
+            <CoachMark.Portal allowedPlacements={["top"]}>
               <></>
             </CoachMark.Portal>
           ),
@@ -218,6 +218,23 @@ describe(CoachMark.Portal.name, () => {
     const coachMark = screen.getByRole("dialog");
     expect(coachMark).not.toHaveAccessibleName();
     expect(coachMark).not.toHaveAccessibleDescription();
+  });
+
+  it("adds the coachMarkActive class to the reference element", () => {
+    render(
+      <ComponentWithCoachMark
+        useCoachMarkOptions={{
+          ...DEFAULT_COACH_MARK_OPTIONS,
+          coachMarkPortal: (
+            <CoachMark.Portal allowedPlacements={["top"]}>
+              <></>
+            </CoachMark.Portal>
+          ),
+        }}
+      />
+    );
+
+    expect(getReferenceElement()).toHaveClass("coachMarkActive");
   });
 
   describe("conditional logic for rendering", () => {
@@ -233,7 +250,7 @@ describe(CoachMark.Portal.name, () => {
             ...DEFAULT_COACH_MARK_OPTIONS,
             expiresOn: expirationDate,
             coachMarkPortal: (
-              <CoachMark.Portal placement="top">
+              <CoachMark.Portal allowedPlacements={["top"]}>
                 <CoachMark.Heading>{coachMarkHeading}</CoachMark.Heading>
               </CoachMark.Portal>
             ),
@@ -262,7 +279,7 @@ describe(CoachMark.Portal.name, () => {
             id: coachMarkId,
             expiresOn: expirationDate,
             coachMarkPortal: (
-              <CoachMark.Portal placement="top">
+              <CoachMark.Portal allowedPlacements={["top"]}>
                 <CoachMark.Heading>{coachMarkHeading}</CoachMark.Heading>
               </CoachMark.Portal>
             ),
@@ -283,7 +300,7 @@ describe(CoachMark.Heading.name, () => {
         useCoachMarkOptions={{
           ...DEFAULT_COACH_MARK_OPTIONS,
           coachMarkPortal: (
-            <CoachMark.Portal placement="top">
+            <CoachMark.Portal allowedPlacements={["top"]}>
               <CoachMark.Heading>{coachMarkHeadingText}</CoachMark.Heading>
             </CoachMark.Portal>
           ),
@@ -301,7 +318,7 @@ describe(CoachMark.Heading.name, () => {
         useCoachMarkOptions={{
           ...DEFAULT_COACH_MARK_OPTIONS,
           coachMarkPortal: (
-            <CoachMark.Portal placement="top">
+            <CoachMark.Portal allowedPlacements={["top"]}>
               <CoachMark.Heading>{coachMarkHeadingText}</CoachMark.Heading>
             </CoachMark.Portal>
           ),
@@ -323,7 +340,7 @@ describe(CoachMark.Description.name, () => {
         useCoachMarkOptions={{
           ...DEFAULT_COACH_MARK_OPTIONS,
           coachMarkPortal: (
-            <CoachMark.Portal placement="top">
+            <CoachMark.Portal allowedPlacements={["top"]}>
               <CoachMark.Description>{description}</CoachMark.Description>
             </CoachMark.Portal>
           ),
@@ -340,7 +357,7 @@ describe(CoachMark.Description.name, () => {
         useCoachMarkOptions={{
           ...DEFAULT_COACH_MARK_OPTIONS,
           coachMarkPortal: (
-            <CoachMark.Portal placement="top">
+            <CoachMark.Portal allowedPlacements={["top"]}>
               <CoachMark.Description asChild={true}>
                 <ol>
                   <li>{descriptionText}</li>
@@ -363,7 +380,7 @@ describe(CoachMark.Description.name, () => {
           useCoachMarkOptions={{
             ...DEFAULT_COACH_MARK_OPTIONS,
             coachMarkPortal: (
-              <CoachMark.Portal placement="top">
+              <CoachMark.Portal allowedPlacements={["top"]}>
                 <CoachMark.Description asChild={true}>
                   <p>Paragraph 1</p>
                   <p>Paragraph 2</p>
@@ -383,7 +400,7 @@ describe(CoachMark.Description.name, () => {
         useCoachMarkOptions={{
           ...DEFAULT_COACH_MARK_OPTIONS,
           coachMarkPortal: (
-            <CoachMark.Portal placement="top">
+            <CoachMark.Portal allowedPlacements={["top"]}>
               <CoachMark.Description>{description}</CoachMark.Description>
             </CoachMark.Portal>
           ),
@@ -397,17 +414,32 @@ describe(CoachMark.Description.name, () => {
   });
 });
 
-describe("dismissing the coach mark", () => {
-  it.each(["Done", "Close"])(
-    "renders a button with accessible name '%s' that closes the dialog",
-    async (accessibleName) => {
+const clickDoneButton = async () => {
+  const button = screen.getByRole("button", { name: "Done" });
+  await userEvent.click(button);
+};
+
+const clickCloseButton = async () => {
+  const button = screen.getByRole("button", { name: "Close" });
+  await userEvent.click(button);
+};
+
+const pressEscapeKey = async () => await userEvent.keyboard("{Escape}");
+
+describe.each([
+  ["the done button is clicked", clickDoneButton],
+  ["the close button is clicked", clickCloseButton],
+  ["Floating UI's dismiss interaction is triggered (e.g. pressing the Escape key)", pressEscapeKey],
+])("dismissing the coach mark", (testCase, dismissEvent) => {
+  describe(`when ${testCase}`, () => {
+    it("closes the dialog", async () => {
       const coachMarkHeading = "Multiple file upload";
       render(
         <ComponentWithCoachMark
           useCoachMarkOptions={{
             ...DEFAULT_COACH_MARK_OPTIONS,
             coachMarkPortal: (
-              <CoachMark.Portal placement="top">
+              <CoachMark.Portal allowedPlacements={["top"]}>
                 <CoachMark.Heading>{coachMarkHeading}</CoachMark.Heading>
                 <CoachMark.Description>You can now upload multiple files.</CoachMark.Description>
               </CoachMark.Portal>
@@ -417,15 +449,11 @@ describe("dismissing the coach mark", () => {
       );
 
       expect(screen.getByText(coachMarkHeading)).toBeInTheDocument();
-      const button = screen.getByRole("button", { name: accessibleName });
-      await userEvent.click(button);
+      await dismissEvent();
       expect(screen.queryByText(coachMarkHeading)).not.toBeInTheDocument();
-    }
-  );
+    });
 
-  it.each(["Done", "Close"])(
-    "sets the hideCoachMark localStorage item and fires the 'click_close_coach_mark' GA event when the '%s' button is clicked",
-    async (accessibleName) => {
+    it("sets the hideCoachMark localStorage item and fires the 'click_close_coach_mark' GA event", async () => {
       const coachMarkHeading = "Multiple file upload";
       const coachMarkId = "multiple_file_upload";
       render(
@@ -434,7 +462,7 @@ describe("dismissing the coach mark", () => {
             ...DEFAULT_COACH_MARK_OPTIONS,
             id: coachMarkId,
             coachMarkPortal: (
-              <CoachMark.Portal placement="top">
+              <CoachMark.Portal allowedPlacements={["top"]}>
                 <CoachMark.Heading>{coachMarkHeading}</CoachMark.Heading>
               </CoachMark.Portal>
             ),
@@ -444,46 +472,35 @@ describe("dismissing the coach mark", () => {
       const hideCoachMarkKey = CoachMark.getHideCoachMarkStorageKey(coachMarkId);
       expect(localStorage.getItem(hideCoachMarkKey)).toBeNull();
 
-      const button = screen.getByRole("button", { name: accessibleName });
-      await userEvent.click(button);
-      expect(button).not.toBeInTheDocument();
+      expect(screen.getByText(coachMarkHeading)).toBeInTheDocument();
+      await dismissEvent();
+      expect(screen.queryByText(coachMarkHeading)).not.toBeInTheDocument();
 
       expect(localStorage.getItem(hideCoachMarkKey)).toBe("true");
       expect(logEventSpy).toHaveBeenCalledTimes(1);
       expect(logEventSpy).toHaveBeenCalledWith("click_close_coach_mark", {
         coach_mark_id: coachMarkId,
       });
-    }
-  );
+    });
 
-  it("sets the hideCoachMark localStorage item and fires the 'click_close_coach_mark' GA event when the coach mark is dismissed via Floating UI's dismiss interaction (e.g. pressing the Escape key)", async () => {
-    const coachMarkId = "multiple-file-upload";
-    render(
-      <ComponentWithCoachMark
-        useCoachMarkOptions={{
-          ...DEFAULT_COACH_MARK_OPTIONS,
-          id: coachMarkId,
-          coachMarkPortal: (
-            <CoachMark.Portal placement="top">
-              <CoachMark.Heading>Multiple file upload</CoachMark.Heading>
-            </CoachMark.Portal>
-          ),
-        }}
-      />
-    );
+    it("removes the coachMarkActive class", async () => {
+      const coachMarkHeading = "Multiple file upload";
+      render(
+        <ComponentWithCoachMark
+          useCoachMarkOptions={{
+            ...DEFAULT_COACH_MARK_OPTIONS,
+            coachMarkPortal: (
+              <CoachMark.Portal allowedPlacements={["top"]}>
+                <CoachMark.Heading>{coachMarkHeading}</CoachMark.Heading>
+                <CoachMark.Description>You can now upload multiple files.</CoachMark.Description>
+              </CoachMark.Portal>
+            ),
+          }}
+        />
+      );
 
-    expect(screen.getByRole("dialog")).toBeInTheDocument();
-
-    const hideCoachMarkKey = CoachMark.getHideCoachMarkStorageKey(coachMarkId);
-    expect(localStorage.getItem(hideCoachMarkKey)).toBeNull();
-
-    await userEvent.keyboard("{Escape}");
-    expect(screen.queryByRole("dialog")).not.toBeInTheDocument();
-
-    expect(localStorage.getItem(hideCoachMarkKey)).toBe("true");
-    expect(logEventSpy).toHaveBeenCalledTimes(1);
-    expect(logEventSpy).toHaveBeenCalledWith("click_close_coach_mark", {
-      coach_mark_id: coachMarkId,
+      await dismissEvent();
+      expect(getReferenceElement()).not.toHaveClass("coachMarkActive");
     });
   });
 });

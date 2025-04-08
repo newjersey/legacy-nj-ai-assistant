@@ -35,7 +35,6 @@ import {
 import NjLogo from "../../assets/nj-logo.svg";
 import { Answer } from "../../components/Answer";
 import { ChatHistoryPanel } from "../../components/ChatHistory/ChatHistoryPanel";
-import * as CoachMark from "../../components/CoachMark/CoachMark";
 import { QuestionInput } from "../../components/QuestionInput";
 import { DEFAULT_CHAT_DESCRIPTION, DEFAULT_CHAT_TITLE } from "../../constants/defaultAppState";
 import { XSSAllowTags } from "../../constants/sanatizeAllowables";
@@ -862,376 +861,349 @@ export const Chat = () => {
     return "";
   };
 
-  const coachMarkReferenceRef = useRef(null);
-
-  const coachMark = CoachMark.useCoachMark({
-    id: "multiple-file-upload",
-    expiresOn: "2025-05-01",
-    referenceRef: coachMarkReferenceRef,
-    coachMarkPortal: (
-      <CoachMark.Portal placement="top">
-        <CoachMark.Heading>New file upload features!</CoachMark.Heading>
-        <CoachMark.Description asChild>
-          <ul className="usa-list margin-top-0">
-            <li>Upload up to 10 files.</li>
-            <li>File size limit increased to 50MB for files, 10MB for images.</li>
-            <li>.DOCX and .CSV file types added.</li>
-            <li>Updated content filtering.</li>
-          </ul>
-        </CoachMark.Description>
-      </CoachMark.Portal>
-    ),
-  });
-
   return (
-    <CoachMark.Root coachMark={coachMark}>
-      <div className={styles.container} role="main">
-        {showAuthMessage ? (
-          <Stack className={styles.chatEmptyState}>
-            <ShieldLockRegular
-              className={styles.chatIcon}
-              style={{ color: "darkorange", height: "200px", width: "200px" }}
-            />
-            <h1 className={styles.chatEmptyStateTitle}>Authentication Not Configured</h1>
-            <h2 className={styles.chatEmptyStateSubtitle}>
-              This app does not have authentication configured. Please add an identity provider by
-              finding your app in the{" "}
-              <a href="https://portal.azure.com/" target="_blank">
-                Azure Portal
-              </a>
-              and following{" "}
-              <a
-                href="https://learn.microsoft.com/en-us/azure/app-service/scenario-secure-app-authentication-app-service#3-configure-authentication-and-authorization"
-                target="_blank"
-              >
-                these instructions
-              </a>
-              .
-            </h2>
-            <h2 className={styles.chatEmptyStateSubtitle} style={{ fontSize: "20px" }}>
-              <strong>Authentication configuration takes a few minutes to apply. </strong>
-            </h2>
-            <h2 className={styles.chatEmptyStateSubtitle} style={{ fontSize: "20px" }}>
-              <strong>
-                If you deployed in the last 10 minutes, please wait and reload the page after 10
-                minutes.
-              </strong>
-            </h2>
-          </Stack>
-        ) : (
-          <Stack horizontal className={styles.chatRoot}>
-            <div className={`${styles.chatContainer}`}>
-              {!messages || messages.length < 1 ? (
-                <div className={`display-flex flex-column ${styles.chatEmptyState}`}>
-                  <div
-                    className={`display-flex flex-row flex-align-center width-full flex-justify-start ${styles.chatHeader}`}
-                  >
-                    <img
-                      src={NjLogo}
-                      className={`${styles.chatIcon}`}
-                      aria-hidden="true"
-                      alt="Official logo for the State of New Jersey"
-                    />
-                    <h1 className={`margin-left-2 ${styles.chatEmptyStateTitle}`}>
-                      {ui?.chat_title ?? DEFAULT_CHAT_TITLE}
-                    </h1>
-                  </div>
-                  <h2
-                    className={styles.chatEmptyStateSubtitle}
-                    dangerouslySetInnerHTML={{
-                      __html: ui?.chat_description ?? DEFAULT_CHAT_DESCRIPTION,
-                    }}
-                  ></h2>
+    <div className={styles.container} role="main">
+      {showAuthMessage ? (
+        <Stack className={styles.chatEmptyState}>
+          <ShieldLockRegular
+            className={styles.chatIcon}
+            style={{ color: "darkorange", height: "200px", width: "200px" }}
+          />
+          <h1 className={styles.chatEmptyStateTitle}>Authentication Not Configured</h1>
+          <h2 className={styles.chatEmptyStateSubtitle}>
+            This app does not have authentication configured. Please add an identity provider by
+            finding your app in the{" "}
+            <a href="https://portal.azure.com/" target="_blank">
+              Azure Portal
+            </a>
+            and following{" "}
+            <a
+              href="https://learn.microsoft.com/en-us/azure/app-service/scenario-secure-app-authentication-app-service#3-configure-authentication-and-authorization"
+              target="_blank"
+            >
+              these instructions
+            </a>
+            .
+          </h2>
+          <h2 className={styles.chatEmptyStateSubtitle} style={{ fontSize: "20px" }}>
+            <strong>Authentication configuration takes a few minutes to apply. </strong>
+          </h2>
+          <h2 className={styles.chatEmptyStateSubtitle} style={{ fontSize: "20px" }}>
+            <strong>
+              If you deployed in the last 10 minutes, please wait and reload the page after 10
+              minutes.
+            </strong>
+          </h2>
+        </Stack>
+      ) : (
+        <Stack horizontal className={styles.chatRoot}>
+          <div className={`${styles.chatContainer}`}>
+            {!messages || messages.length < 1 ? (
+              <div className={`display-flex flex-column ${styles.chatEmptyState}`}>
+                <div
+                  className={`display-flex flex-row flex-align-center width-full flex-justify-start ${styles.chatHeader}`}
+                >
+                  <img
+                    src={NjLogo}
+                    className={`${styles.chatIcon}`}
+                    aria-hidden="true"
+                    alt="Official logo for the State of New Jersey"
+                  />
+                  <h1 className={`margin-left-2 ${styles.chatEmptyStateTitle}`}>
+                    {ui?.chat_title ?? DEFAULT_CHAT_TITLE}
+                  </h1>
                 </div>
-              ) : (
-                <div className={styles.chatMessageStream} role="log">
-                  {messages.map((answer, index) => (
-                    <div key={answer.id}>
-                      {answer.role === "user" ? (
+                <h2
+                  className={styles.chatEmptyStateSubtitle}
+                  dangerouslySetInnerHTML={{
+                    __html: ui?.chat_description ?? DEFAULT_CHAT_DESCRIPTION,
+                  }}
+                ></h2>
+              </div>
+            ) : (
+              <div className={styles.chatMessageStream} role="log">
+                {messages.map((answer, index) => (
+                  <div key={answer.id}>
+                    {answer.role === "user" ? (
+                      <div
+                        className={`display-flex flex-column flex-align-end ${styles.chatMessageUser}`}
+                      >
                         <div
-                          className={`display-flex flex-column flex-align-end ${styles.chatMessageUser}`}
+                          className={`display-flex flex-column flex-align-end ${styles.chatMessageUserMessage}`}
                         >
-                          <div
-                            className={`display-flex flex-column flex-align-end ${styles.chatMessageUserMessage}`}
-                          >
-                            {answer.uploaded_files != null &&
-                              answer.uploaded_files.some(isImageFile) && (
-                                <div
-                                  className={`display-flex flex-row flex-wrap flex-align-end flex-justify-end ${styles.chatMessageImageAttachmentPreviewContainer}`}
-                                >
-                                  {getUploadedImageFiles(answer.uploaded_files).map((file) => (
-                                    <div className={"margin-bottom-1"} key={file.name}>
-                                      <img
-                                        className={styles.previewImage}
-                                        height="auto"
-                                        src={file.contents}
-                                        alt={file.name}
-                                      ></img>
-                                    </div>
-                                  ))}
-                                </div>
-                              )}
-                            <div className="display-flex flex-row flex-align-end flex-justify-end">
-                              {answer.content}
-                            </div>
-                            {answer.uploaded_files != null && answer.uploaded_files.length > 0 && (
-                              <div className={`${styles.userAttachmentDisclaimer}`}>
-                                {getUserAttachmentDisclaimerText(answer.uploaded_files)}
+                          {answer.uploaded_files != null &&
+                            answer.uploaded_files.some(isImageFile) && (
+                              <div
+                                className={`display-flex flex-row flex-wrap flex-align-end flex-justify-end ${styles.chatMessageImageAttachmentPreviewContainer}`}
+                              >
+                                {getUploadedImageFiles(answer.uploaded_files).map((file) => (
+                                  <div className={"margin-bottom-1"} key={file.name}>
+                                    <img
+                                      className={styles.previewImage}
+                                      height="auto"
+                                      src={file.contents}
+                                      alt={file.name}
+                                    ></img>
+                                  </div>
+                                ))}
                               </div>
                             )}
+                          <div className="display-flex flex-row flex-align-end flex-justify-end">
+                            {answer.content}
                           </div>
+                          {answer.uploaded_files != null && answer.uploaded_files.length > 0 && (
+                            <div className={`${styles.userAttachmentDisclaimer}`}>
+                              {getUserAttachmentDisclaimerText(answer.uploaded_files)}
+                            </div>
+                          )}
                         </div>
-                      ) : answer.role === "assistant" ? (
-                        <div className={styles.chatMessageGpt}>
-                          <Answer
-                            answer={{
-                              answer: answer.content,
-                              citations: parseCitationFromMessage(messages[index - 1]),
-                              plotly_data: parsePlotFromMessage(messages[index - 1]),
-                              message_id: answer.id,
-                              feedback: answer.feedback,
-                              exec_results: execResults,
-                            }}
-                            onCitationClicked={(c) => onShowCitation(c)}
-                            onExectResultClicked={() => onShowExecResult()}
-                          />
-                        </div>
-                      ) : answer.role === ERROR ? (
-                        <div className={styles.chatMessageError}>
-                          <Stack horizontal className={styles.chatMessageErrorContent}>
-                            <ErrorCircleRegular
-                              className={styles.errorIcon}
-                              style={{ color: "rgba(182, 52, 67, 1)" }}
-                            />
-                            <span>Error</span>
-                          </Stack>
-                          <span className={styles.chatMessageErrorContent}>{answer.content}</span>
-                        </div>
-                      ) : null}
-                    </div>
-                  ))}
-                  {showLoadingMessage && (
-                    <>
+                      </div>
+                    ) : answer.role === "assistant" ? (
                       <div className={styles.chatMessageGpt}>
                         <Answer
                           answer={{
-                            answer: "Generating answer...",
-                            citations: [],
-                            plotly_data: null,
+                            answer: answer.content,
+                            citations: parseCitationFromMessage(messages[index - 1]),
+                            plotly_data: parsePlotFromMessage(messages[index - 1]),
+                            message_id: answer.id,
+                            feedback: answer.feedback,
+                            exec_results: execResults,
                           }}
-                          onCitationClicked={() => null}
-                          onExectResultClicked={() => null}
+                          onCitationClicked={(c) => onShowCitation(c)}
+                          onExectResultClicked={() => onShowExecResult()}
                         />
                       </div>
-                    </>
-                  )}
-                  <div ref={chatMessageStreamEnd} />
-                </div>
-              )}
-              <Stack horizontal className={styles.chatInput}>
-                {isLoading && messages.length > 0 && (
-                  <Stack
-                    horizontal
-                    className={styles.stopGeneratingContainer}
-                    role="button"
-                    aria-label="Stop generating"
-                    tabIndex={0}
-                    onClick={stopGenerating}
-                    onKeyDown={(e) =>
-                      e.key === "Enter" || e.key === " " ? stopGenerating() : null
-                    }
-                  >
-                    <SquareRegular className={styles.stopGeneratingIcon} aria-hidden="true" />
-                    <span className={styles.stopGeneratingText} aria-hidden="true">
-                      Stop generating
-                    </span>
-                  </Stack>
+                    ) : answer.role === ERROR ? (
+                      <div className={styles.chatMessageError}>
+                        <Stack horizontal className={styles.chatMessageErrorContent}>
+                          <ErrorCircleRegular
+                            className={styles.errorIcon}
+                            style={{ color: "rgba(182, 52, 67, 1)" }}
+                          />
+                          <span>Error</span>
+                        </Stack>
+                        <span className={styles.chatMessageErrorContent}>{answer.content}</span>
+                      </div>
+                    ) : null}
+                  </div>
+                ))}
+                {showLoadingMessage && (
+                  <>
+                    <div className={styles.chatMessageGpt}>
+                      <Answer
+                        answer={{
+                          answer: "Generating answer...",
+                          citations: [],
+                          plotly_data: null,
+                        }}
+                        onCitationClicked={() => null}
+                        onExectResultClicked={() => null}
+                      />
+                    </div>
+                  </>
                 )}
-                <div className="display-flex width-full">
-                  <Stack className="flex-justify-end margin-bottom-5">
-                    {isCosmosDbConfigured() && (
-                      <button
-                        className={styles.newChatIcon}
-                        onClick={newChat}
-                        aria-label="start a new chat button"
-                        disabled={disabledButton()}
-                      >
-                        <svg className="usa-icon" aria-hidden="true" focusable="false" role="img">
-                          <use href={`${icons}#add`} />
-                        </svg>
-                      </button>
-                    )}
+                <div ref={chatMessageStreamEnd} />
+              </div>
+            )}
+            <Stack horizontal className={styles.chatInput}>
+              {isLoading && messages.length > 0 && (
+                <Stack
+                  horizontal
+                  className={styles.stopGeneratingContainer}
+                  role="button"
+                  aria-label="Stop generating"
+                  tabIndex={0}
+                  onClick={stopGenerating}
+                  onKeyDown={(e) => (e.key === "Enter" || e.key === " " ? stopGenerating() : null)}
+                >
+                  <SquareRegular className={styles.stopGeneratingIcon} aria-hidden="true" />
+                  <span className={styles.stopGeneratingText} aria-hidden="true">
+                    Stop generating
+                  </span>
+                </Stack>
+              )}
+              <div className="display-flex width-full">
+                <Stack className="flex-justify-end margin-bottom-5">
+                  {isCosmosDbConfigured() && (
                     <button
-                      ref={coachMarkReferenceRef}
-                      {...coachMark.getReferenceProps()}
-                      className={`usa-button width-7 display-flex flex-row flex-justify-center flex-align-center ${additionalClearChatStyles}`}
-                      id={styles.chatHistoryButton}
-                      onClick={isCosmosDbConfigured() ? clearChat : newChat}
-                      aria-label="clear chat button"
+                      className={styles.newChatIcon}
+                      onClick={newChat}
+                      aria-label="start a new chat button"
+                      disabled={disabledButton()}
                     >
-                      <svg
-                        className="usa-icon margin-right-05"
-                        aria-hidden="true"
-                        focusable="false"
-                        role="img"
-                      >
-                        <use href={`${icons}#history`} />
+                      <svg className="usa-icon" aria-hidden="true" focusable="false" role="img">
+                        <use href={`${icons}#add`} />
                       </svg>
                     </button>
-                    <Dialog
-                      hidden={hideErrorDialog}
-                      onDismiss={handleErrorDialogClose}
-                      dialogContentProps={errorDialogContentProps}
-                      modalProps={modalProps}
-                    ></Dialog>
-                  </Stack>
-                  <QuestionInput
-                    clearOnSend
-                    placeholder="Type a new question..."
-                    disabled={isLoading}
-                    onSend={(question, id, uploadedFiles) => {
-                      appStateContext?.state.isCosmosDBAvailable?.cosmosDB
-                        ? makeApiRequestWithCosmosDB(question, id)
-                        : makeApiRequestWithoutCosmosDB(question, id, uploadedFiles);
-                    }}
-                    conversationId={
-                      appStateContext?.state.currentChat?.id
-                        ? appStateContext?.state.currentChat?.id
-                        : undefined
-                    }
-                  />
-                </div>
-              </Stack>
-            </div>
-            {/* Citation Panel */}
-            {messages && messages.length > 0 && isCitationPanelOpen && activeCitation && (
-              <Stack.Item
-                className={styles.citationPanel}
-                tabIndex={0}
-                role="tabpanel"
-                aria-label="Citations Panel"
-              >
-                <Stack
-                  aria-label="Citations Panel Header Container"
-                  horizontal
-                  className={styles.citationPanelHeaderContainer}
-                  horizontalAlign="space-between"
-                  verticalAlign="center"
-                >
-                  <span aria-label="Citations" className={styles.citationPanelHeader}>
-                    Citations
-                  </span>
-                  <IconButton
-                    iconProps={{ iconName: "Cancel" }}
-                    aria-label="Close citations panel"
-                    onClick={() => setIsCitationPanelOpen(false)}
-                  />
+                  )}
+                  <button
+                    className={`usa-button width-7 display-flex flex-row flex-justify-center flex-align-center ${additionalClearChatStyles}`}
+                    id={styles.chatHistoryButton}
+                    onClick={isCosmosDbConfigured() ? clearChat : newChat}
+                    aria-label="clear chat button"
+                  >
+                    <svg
+                      className="usa-icon margin-right-05"
+                      aria-hidden="true"
+                      focusable="false"
+                      role="img"
+                    >
+                      <use href={`${icons}#history`} />
+                    </svg>
+                  </button>
+                  <Dialog
+                    hidden={hideErrorDialog}
+                    onDismiss={handleErrorDialogClose}
+                    dialogContentProps={errorDialogContentProps}
+                    modalProps={modalProps}
+                  ></Dialog>
                 </Stack>
-                <div
-                  className={styles.citationPanelTitle}
-                  tabIndex={0}
-                  role="link"
-                  title={
-                    activeCitation.url && !activeCitation.url.includes("blob.core")
-                      ? activeCitation.url
-                      : (activeCitation.title ?? "")
+                <QuestionInput
+                  clearOnSend
+                  placeholder="Type a new question..."
+                  disabled={isLoading}
+                  onSend={(question, id, uploadedFiles) => {
+                    appStateContext?.state.isCosmosDBAvailable?.cosmosDB
+                      ? makeApiRequestWithCosmosDB(question, id)
+                      : makeApiRequestWithoutCosmosDB(question, id, uploadedFiles);
+                  }}
+                  conversationId={
+                    appStateContext?.state.currentChat?.id
+                      ? appStateContext?.state.currentChat?.id
+                      : undefined
                   }
-                  onClick={() => onViewSource(activeCitation)}
-                >
-                  {activeCitation.title}
-                </div>
-                <div>
-                  <ReactMarkdown
-                    linkTarget="_blank"
-                    className={styles.citationPanelContent}
-                    children={DOMPurify.sanitize(activeCitation.content, {
-                      ALLOWED_TAGS: XSSAllowTags,
-                    })}
-                    remarkPlugins={[remarkGfm]}
-                    rehypePlugins={[rehypeRaw]}
-                  />
-                </div>
-              </Stack.Item>
-            )}
-            {messages && messages.length > 0 && isIntentsPanelOpen && (
-              <Stack.Item
-                className={styles.citationPanel}
-                tabIndex={0}
-                role="tabpanel"
-                aria-label="Intents Panel"
+                />
+              </div>
+            </Stack>
+          </div>
+          {/* Citation Panel */}
+          {messages && messages.length > 0 && isCitationPanelOpen && activeCitation && (
+            <Stack.Item
+              className={styles.citationPanel}
+              tabIndex={0}
+              role="tabpanel"
+              aria-label="Citations Panel"
+            >
+              <Stack
+                aria-label="Citations Panel Header Container"
+                horizontal
+                className={styles.citationPanelHeaderContainer}
+                horizontalAlign="space-between"
+                verticalAlign="center"
               >
-                <Stack
-                  aria-label="Intents Panel Header Container"
-                  horizontal
-                  className={styles.citationPanelHeaderContainer}
-                  horizontalAlign="space-between"
-                  verticalAlign="center"
-                >
-                  <span aria-label="Intents" className={styles.citationPanelHeader}>
-                    Intents
-                  </span>
-                  <IconButton
-                    iconProps={{ iconName: "Cancel" }}
-                    aria-label="Close intents panel"
-                    onClick={() => setIsIntentsPanelOpen(false)}
-                  />
-                </Stack>
-                <Stack horizontalAlign="space-between">
-                  {execResults.map((execResult) => {
-                    return (
-                      <Stack className={styles.exectResultList} verticalAlign="space-between">
-                        <>
-                          <span>Intent:</span> <p>{execResult.intent}</p>
-                        </>
-                        {execResult.search_query && (
-                          <>
-                            <span>Search Query:</span>
-                            <SyntaxHighlighter
-                              style={nord}
-                              wrapLines={true}
-                              lineProps={{
-                                style: { wordBreak: "break-all", whiteSpace: "pre-wrap" },
-                              }}
-                              language="sql"
-                              PreTag="p"
-                            >
-                              {execResult.search_query}
-                            </SyntaxHighlighter>
-                          </>
-                        )}
-                        {execResult.search_result && (
-                          <>
-                            <span>Search Result:</span> <p>{execResult.search_result}</p>
-                          </>
-                        )}
-                        {execResult.code_generated && (
-                          <>
-                            <span>Code Generated:</span>
-                            <SyntaxHighlighter
-                              style={nord}
-                              wrapLines={true}
-                              lineProps={{
-                                style: { wordBreak: "break-all", whiteSpace: "pre-wrap" },
-                              }}
-                              language="python"
-                              PreTag="p"
-                            >
-                              {execResult.code_generated}
-                            </SyntaxHighlighter>
-                          </>
-                        )}
-                      </Stack>
-                    );
+                <span aria-label="Citations" className={styles.citationPanelHeader}>
+                  Citations
+                </span>
+                <IconButton
+                  iconProps={{ iconName: "Cancel" }}
+                  aria-label="Close citations panel"
+                  onClick={() => setIsCitationPanelOpen(false)}
+                />
+              </Stack>
+              <div
+                className={styles.citationPanelTitle}
+                tabIndex={0}
+                role="link"
+                title={
+                  activeCitation.url && !activeCitation.url.includes("blob.core")
+                    ? activeCitation.url
+                    : (activeCitation.title ?? "")
+                }
+                onClick={() => onViewSource(activeCitation)}
+              >
+                {activeCitation.title}
+              </div>
+              <div>
+                <ReactMarkdown
+                  linkTarget="_blank"
+                  className={styles.citationPanelContent}
+                  children={DOMPurify.sanitize(activeCitation.content, {
+                    ALLOWED_TAGS: XSSAllowTags,
                   })}
-                </Stack>
-              </Stack.Item>
-            )}
-            {appStateContext?.state.isChatHistoryOpen && isCosmosDbConfigured() && (
-              <ChatHistoryPanel />
-            )}
-          </Stack>
-        )}
-      </div>
-    </CoachMark.Root>
+                  remarkPlugins={[remarkGfm]}
+                  rehypePlugins={[rehypeRaw]}
+                />
+              </div>
+            </Stack.Item>
+          )}
+          {messages && messages.length > 0 && isIntentsPanelOpen && (
+            <Stack.Item
+              className={styles.citationPanel}
+              tabIndex={0}
+              role="tabpanel"
+              aria-label="Intents Panel"
+            >
+              <Stack
+                aria-label="Intents Panel Header Container"
+                horizontal
+                className={styles.citationPanelHeaderContainer}
+                horizontalAlign="space-between"
+                verticalAlign="center"
+              >
+                <span aria-label="Intents" className={styles.citationPanelHeader}>
+                  Intents
+                </span>
+                <IconButton
+                  iconProps={{ iconName: "Cancel" }}
+                  aria-label="Close intents panel"
+                  onClick={() => setIsIntentsPanelOpen(false)}
+                />
+              </Stack>
+              <Stack horizontalAlign="space-between">
+                {execResults.map((execResult) => {
+                  return (
+                    <Stack className={styles.exectResultList} verticalAlign="space-between">
+                      <>
+                        <span>Intent:</span> <p>{execResult.intent}</p>
+                      </>
+                      {execResult.search_query && (
+                        <>
+                          <span>Search Query:</span>
+                          <SyntaxHighlighter
+                            style={nord}
+                            wrapLines={true}
+                            lineProps={{
+                              style: { wordBreak: "break-all", whiteSpace: "pre-wrap" },
+                            }}
+                            language="sql"
+                            PreTag="p"
+                          >
+                            {execResult.search_query}
+                          </SyntaxHighlighter>
+                        </>
+                      )}
+                      {execResult.search_result && (
+                        <>
+                          <span>Search Result:</span> <p>{execResult.search_result}</p>
+                        </>
+                      )}
+                      {execResult.code_generated && (
+                        <>
+                          <span>Code Generated:</span>
+                          <SyntaxHighlighter
+                            style={nord}
+                            wrapLines={true}
+                            lineProps={{
+                              style: { wordBreak: "break-all", whiteSpace: "pre-wrap" },
+                            }}
+                            language="python"
+                            PreTag="p"
+                          >
+                            {execResult.code_generated}
+                          </SyntaxHighlighter>
+                        </>
+                      )}
+                    </Stack>
+                  );
+                })}
+              </Stack>
+            </Stack.Item>
+          )}
+          {appStateContext?.state.isChatHistoryOpen && isCosmosDbConfigured() && (
+            <ChatHistoryPanel />
+          )}
+        </Stack>
+      )}
+    </div>
   );
 };

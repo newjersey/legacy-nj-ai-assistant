@@ -79,6 +79,12 @@ button.fileInputButton {
   align-items: center;
 }
 
+button.fileInputButton:global(.coachMarkActive) {
+  background-color: white;
+  padding: 0.5rem;
+  border-radius: 2rem;
+}
+
 .fileInput {
   display: none;
 }

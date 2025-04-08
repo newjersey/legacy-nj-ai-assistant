@@ -14,13 +14,12 @@ import {
 import type { Placement } from "@floating-ui/react";
 import {
   arrow,
+  autoPlacement,
   autoUpdate,
-  flip,
   FloatingArrow,
   FloatingFocusManager,
   FloatingOverlay,
   offset,
-  shift,
   useDismiss,
   useFloating,
   useFloatingRootContext,
@@ -38,8 +37,6 @@ const GAP = 8;
 const COACH_MARK_STORAGE_KEY_PREFIX = "coach_mark";
 const HIDE_COACH_MARK_STORAGE_KEY_PREFIX = "hide_coach_mark";
 
-// TODO: reverse tab order of heading + close button
-
 export const getCoachMarkStorageKey = (id: string) => {
   return `${COACH_MARK_STORAGE_KEY_PREFIX}__${id}`;
 };
@@ -48,6 +45,7 @@ export const getHideCoachMarkStorageKey = (id: string) => {
   return `${HIDE_COACH_MARK_STORAGE_KEY_PREFIX}__${id}`;
 };
 
+// TODO: just record the expiration
 const setCoachMarkStorageItem = (id: string, expiresOn: string) => {
   const showCoachMarkValue: {
     id: string;
@@ -102,10 +100,11 @@ export const useCoachMark = (options: CoachMarkOptions) => {
   const handleDismiss = useCallback(() => {
     setIsOpen(false);
     setHideCoachMarkStorageItem(options.id);
+    referenceElement?.classList.remove("coachMarkActive");
     logEvent("click_close_coach_mark", {
       coach_mark_id: options.id,
     });
-  }, [options.id]);
+  }, [options.id, referenceElement?.classList]);
 
   useEffect(() => {
     if (options.referenceRef.current !== null) {
@@ -133,8 +132,8 @@ export const useCoachMark = (options: CoachMarkOptions) => {
 
   return useMemo(
     () => ({
+      referenceElement,
       setCoachMark,
-      setReferenceElement,
       isOpen,
       handleDismiss,
       coachMarkPortal: options.coachMarkPortal,
@@ -147,6 +146,7 @@ export const useCoachMark = (options: CoachMarkOptions) => {
       ...floatingRootContext,
     }),
     [
+      referenceElement,
       isOpen,
       handleDismiss,
       options.coachMarkPortal,
@@ -187,20 +187,29 @@ const CoachMarkRoot = (props: CoachMarkRootProps) => {
 };
 
 interface CoachMarkPortalProps {
-  placement: Placement;
+  allowedPlacements: Placement[];
   children: ReactNode;
 }
 
 const CoachMarkPortal = (props: CoachMarkPortalProps) => {
   const coachMarkContext = useCoachMarkContext();
 
+  useEffect(() => {
+    if (coachMarkContext.referenceElement !== null) {
+      coachMarkContext.referenceElement.classList.add("coachMarkActive");
+    }
+  }, [coachMarkContext.referenceElement]);
+
   const arrowRef = useRef(null);
 
   const { floatingStyles, context } = useFloating({
-    placement: props.placement,
     rootContext: coachMarkContext,
     whileElementsMounted: autoUpdate,
-    middleware: [shift(), flip(), arrow({ element: arrowRef }), offset(ARROW_HEIGHT + GAP)],
+    middleware: [
+      autoPlacement({ allowedPlacements: props.allowedPlacements, padding: 5 }),
+      arrow({ element: arrowRef }),
+      offset(ARROW_HEIGHT + GAP),
+    ],
   });
 
   if (!coachMarkContext.open) return null;
@@ -246,11 +255,11 @@ const CoachMarkHeading = (props: CoachMarkHeadingProps) => {
   }, [id, setLabelId]);
 
   return (
-    <div className="display-flex flex-justify">
+    <div className={`display-flex ${styles["flex-row-reverse"]} flex-justify`}>
+      <CloseButton ariaLabel="Close" handleClick={handleDismiss} />
       <h1 id={id} className="font-sans-md">
         {props.children}
       </h1>
-      <CloseButton ariaLabel="Close" handleClick={handleDismiss} />
     </div>
   );
 };

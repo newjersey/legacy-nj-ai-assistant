@@ -2,3 +2,11 @@
   background: rgba(0, 0, 0, 0.8);
   z-index: 1;
 }
+
+.flex-row-reverse {
+  flex-direction: row-reverse;
+}
+
+:global(.coachMarkActive) {
+  z-index: 1;
+}
