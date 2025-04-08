@@ -29,6 +29,8 @@ describe("Test the isImageFile function", () => {
     [ACCEPTED_FILE_TYPES.BMP, true],
     [ACCEPTED_FILE_TYPES.TIFF, true],
     [ACCEPTED_FILE_TYPES.DOCX, false],
+    [ACCEPTED_FILE_TYPES.XLS, false],
+    [ACCEPTED_FILE_TYPES.XLSX, false],
     [ACCEPTED_FILE_TYPES.CSV, false],
     [ACCEPTED_FILE_TYPES.PDF, false],
   ])(

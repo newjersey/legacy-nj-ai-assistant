@@ -3,6 +3,7 @@ import pdfToText from "react-pdftotext";
 import icons from "@newjersey/njwds/dist/img/sprite.svg";
 import { extractRawText } from "mammoth";
 import { v4 as uuidv4 } from "uuid";
+import * as XLSX from "xlsx";
 
 import type { AlertsMap } from "../../utils/alertUtils";
 import {
@@ -247,6 +248,30 @@ export const QuestionInput = ({
           uploadedFile = {
             name: selectedFile.name,
             contents: extractedText,
+            extension: selectedFile.type,
+            size: selectedFile.size,
+          };
+        }
+      } else if (
+        selectedFile.type === ACCEPTED_FILE_TYPES.XLSX ||
+        selectedFile.type === ACCEPTED_FILE_TYPES.XLS
+      ) {
+        const arrayBuffer = await selectedFile.arrayBuffer();
+        const workbook = XLSX.read(arrayBuffer);
+        let workbookContents: string[] = [];
+
+        workbook.SheetNames.forEach((sheetName) => {
+          const worksheet = workbook.Sheets[sheetName];
+          const worksheetAsCsvString = XLSX.utils.sheet_to_csv(worksheet);
+          workbookContents.push(worksheetAsCsvString);
+        });
+
+        if (workbookContents.length === 0) {
+          throw new Error();
+        } else {
+          uploadedFile = {
+            name: selectedFile.name,
+            contents: workbookContents.join(" | "),
             extension: selectedFile.type,
             size: selectedFile.size,
           };

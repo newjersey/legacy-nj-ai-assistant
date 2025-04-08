@@ -11,6 +11,8 @@ export enum ACCEPTED_FILE_TYPES {
   PDF = "application/pdf",
   CSV = "text/csv",
   DOCX = "application/vnd.openxmlformats-officedocument.wordprocessingml.document",
+  XLS = "application/vnd.ms-excel",
+  XLSX = "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",
 }
 
 export interface UploadedFile {

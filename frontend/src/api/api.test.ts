@@ -64,6 +64,8 @@ describe("Test the conversationApi function", () => {
     ["bmp", ACCEPTED_FILE_TYPES.BMP, "image_url"],
     ["tiff", ACCEPTED_FILE_TYPES.TIFF, "image_url"],
     ["docx", ACCEPTED_FILE_TYPES.DOCX, "Use the following document in your responses"],
+    ["xls", ACCEPTED_FILE_TYPES.XLSX, "Use the following document in your responses"],
+    ["xlsx", ACCEPTED_FILE_TYPES.XLSX, "Use the following document in your responses"],
     ["csv", ACCEPTED_FILE_TYPES.CSV, "CSV format"],
     ["pdf", ACCEPTED_FILE_TYPES.PDF, "Use the following document in your responses"],
   ])(
@@ -92,6 +94,8 @@ describe("Test the conversationApi function", () => {
       { ...defaultUploadedFile, extension: ACCEPTED_FILE_TYPES.BMP },
       { ...defaultUploadedFile, extension: ACCEPTED_FILE_TYPES.TIFF },
       { ...defaultUploadedFile, extension: ACCEPTED_FILE_TYPES.DOCX },
+      { ...defaultUploadedFile, extension: ACCEPTED_FILE_TYPES.XLS },
+      { ...defaultUploadedFile, extension: ACCEPTED_FILE_TYPES.XLSX },
       { ...defaultUploadedFile, extension: ACCEPTED_FILE_TYPES.CSV },
       { ...defaultUploadedFile, extension: ACCEPTED_FILE_TYPES.PDF },
     ];
@@ -103,7 +107,7 @@ describe("Test the conversationApi function", () => {
     expect(fetch).toHaveBeenCalledWith("/conversation", {
       ...defaultFetchRequest,
       body: expect.stringMatching(
-        /"type":"image_url".*"type":"image_url".*"type":"image_url".*"type":"image_url".*"type":"image_url".*Use the following document in your responses.*CSV format.*Use the following document in your responses/
+        /"type":"image_url".*"type":"image_url".*"type":"image_url".*"type":"image_url".*"type":"image_url".*Use the following document in your responses.*CSV format.*CSV format.*CSV format.*Use the following document in your responses/
       ),
     });
   });

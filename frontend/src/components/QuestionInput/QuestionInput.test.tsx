@@ -400,6 +400,8 @@ describe("Test error alerts", () => {
 
   it.each([
     ["docx", ACCEPTED_FILE_TYPES.DOCX],
+    ["xls", ACCEPTED_FILE_TYPES.XLS],
+    ["xlsx", ACCEPTED_FILE_TYPES.XLSX],
     ["csv", ACCEPTED_FILE_TYPES.CSV],
     ["pdf", ACCEPTED_FILE_TYPES.PDF],
   ])(
@@ -567,11 +569,10 @@ describe("Test error alerts", () => {
     expect(await axe(container)).toHaveNoViolations();
   });
 
-  it("displays the appropriate input error if text cannot be read from multiple files", async () => {
+  it("displays the appropriate input error if text cannot be read from a .xls file", async () => {
     const mockOnSend = jest.fn();
 
-    const uploadedDocxFile = createMockFile("docx", ACCEPTED_FILE_TYPES.DOCX, 8, "");
-    const uploadedPdfFile = createMockFile("pdf", ACCEPTED_FILE_TYPES.PDF, 8, "");
+    const uploadedXlsFile = createMockFile("docx", ACCEPTED_FILE_TYPES.XLS, 8, "");
 
     const { container } = render(
       <QuestionInput
@@ -583,13 +584,72 @@ describe("Test error alerts", () => {
       />
     );
 
-    await uploadFiles([uploadedDocxFile, uploadedPdfFile]);
+    await uploadFiles([uploadedXlsFile]);
+    await inputChatMessage();
+    await clickSubmitButton();
+
+    expect(screen.getByText(/Could not read text from file:/)).toBeInTheDocument();
+    expect(screen.getByText(uploadedXlsFile.name)).toBeInTheDocument();
+
+    expect(mockOnSend).toHaveBeenCalledTimes(0);
+
+    expect(await axe(container)).toHaveNoViolations();
+  });
+
+  it("displays the appropriate input error if text cannot be read from a .xls file", async () => {
+    const mockOnSend = jest.fn();
+
+    const uploadedXlsxFile = createMockFile("docx", ACCEPTED_FILE_TYPES.XLSX, 8, "");
+
+    const { container } = render(
+      <QuestionInput
+        onSend={jest.fn()}
+        disabled={false}
+        placeholder={"placeholder"}
+        conversationId={undefined}
+        clearOnSend={false}
+      />
+    );
+
+    await uploadFiles([uploadedXlsxFile]);
+    await inputChatMessage();
+    await clickSubmitButton();
+
+    expect(screen.getByText(/Could not read text from file:/)).toBeInTheDocument();
+    expect(screen.getByText(uploadedXlsxFile.name)).toBeInTheDocument();
+
+    expect(mockOnSend).toHaveBeenCalledTimes(0);
+
+    expect(await axe(container)).toHaveNoViolations();
+  });
+
+  it("displays the appropriate input error if text cannot be read from multiple files", async () => {
+    const mockOnSend = jest.fn();
+
+    const uploadedDocxFile = createMockFile("docx", ACCEPTED_FILE_TYPES.DOCX, 8, "");
+    const uploadedPdfFile = createMockFile("pdf", ACCEPTED_FILE_TYPES.PDF, 8, "");
+    const uploadedXlsFile = createMockFile("xls", ACCEPTED_FILE_TYPES.XLS, 8, "");
+    const uploadedXlsxFile = createMockFile("xlsx", ACCEPTED_FILE_TYPES.XLSX, 8, "");
+
+    const { container } = render(
+      <QuestionInput
+        onSend={jest.fn()}
+        disabled={false}
+        placeholder={"placeholder"}
+        conversationId={undefined}
+        clearOnSend={false}
+      />
+    );
+
+    await uploadFiles([uploadedDocxFile, uploadedPdfFile, uploadedXlsFile, uploadedXlsxFile]);
     await inputChatMessage();
     await clickSubmitButton();
 
     expect(screen.getByText(/Could not read text from files:/)).toBeInTheDocument();
     expect(screen.getByText(uploadedDocxFile.name)).toBeInTheDocument();
     expect(screen.getByText(uploadedPdfFile.name)).toBeInTheDocument();
+    expect(screen.getByText(uploadedXlsFile.name)).toBeInTheDocument();
+    expect(screen.getByText(uploadedXlsxFile.name)).toBeInTheDocument();
 
     expect(mockOnSend).toHaveBeenCalledTimes(0);
 
@@ -638,6 +698,8 @@ describe("Test uploading files", () => {
     ["bmp", ACCEPTED_FILE_TYPES.BMP],
     ["tiff", ACCEPTED_FILE_TYPES.TIFF],
     ["docx", ACCEPTED_FILE_TYPES.DOCX],
+    ["xls", ACCEPTED_FILE_TYPES.XLS],
+    ["xlsx", ACCEPTED_FILE_TYPES.XLSX],
     ["csv", ACCEPTED_FILE_TYPES.CSV],
     ["pdf", ACCEPTED_FILE_TYPES.PDF],
   ])(
