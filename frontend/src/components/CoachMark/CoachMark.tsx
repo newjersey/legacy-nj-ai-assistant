@@ -34,10 +34,10 @@ import styles from "./CoachMark.module.css";
 const ARROW_HEIGHT = 7;
 const GAP = 8;
 
-const COACH_MARK_STORAGE_KEY_PREFIX = "coach_mark";
+const COACH_MARK_STORAGE_KEY_PREFIX = "coach_mark_expiration_date_utc";
 const HIDE_COACH_MARK_STORAGE_KEY_PREFIX = "hide_coach_mark";
 
-export const getCoachMarkStorageKey = (id: string) => {
+export const getExpirationDateCoachMarkStorageKey = (id: string) => {
   return `${COACH_MARK_STORAGE_KEY_PREFIX}__${id}`;
 };
 
@@ -45,31 +45,26 @@ export const getHideCoachMarkStorageKey = (id: string) => {
   return `${HIDE_COACH_MARK_STORAGE_KEY_PREFIX}__${id}`;
 };
 
-// TODO: just record the expiration
-const setCoachMarkStorageItem = (id: string, expiresOn: string) => {
-  const showCoachMarkValue: {
-    id: string;
-    expiresOn: string;
-  } = { id, expiresOn };
-  localStorage.setItem(getCoachMarkStorageKey(id), JSON.stringify(showCoachMarkValue));
+const setExpirationDateCoachMarkStorageItem = (id: string, expirationDateUtc: string) => {
+  localStorage.setItem(getExpirationDateCoachMarkStorageKey(id), expirationDateUtc);
 };
 
 const setHideCoachMarkStorageItem = (id: string) => {
   localStorage.setItem(getHideCoachMarkStorageKey(id), JSON.stringify(true));
 };
 
-const isCoachMarkExpired = (expiresOnUtcString: string) => {
+const isCoachMarkExpired = (expirationDateUtc: string) => {
   const today = new Date();
   today.setHours(0, 0, 0, 0);
 
-  const expiresOn = new Date(expiresOnUtcString);
+  const expiresOn = new Date(expirationDateUtc);
   expiresOn.setHours(0, 0, 0, 0);
   return today > expiresOn;
 };
 
 export interface CoachMarkOptions {
   id: string;
-  expiresOn: string;
+  expirationDateUtc: string;
   referenceRef: RefObject<HTMLElement>;
   coachMarkPortal: ReactElement;
 }
@@ -82,11 +77,11 @@ export const useCoachMark = (options: CoachMarkOptions) => {
   const hideCoachMarkStorageKey = getHideCoachMarkStorageKey(options.id);
   const isDimissed = localStorage.getItem(hideCoachMarkStorageKey) != null;
 
-  const isExpired = isCoachMarkExpired(options.expiresOn);
+  const isExpired = isCoachMarkExpired(options.expirationDateUtc);
   if (!isExpired) {
-    setCoachMarkStorageItem(options.id, options.expiresOn);
+    setExpirationDateCoachMarkStorageItem(options.id, options.expirationDateUtc);
   } else {
-    localStorage.removeItem(getCoachMarkStorageKey(options.id));
+    localStorage.removeItem(getExpirationDateCoachMarkStorageKey(options.id));
     localStorage.removeItem(hideCoachMarkStorageKey);
   }
 

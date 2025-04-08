@@ -336,10 +336,10 @@ export const QuestionInput = ({
 
   const coachMark = CoachMark.useCoachMark({
     id: "multiple-file-upload",
-    expiresOn: "2025-05-01",
+    expirationDateUtc: "2025-05-01",
     referenceRef: coachMarkReferenceRef,
     coachMarkPortal: (
-      <CoachMark.Portal allowedPlacements={["right", "top", "top-start"]}>
+      <CoachMark.Portal allowedPlacements={["top"]}>
         <CoachMark.Heading>New file upload features!</CoachMark.Heading>
         <CoachMark.Description asChild>
           <ul className="usa-list margin-top-0">

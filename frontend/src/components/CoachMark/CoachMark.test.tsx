@@ -10,7 +10,7 @@ const DEFAULT_EXPIRATION_DATE = "2025-01-01";
 
 const DEFAULT_COACH_MARK_OPTIONS: Omit<CoachMark.CoachMarkOptions, "referenceRef"> = {
   id: "",
-  expiresOn: DEFAULT_EXPIRATION_DATE,
+  expirationDateUtc: DEFAULT_EXPIRATION_DATE,
   coachMarkPortal: (
     <CoachMark.Portal allowedPlacements={["top"]}>
       <></>
@@ -57,7 +57,7 @@ afterEach(() => {
 });
 
 describe(CoachMark.useCoachMark.name, () => {
-  it("sets the coach_mark localStorage item if the coach mark's expiration date hasn't passed yet", () => {
+  it(`sets the expirationDateCoachMark localStorage item if the coach mark's expiration date hasn't passed yet`, () => {
     jest.setSystemTime(new Date("2025-01-01"));
     const coachMarkId = "multiple-file-upload";
     const expirationDate = "2025-01-02";
@@ -66,18 +66,14 @@ describe(CoachMark.useCoachMark.name, () => {
         useCoachMarkOptions={{
           ...DEFAULT_COACH_MARK_OPTIONS,
           id: coachMarkId,
-          expiresOn: expirationDate,
+          expirationDateUtc: expirationDate,
         }}
       />
     );
 
-    const coachMarkStorageKey = CoachMark.getCoachMarkStorageKey(coachMarkId);
-    const coachMarkStorageValue = localStorage.getItem(coachMarkStorageKey);
+    const coachMarkStorageKey = CoachMark.getExpirationDateCoachMarkStorageKey(coachMarkId);
 
-    expect(JSON.parse(coachMarkStorageValue as string)).toStrictEqual({
-      id: coachMarkId,
-      expiresOn: expirationDate,
-    });
+    expect(localStorage.getItem(coachMarkStorageKey)).toBe(expirationDate);
   });
 
   it("does not set the coach_mark localStorage item if the coach mark is expired", () => {
@@ -89,19 +85,21 @@ describe(CoachMark.useCoachMark.name, () => {
         useCoachMarkOptions={{
           ...DEFAULT_COACH_MARK_OPTIONS,
           id: coachMarkId,
-          expiresOn: expirationDate,
+          expirationDateUtc: expirationDate,
         }}
       />
     );
-    expect(localStorage.getItem(CoachMark.getCoachMarkStorageKey(coachMarkId))).toBeNull();
+    expect(
+      localStorage.getItem(CoachMark.getExpirationDateCoachMarkStorageKey(coachMarkId))
+    ).toBeNull();
   });
 
-  it("removes the coachMark and hideCoachMark storage items if the coach mark is expired", () => {
+  it("removes the expirationDateCoachMark and hideCoachMark storage items if the coach mark is expired", () => {
     const coachMarkId = "multiple-file-upload";
     const expirationDate = "2025-01-02";
     jest.setSystemTime(new Date("2025-01-03"));
 
-    const coachMarkStorageKey = CoachMark.getCoachMarkStorageKey(coachMarkId);
+    const coachMarkStorageKey = CoachMark.getExpirationDateCoachMarkStorageKey(coachMarkId);
     localStorage.setItem(
       coachMarkStorageKey,
       JSON.stringify({
@@ -118,7 +116,7 @@ describe(CoachMark.useCoachMark.name, () => {
         useCoachMarkOptions={{
           ...DEFAULT_COACH_MARK_OPTIONS,
           id: coachMarkId,
-          expiresOn: expirationDate,
+          expirationDateUtc: expirationDate,
         }}
       />
     );
@@ -248,7 +246,7 @@ describe(CoachMark.Portal.name, () => {
         <ComponentWithCoachMark
           useCoachMarkOptions={{
             ...DEFAULT_COACH_MARK_OPTIONS,
-            expiresOn: expirationDate,
+            expirationDateUtc: expirationDate,
             coachMarkPortal: (
               <CoachMark.Portal allowedPlacements={["top"]}>
                 <CoachMark.Heading>{coachMarkHeading}</CoachMark.Heading>
@@ -277,7 +275,7 @@ describe(CoachMark.Portal.name, () => {
           useCoachMarkOptions={{
             ...DEFAULT_COACH_MARK_OPTIONS,
             id: coachMarkId,
-            expiresOn: expirationDate,
+            expirationDateUtc: expirationDate,
             coachMarkPortal: (
               <CoachMark.Portal allowedPlacements={["top"]}>
                 <CoachMark.Heading>{coachMarkHeading}</CoachMark.Heading>
