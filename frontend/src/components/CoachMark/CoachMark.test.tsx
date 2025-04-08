@@ -57,56 +57,10 @@ afterEach(() => {
 });
 
 describe(CoachMark.useCoachMark.name, () => {
-  it(`sets the expirationDateCoachMark localStorage item if the coach mark's expiration date hasn't passed yet`, () => {
-    jest.setSystemTime(new Date("2025-01-01"));
-    const coachMarkId = "multiple-file-upload";
-    const expirationDate = "2025-01-02";
-    render(
-      <ComponentWithCoachMark
-        useCoachMarkOptions={{
-          ...DEFAULT_COACH_MARK_OPTIONS,
-          id: coachMarkId,
-          expirationDateUtc: expirationDate,
-        }}
-      />
-    );
-
-    const coachMarkStorageKey = CoachMark.getExpirationDateCoachMarkStorageKey(coachMarkId);
-
-    expect(localStorage.getItem(coachMarkStorageKey)).toBe(expirationDate);
-  });
-
-  it("does not set the coach_mark localStorage item if the coach mark is expired", () => {
+  it("removes the hideCoachMark storage item if the coach mark is expired", () => {
     const coachMarkId = "multiple-file-upload";
     const expirationDate = "2025-01-02";
     jest.setSystemTime(new Date("2025-01-03"));
-    render(
-      <ComponentWithCoachMark
-        useCoachMarkOptions={{
-          ...DEFAULT_COACH_MARK_OPTIONS,
-          id: coachMarkId,
-          expirationDateUtc: expirationDate,
-        }}
-      />
-    );
-    expect(
-      localStorage.getItem(CoachMark.getExpirationDateCoachMarkStorageKey(coachMarkId))
-    ).toBeNull();
-  });
-
-  it("removes the expirationDateCoachMark and hideCoachMark storage items if the coach mark is expired", () => {
-    const coachMarkId = "multiple-file-upload";
-    const expirationDate = "2025-01-02";
-    jest.setSystemTime(new Date("2025-01-03"));
-
-    const coachMarkStorageKey = CoachMark.getExpirationDateCoachMarkStorageKey(coachMarkId);
-    localStorage.setItem(
-      coachMarkStorageKey,
-      JSON.stringify({
-        id: coachMarkId,
-        expiresOn: expirationDate,
-      })
-    );
 
     const hideCoachMarkKey = CoachMark.getHideCoachMarkStorageKey(coachMarkId);
     localStorage.setItem(hideCoachMarkKey, JSON.stringify(true));
@@ -120,8 +74,6 @@ describe(CoachMark.useCoachMark.name, () => {
         }}
       />
     );
-
-    expect(localStorage.getItem(coachMarkStorageKey)).toBeNull();
     expect(localStorage.getItem(hideCoachMarkKey)).toBeNull();
   });
 });
@@ -259,7 +211,7 @@ describe(CoachMark.Portal.name, () => {
       expect(screen.queryByRole("dialog", { name: coachMarkHeading })).not.toBeInTheDocument();
     });
 
-    it("does not render if the hideCoachMark localStorage item has been set", () => {
+    it("does not render if the coach mark has already been dismissed (localStorage has hideCoachMark key)", () => {
       const coachMarkId = "multiple-file-upload";
 
       jest.setSystemTime(new Date("2025-01-01"));

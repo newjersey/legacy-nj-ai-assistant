@@ -34,19 +34,10 @@ import styles from "./CoachMark.module.css";
 const ARROW_HEIGHT = 7;
 const GAP = 8;
 
-const COACH_MARK_STORAGE_KEY_PREFIX = "coach_mark_expiration_date_utc";
 const HIDE_COACH_MARK_STORAGE_KEY_PREFIX = "hide_coach_mark";
-
-export const getExpirationDateCoachMarkStorageKey = (id: string) => {
-  return `${COACH_MARK_STORAGE_KEY_PREFIX}__${id}`;
-};
 
 export const getHideCoachMarkStorageKey = (id: string) => {
   return `${HIDE_COACH_MARK_STORAGE_KEY_PREFIX}__${id}`;
-};
-
-const setExpirationDateCoachMarkStorageItem = (id: string, expirationDateUtc: string) => {
-  localStorage.setItem(getExpirationDateCoachMarkStorageKey(id), expirationDateUtc);
 };
 
 const setHideCoachMarkStorageItem = (id: string) => {
@@ -78,10 +69,7 @@ export const useCoachMark = (options: CoachMarkOptions) => {
   const isDimissed = localStorage.getItem(hideCoachMarkStorageKey) != null;
 
   const isExpired = isCoachMarkExpired(options.expirationDateUtc);
-  if (!isExpired) {
-    setExpirationDateCoachMarkStorageItem(options.id, options.expirationDateUtc);
-  } else {
-    localStorage.removeItem(getExpirationDateCoachMarkStorageKey(options.id));
+  if (isExpired) {
     localStorage.removeItem(hideCoachMarkStorageKey);
   }
 
