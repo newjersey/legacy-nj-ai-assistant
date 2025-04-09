@@ -376,10 +376,15 @@ const clickCloseButton = async () => {
 
 const pressEscapeKey = async () => await userEvent.keyboard("{Escape}");
 
+const clickReferenceElement = async () => {
+  await userEvent.click(getReferenceElement());
+};
+
 describe.each([
   ["the done button is clicked", clickDoneButton],
   ["the close button is clicked", clickCloseButton],
-  ["Floating UI's dismiss interaction is triggered (e.g. pressing the Escape key)", pressEscapeKey],
+  ["the Escape key is pressed", pressEscapeKey],
+  ["the reference element is clicked", clickReferenceElement],
 ])("dismissing the coach mark", (testCase, dismissEvent) => {
   describe(`when ${testCase}`, () => {
     it("closes the dialog", async () => {
@@ -427,10 +432,10 @@ describe.each([
       expect(screen.queryByText(coachMarkHeading)).not.toBeInTheDocument();
 
       expect(localStorage.getItem(hideCoachMarkKey)).toBe("true");
-      expect(logEventSpy).toHaveBeenCalledTimes(1);
       expect(logEventSpy).toHaveBeenCalledWith("click_close_coach_mark", {
         coach_mark_id: coachMarkId,
       });
+      expect(logEventSpy).toHaveBeenCalledTimes(1);
     });
 
     it("removes the coachMarkActive class", async () => {

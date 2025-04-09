@@ -340,7 +340,7 @@ export const QuestionInput = ({
     referenceRef: coachMarkReferenceRef,
     coachMarkPortal: (
       <CoachMark.Portal allowedPlacements={["top"]}>
-        <CoachMark.Heading>New file upload features!</CoachMark.Heading>
+        <CoachMark.Heading>New file upload features</CoachMark.Heading>
         <CoachMark.Description asChild>
           <ul className="usa-list margin-top-0">
             <li>Upload up to 10 files.</li>
@@ -380,6 +380,7 @@ export const QuestionInput = ({
           >
             <button
               ref={coachMarkReferenceRef}
+              {...coachMark.getReferenceProps()}
               className={`usa-button usa-button--unstyled text-no-underline display-flex ${styles.fileInputButton}`}
               onKeyDown={onFileUploadButtonEnterPress}
               onClick={onFileUploadButtonClick}

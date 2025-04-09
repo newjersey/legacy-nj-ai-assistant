@@ -110,7 +110,7 @@ export const useCoachMark = (options: CoachMarkOptions) => {
     },
   });
 
-  const dismiss = useDismiss(floatingRootContext);
+  const dismiss = useDismiss(floatingRootContext, { referencePress: true, outsidePress: false });
   const interactions = useInteractions([dismiss]);
 
   return useMemo(
