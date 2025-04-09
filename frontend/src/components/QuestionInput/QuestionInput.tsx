@@ -258,7 +258,7 @@ export const QuestionInput = ({
       ) {
         const arrayBuffer = await selectedFile.arrayBuffer();
         const workbook = XLSX.read(arrayBuffer);
-        let workbookContents: string[] = [];
+        const workbookContents: string[] = [];
 
         workbook.SheetNames.forEach((sheetName) => {
           const worksheet = workbook.Sheets[sheetName];
