@@ -342,7 +342,7 @@ export const QuestionInput = ({
       <CoachMark.Portal allowedPlacements={["top"]}>
         <CoachMark.Heading>New file upload features</CoachMark.Heading>
         <CoachMark.Description asChild>
-          <ul className="usa-list margin-top-0">
+          <ul className="usa-list margin-1">
             <li>Upload up to 10 files.</li>
             <li>File size limit increased to 50MB for files, 10MB for images.</li>
             <li>.DOCX and .CSV file types added.</li>

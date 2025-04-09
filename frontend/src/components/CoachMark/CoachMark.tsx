@@ -238,9 +238,9 @@ const CoachMarkHeading = (props: CoachMarkHeadingProps) => {
   }, [id, setLabelId]);
 
   return (
-    <div className={`display-flex ${styles["flex-row-reverse"]} flex-justify`}>
+    <div className={`display-flex ${styles["flex-row-reverse"]} flex-justify flex-align-center`}>
       <CloseButton ariaLabel="Close" handleClick={handleDismiss} />
-      <h1 id={id} className="font-sans-md">
+      <h1 id={id} className="margin-0 font-sans-md">
         {props.children}
       </h1>
     </div>
@@ -271,7 +271,7 @@ const CoachMarkDescription = (props: CoachMarkDescriptionProps) => {
   }
 
   return (
-    <p id={id} className="margin-top-0 font-sans-2xs">
+    <p id={id} className="margin-top-05 font-sans-2xs">
       {props.children}
     </p>
   );
