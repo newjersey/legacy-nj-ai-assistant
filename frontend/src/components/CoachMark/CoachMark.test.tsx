@@ -36,6 +36,7 @@ const ComponentWithCoachMark = (props: ComponentWithCoachMarkProps) => {
       <p ref={coachMarkReferenceRef} {...coachMark.getReferenceProps()}>
         Reference element
       </p>
+      <p>Outside element</p>
     </CoachMark.Root>
   );
 };
@@ -107,6 +108,29 @@ describe(CoachMark.Root.name, () => {
         />
       )
     ).toThrow();
+  });
+
+  it("does not dismiss the coach mark when pressing outside of both the coach mark and reference elements", async () => {
+    const coachMarkHeadingText = "Multiple file upload";
+    render(
+      <ComponentWithCoachMark
+        useCoachMarkOptions={{
+          ...DEFAULT_COACH_MARK_OPTIONS,
+          coachMarkPortal: (
+            <CoachMark.Portal allowedPlacements={["top"]}>
+              <CoachMark.Heading>{coachMarkHeadingText}</CoachMark.Heading>
+            </CoachMark.Portal>
+          ),
+        }}
+      />
+    );
+
+    expect(screen.getByText(coachMarkHeadingText)).toBeInTheDocument();
+
+    const outsideElement = screen.getByText("Outside element");
+    await userEvent.click(outsideElement);
+
+    expect(screen.getByText(coachMarkHeadingText)).toBeInTheDocument();
   });
 });
 

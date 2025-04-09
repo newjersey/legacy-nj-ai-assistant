@@ -20,6 +20,8 @@ import {
   FloatingFocusManager,
   FloatingOverlay,
   offset,
+  shift,
+  useClick,
   useDismiss,
   useFloating,
   useFloatingRootContext,
@@ -98,7 +100,7 @@ export const useCoachMark = (options: CoachMarkOptions) => {
   const floatingRootContext = useFloatingRootContext({
     open: isOpen,
     onOpenChange(nextOpen) {
-      if (nextOpen === false) {
+      if (isOpen && nextOpen === false) {
         handleDismiss();
       } else {
         setIsOpen(nextOpen);
@@ -110,8 +112,9 @@ export const useCoachMark = (options: CoachMarkOptions) => {
     },
   });
 
+  const click = useClick(floatingRootContext, { enabled: false });
   const dismiss = useDismiss(floatingRootContext, { referencePress: true, outsidePress: false });
-  const interactions = useInteractions([dismiss]);
+  const interactions = useInteractions([dismiss, click]);
 
   return useMemo(
     () => ({
@@ -189,9 +192,12 @@ const CoachMarkPortal = (props: CoachMarkPortalProps) => {
     rootContext: coachMarkContext,
     whileElementsMounted: autoUpdate,
     middleware: [
-      autoPlacement({ allowedPlacements: props.allowedPlacements, padding: 5 }),
+      autoPlacement({ allowedPlacements: props.allowedPlacements }),
+      shift(),
+      offset({
+        mainAxis: ARROW_HEIGHT + GAP,
+      }),
       arrow({ element: arrowRef }),
-      offset(ARROW_HEIGHT + GAP),
     ],
   });
 
@@ -206,7 +212,7 @@ const CoachMarkPortal = (props: CoachMarkPortalProps) => {
           aria-modal="true"
           aria-labelledby={coachMarkContext.labelId}
           aria-describedby={coachMarkContext.descriptionId}
-          className="flex padding-2 bg-primary-lightest radius-lg shadow-2 maxw-mobile"
+          className={`flex padding-2 bg-primary-lightest radius-lg shadow-2 max-mobile-lg ${styles.coachMarkDialog}`}
           ref={coachMarkContext.setCoachMark}
           style={floatingStyles}
           {...coachMarkContext.getFloatingProps()}
@@ -217,7 +223,12 @@ const CoachMarkPortal = (props: CoachMarkPortalProps) => {
               Done
             </button>
           </div>
-          <FloatingArrow ref={arrowRef} context={context} fill="#e8f5ff" />
+          <FloatingArrow
+            ref={arrowRef}
+            className={styles.coachMarkArrow}
+            context={context}
+            fill="#e8f5ff"
+          />
         </div>
       </FloatingFocusManager>
     </FloatingOverlay>
