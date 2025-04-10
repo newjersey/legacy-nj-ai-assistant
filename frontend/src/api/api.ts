@@ -1,6 +1,6 @@
 import { chatHistorySampleData } from "../constants/chatHistory";
 import type { UploadedFile } from "../utils/fileUploadUtils";
-import { ACCEPTED_FILE_TYPES, isImageFile, isSpreadsheetFile } from "../utils/fileUploadUtils";
+import { isImageFile, isSpreadsheetFile } from "../utils/fileUploadUtils";
 
 import type {
   ChatMessage,
