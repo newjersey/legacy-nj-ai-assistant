@@ -69,6 +69,10 @@ textarea.questionInputTextArea {
   outline: none;
 }
 
+.errorAlertText {
+  width: 95%;
+}
+
 button.closeButton {
   color: var(--base-ink);
 }

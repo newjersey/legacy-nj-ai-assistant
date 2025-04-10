@@ -9,16 +9,7 @@ jest.mock("framer-motion", () => ({
       <div data-testid="motion-div">{props.children}</div>
     ),
   },
-  AnimatePresence: ({children, onExitComplete}: {
-    children: React.ReactNode;
-    onExitComplete?: () => void;
-  }) => {
-    if (onExitComplete != null) {
-      setTimeout(() => {
-        onExitComplete();
-      }, 10000);
-    }
-
+  AnimatePresence: ({ children }: { children: React.ReactNode }) => {
     return <>{children}</>;
   },
 }));

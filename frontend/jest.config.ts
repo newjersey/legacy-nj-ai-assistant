@@ -15,6 +15,7 @@ const config: Config.InitialOptions = {
     "rehype-raw": "<rootDir>/__mocks__/rehypeRaw.ts",
     "remark-gfm": "<rootDir>/__mocks__/remarkGfm.ts",
     "remark-supersub": "<rootDir>/__mocks__/remarkSupersub.ts",
+    "react-pdftotext": "<rootDir>/__mocks__/reactPdfToText.ts",
   },
   testEnvironment: "jsdom",
   silent: true,

@@ -1,3 +1,7 @@
+export const MAX_UPLOADED_FILE_SIZE_IN_MB = 50;
+export const MAX_UPLOADED_IMAGE_SIZE_IN_MB = 10;
+export const MAX_UPLOADED_FILE_COUNT = 10;
+
 export enum ACCEPTED_FILE_TYPES {
   JPEG = "image/jpeg",
   PNG = "image/png",
