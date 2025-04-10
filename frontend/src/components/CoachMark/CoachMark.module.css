@@ -13,12 +13,11 @@
   z-index: 1;
 }
 
-
 .coachMarkDialog {
-  margin: 0 var(--coach-mark-margin)
+  margin: 0 var(--coach-mark-margin);
 }
 
 .coachMarkArrow {
   /* negative margin to center arrow back on reference element */
-  margin: 0 calc(var(--coach-mark-margin) * -1)
+  margin: 0 calc(var(--coach-mark-margin) * -1);
 }
