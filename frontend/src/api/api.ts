@@ -37,10 +37,7 @@ export const conversationApi = async (
             type: "text",
             text: `The following document contains one or more tables in CSV format. Each document is separated by a pipe (|). Use the following document in your responses:\n ---BEGIN DOCUMENT---${uploadedFile.contents}---END DOCUMENT---`,
           });
-        } else if (
-          uploadedFile.extension === ACCEPTED_FILE_TYPES.PDF ||
-          uploadedFile.extension === ACCEPTED_FILE_TYPES.DOCX
-        ) {
+        } else {
           fileContents.push({
             type: "text",
             text: `Use the following document in your responses:\n ---BEGIN DOCUMENT---${uploadedFile.contents}---END DOCUMENT---`,

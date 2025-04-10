@@ -64,7 +64,7 @@ describe("Test the conversationApi function", () => {
     ["bmp", ACCEPTED_FILE_TYPES.BMP, "image_url"],
     ["tiff", ACCEPTED_FILE_TYPES.TIFF, "image_url"],
     ["docx", ACCEPTED_FILE_TYPES.DOCX, "Use the following document in your responses"],
-    ["xls", ACCEPTED_FILE_TYPES.XLSX, "Use the following document in your responses"],
+    ["xls", ACCEPTED_FILE_TYPES.XLS, "Use the following document in your responses"],
     ["xlsx", ACCEPTED_FILE_TYPES.XLSX, "Use the following document in your responses"],
     ["csv", ACCEPTED_FILE_TYPES.CSV, "CSV format"],
     ["pdf", ACCEPTED_FILE_TYPES.PDF, "Use the following document in your responses"],

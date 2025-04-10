@@ -569,59 +569,38 @@ describe("Test error alerts", () => {
     expect(await axe(container)).toHaveNoViolations();
   });
 
-  it("displays the appropriate input error if text cannot be read from a .xls file", async () => {
-    const mockOnSend = jest.fn();
+  it.each([
+    ["xls", ACCEPTED_FILE_TYPES.XLS],
+    ["xlsx", ACCEPTED_FILE_TYPES.XLSX],
+  ])(
+    "displays the appropriate input error if text cannot be read from a .%s file",
+    async (extension: string, fileType: ACCEPTED_FILE_TYPES) => {
+      const mockOnSend = jest.fn();
 
-    const uploadedXlsFile = createMockFile("docx", ACCEPTED_FILE_TYPES.XLS, 8, "");
+      const uploadedExcelFile = createMockFile("extension", fileType, 8, "");
 
-    const { container } = render(
-      <QuestionInput
-        onSend={jest.fn()}
-        disabled={false}
-        placeholder={"placeholder"}
-        conversationId={undefined}
-        clearOnSend={false}
-      />
-    );
+      const { container } = render(
+        <QuestionInput
+          onSend={jest.fn()}
+          disabled={false}
+          placeholder={"placeholder"}
+          conversationId={undefined}
+          clearOnSend={false}
+        />
+      );
 
-    await uploadFiles([uploadedXlsFile]);
-    await inputChatMessage();
-    await clickSubmitButton();
+      await uploadFiles([uploadedExcelFile]);
+      await inputChatMessage();
+      await clickSubmitButton();
 
-    expect(screen.getByText(/Could not read text from file:/)).toBeInTheDocument();
-    expect(screen.getByText(uploadedXlsFile.name)).toBeInTheDocument();
+      expect(screen.getByText(/Could not read text from file:/)).toBeInTheDocument();
+      expect(screen.getByText(uploadedExcelFile.name)).toBeInTheDocument();
 
-    expect(mockOnSend).toHaveBeenCalledTimes(0);
+      expect(mockOnSend).toHaveBeenCalledTimes(0);
 
-    expect(await axe(container)).toHaveNoViolations();
-  });
-
-  it("displays the appropriate input error if text cannot be read from a .xls file", async () => {
-    const mockOnSend = jest.fn();
-
-    const uploadedXlsxFile = createMockFile("docx", ACCEPTED_FILE_TYPES.XLSX, 8, "");
-
-    const { container } = render(
-      <QuestionInput
-        onSend={jest.fn()}
-        disabled={false}
-        placeholder={"placeholder"}
-        conversationId={undefined}
-        clearOnSend={false}
-      />
-    );
-
-    await uploadFiles([uploadedXlsxFile]);
-    await inputChatMessage();
-    await clickSubmitButton();
-
-    expect(screen.getByText(/Could not read text from file:/)).toBeInTheDocument();
-    expect(screen.getByText(uploadedXlsxFile.name)).toBeInTheDocument();
-
-    expect(mockOnSend).toHaveBeenCalledTimes(0);
-
-    expect(await axe(container)).toHaveNoViolations();
-  });
+      expect(await axe(container)).toHaveNoViolations();
+    }
+  );
 
   it("displays the appropriate input error if text cannot be read from multiple files", async () => {
     const mockOnSend = jest.fn();
