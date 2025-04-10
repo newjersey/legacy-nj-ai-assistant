@@ -1,6 +1,6 @@
 import { chatHistorySampleData } from "../constants/chatHistory";
 import type { UploadedFile } from "../utils/fileUploadUtils";
-import { ACCEPTED_FILE_TYPES, isImageFile } from "../utils/fileUploadUtils";
+import { ACCEPTED_FILE_TYPES, isImageFile, isSpreadsheetFile } from "../utils/fileUploadUtils";
 
 import type {
   ChatMessage,
@@ -32,11 +32,7 @@ export const conversationApi = async (
 
         if (isImageFile(uploadedFile)) {
           fileContents.push({ type: "image_url", image_url: { url: uploadedFile.contents } });
-        } else if (
-          uploadedFile.extension === ACCEPTED_FILE_TYPES.XLSX ||
-          uploadedFile.extension === ACCEPTED_FILE_TYPES.XLS ||
-          uploadedFile.extension === ACCEPTED_FILE_TYPES.CSV
-        ) {
+        } else if (isSpreadsheetFile(uploadedFile)) {
           fileContents.push({
             type: "text",
             text: `The following document contains one or more tables in CSV format. Each document is separated by a pipe (|). Use the following document in your responses:\n ---BEGIN DOCUMENT---${uploadedFile.contents}---END DOCUMENT---`,

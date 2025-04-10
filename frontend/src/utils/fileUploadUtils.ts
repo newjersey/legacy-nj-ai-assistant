@@ -35,6 +35,14 @@ export const isImageFile = (file: UploadedFile): boolean => {
   return file.extension.includes("image");
 };
 
+export const isSpreadsheetFile = (file: UploadedFile): boolean => {
+  return (
+    file.extension === ACCEPTED_FILE_TYPES.XLS ||
+    file.extension === ACCEPTED_FILE_TYPES.XLSX ||
+    file.extension === ACCEPTED_FILE_TYPES.CSV
+  );
+};
+
 export const truncateFilename = (fileName: string) => {
   if (fileName.length < 20) {
     return fileName;
