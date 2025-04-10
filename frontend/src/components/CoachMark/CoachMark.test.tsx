@@ -98,6 +98,7 @@ describe(CoachMark.Root.name, () => {
   });
 
   it("throws an error when the 'coachMarkPortal' option is not a coachMarkPortal component", async () => {
+    const error = jest.spyOn(console, "error").mockImplementation(() => {});
     expect(() =>
       render(
         <ComponentWithCoachMark
@@ -108,6 +109,7 @@ describe(CoachMark.Root.name, () => {
         />
       )
     ).toThrow();
+    error.mockReset();
   });
 
   it("does not dismiss the coach mark when pressing outside of both the coach mark and reference elements", async () => {
@@ -131,6 +133,88 @@ describe(CoachMark.Root.name, () => {
     await userEvent.click(outsideElement);
 
     expect(screen.getByText(coachMarkHeadingText)).toBeInTheDocument();
+  });
+
+  describe("conditional logic for showing coach mark", () => {
+    it("does not show the coach mark if its expiration date has passed", () => {
+      const expirationDate = "2025-01-02";
+      jest.setSystemTime(new Date("2025-01-03"));
+
+      const coachMarkHeading = "Multiple file upload";
+
+      render(
+        <ComponentWithCoachMark
+          useCoachMarkOptions={{
+            ...DEFAULT_COACH_MARK_OPTIONS,
+            expirationDateUtc: expirationDate,
+            coachMarkPortal: (
+              <CoachMark.Portal allowedPlacements={["top"]}>
+                <CoachMark.Heading>{coachMarkHeading}</CoachMark.Heading>
+              </CoachMark.Portal>
+            ),
+          }}
+        />
+      );
+
+      expect(screen.queryByRole("dialog", { name: coachMarkHeading })).not.toBeInTheDocument();
+    });
+
+    it("does not show the coach mark if it has already been dismissed (localStorage has hideCoachMark key)", () => {
+      const coachMarkId = "multiple-file-upload";
+
+      jest.setSystemTime(new Date("2025-01-01"));
+      const expirationDate = "2025-01-02";
+
+      const hideCoachMarkKey = CoachMark.getHideCoachMarkStorageKey(coachMarkId);
+      localStorage.setItem(hideCoachMarkKey, "true");
+
+      const coachMarkHeading = "Multiple file upload";
+
+      render(
+        <ComponentWithCoachMark
+          useCoachMarkOptions={{
+            ...DEFAULT_COACH_MARK_OPTIONS,
+            id: coachMarkId,
+            expirationDateUtc: expirationDate,
+            coachMarkPortal: (
+              <CoachMark.Portal allowedPlacements={["top"]}>
+                <CoachMark.Heading>{coachMarkHeading}</CoachMark.Heading>
+              </CoachMark.Portal>
+            ),
+          }}
+        />
+      );
+
+      expect(screen.queryByRole("dialog", { name: coachMarkHeading })).not.toBeInTheDocument();
+    });
+
+    it("does not show if the coach mark if the disableCoachMarksForTests localStorage item is set", () => {
+      const coachMarkId = "multiple-file-upload";
+
+      jest.setSystemTime(new Date("2025-01-01"));
+      const expirationDate = "2025-01-02";
+
+      localStorage.setItem(CoachMark.DISABLE_COACH_MARKS_FOR_TEST_STORAGE_KEY, "true");
+
+      const coachMarkHeading = "Multiple file upload";
+
+      render(
+        <ComponentWithCoachMark
+          useCoachMarkOptions={{
+            ...DEFAULT_COACH_MARK_OPTIONS,
+            id: coachMarkId,
+            expirationDateUtc: expirationDate,
+            coachMarkPortal: (
+              <CoachMark.Portal allowedPlacements={["top"]}>
+                <CoachMark.Heading>{coachMarkHeading}</CoachMark.Heading>
+              </CoachMark.Portal>
+            ),
+          }}
+        />
+      );
+
+      expect(screen.queryByRole("dialog", { name: coachMarkHeading })).not.toBeInTheDocument();
+    });
   });
 });
 
@@ -209,60 +293,6 @@ describe(CoachMark.Portal.name, () => {
     );
 
     expect(getReferenceElement()).toHaveClass("coachMarkActive");
-  });
-
-  describe("conditional logic for rendering", () => {
-    it("does not render if the coach mark's expiration date has passed", () => {
-      const expirationDate = "2025-01-02";
-      jest.setSystemTime(new Date("2025-01-03"));
-
-      const coachMarkHeading = "Multiple file upload";
-
-      render(
-        <ComponentWithCoachMark
-          useCoachMarkOptions={{
-            ...DEFAULT_COACH_MARK_OPTIONS,
-            expirationDateUtc: expirationDate,
-            coachMarkPortal: (
-              <CoachMark.Portal allowedPlacements={["top"]}>
-                <CoachMark.Heading>{coachMarkHeading}</CoachMark.Heading>
-              </CoachMark.Portal>
-            ),
-          }}
-        />
-      );
-
-      expect(screen.queryByRole("dialog", { name: coachMarkHeading })).not.toBeInTheDocument();
-    });
-
-    it("does not render if the coach mark has already been dismissed (localStorage has hideCoachMark key)", () => {
-      const coachMarkId = "multiple-file-upload";
-
-      jest.setSystemTime(new Date("2025-01-01"));
-      const expirationDate = "2025-01-02";
-
-      const hideCoachMarkKey = CoachMark.getHideCoachMarkStorageKey(coachMarkId);
-      localStorage.setItem(hideCoachMarkKey, "true");
-
-      const coachMarkHeading = "Multiple file upload";
-
-      render(
-        <ComponentWithCoachMark
-          useCoachMarkOptions={{
-            ...DEFAULT_COACH_MARK_OPTIONS,
-            id: coachMarkId,
-            expirationDateUtc: expirationDate,
-            coachMarkPortal: (
-              <CoachMark.Portal allowedPlacements={["top"]}>
-                <CoachMark.Heading>{coachMarkHeading}</CoachMark.Heading>
-              </CoachMark.Portal>
-            ),
-          }}
-        />
-      );
-
-      expect(screen.queryByRole("dialog", { name: coachMarkHeading })).not.toBeInTheDocument();
-    });
   });
 });
 
@@ -348,6 +378,7 @@ describe(CoachMark.Description.name, () => {
   });
 
   it("throws an error when the asChild prop is true and an invalid React element is passed a child", () => {
+    const error = jest.spyOn(console, "error").mockImplementation(() => {});
     expect(() =>
       render(
         <ComponentWithCoachMark
@@ -365,6 +396,7 @@ describe(CoachMark.Description.name, () => {
         />
       )
     ).toThrow();
+    error.mockReset();
   });
 
   it("serves as the dialog's accessible description (via the aria-describedby attribute)", () => {
@@ -456,7 +488,7 @@ describe.each([
       expect(screen.queryByText(coachMarkHeading)).not.toBeInTheDocument();
 
       expect(localStorage.getItem(hideCoachMarkKey)).toBe("true");
-      expect(logEventSpy).toHaveBeenCalledWith("click_close_coach_mark", {
+      expect(logEventSpy).toHaveBeenCalledWith("coach_mark_single_feat_dimiss", {
         coach_mark_id: coachMarkId,
       });
       expect(logEventSpy).toHaveBeenCalledTimes(1);

@@ -37,6 +37,7 @@ const ARROW_HEIGHT = 7;
 const GAP = 8;
 
 const HIDE_COACH_MARK_STORAGE_KEY_PREFIX = "hide_coach_mark";
+export const DISABLE_COACH_MARKS_FOR_TEST_STORAGE_KEY = "disable_coach_marks_for_tests";
 
 export const getHideCoachMarkStorageKey = (id: string) => {
   return `${HIDE_COACH_MARK_STORAGE_KEY_PREFIX}__${id}`;
@@ -70,12 +71,18 @@ export const useCoachMark = (options: CoachMarkOptions) => {
   const hideCoachMarkStorageKey = getHideCoachMarkStorageKey(options.id);
   const isDimissed = localStorage.getItem(hideCoachMarkStorageKey) != null;
 
+  const disableCoachMarksStorageValue = localStorage.getItem(
+    DISABLE_COACH_MARKS_FOR_TEST_STORAGE_KEY
+  );
+  const isDisabled =
+    disableCoachMarksStorageValue != null && JSON.parse(disableCoachMarksStorageValue) !== false;
+
   const isExpired = isCoachMarkExpired(options.expirationDateUtc);
   if (isExpired) {
     localStorage.removeItem(hideCoachMarkStorageKey);
   }
 
-  const [isOpen, setIsOpen] = useState(!(isExpired || isDimissed));
+  const [isOpen, setIsOpen] = useState(!(isExpired || isDimissed || isDisabled));
   const [coachMark, setCoachMark] = useState<HTMLElement | null>(null);
   const [referenceElement, setReferenceElement] = useState<HTMLElement | null>(null);
 
@@ -86,7 +93,7 @@ export const useCoachMark = (options: CoachMarkOptions) => {
     setIsOpen(false);
     setHideCoachMarkStorageItem(options.id);
     referenceElement?.classList.remove("coachMarkActive");
-    logEvent("coach_mark_dismiss_single", {
+    logEvent("coach_mark_single_feat_dimiss", {
       coach_mark_id: options.id,
     });
   }, [options.id, referenceElement?.classList]);
