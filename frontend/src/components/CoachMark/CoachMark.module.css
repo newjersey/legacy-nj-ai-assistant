@@ -19,5 +19,6 @@
 }
 
 .coachMarkArrow {
+  /* negative margin to center arrow back on reference element */
   margin: 0 calc(var(--coach-mark-margin) * -1)
 }

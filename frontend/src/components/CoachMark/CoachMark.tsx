@@ -86,7 +86,7 @@ export const useCoachMark = (options: CoachMarkOptions) => {
     setIsOpen(false);
     setHideCoachMarkStorageItem(options.id);
     referenceElement?.classList.remove("coachMarkActive");
-    logEvent("click_close_coach_mark", {
+    logEvent("coach_mark_dismiss_single", {
       coach_mark_id: options.id,
     });
   }, [options.id, referenceElement?.classList]);
