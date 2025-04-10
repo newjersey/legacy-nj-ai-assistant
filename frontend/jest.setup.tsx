@@ -1,5 +1,5 @@
 import React from "react";
-import { beforeAll, jest } from "@jest/globals";
+import { afterAll, beforeAll, jest } from "@jest/globals";
 
 import "@testing-library/jest-dom";
 import * as CoachMark from "./src/components/CoachMark/CoachMark"
@@ -17,4 +17,8 @@ jest.mock("framer-motion", () => ({
 
 beforeAll(async () => {
   localStorage.setItem(CoachMark.DISABLE_COACH_MARKS_FOR_TEST_STORAGE_KEY, JSON.stringify(true))
+})
+
+afterAll( () => {
+  localStorage.clear()
 })
