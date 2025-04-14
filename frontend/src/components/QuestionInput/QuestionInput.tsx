@@ -259,11 +259,13 @@ export const QuestionInput = ({
         const arrayBuffer = await selectedFile.arrayBuffer();
         const workbook = XLSX.read(arrayBuffer);
         const workbookContents: string[] = [];
+        const sheetNames: string[] = [];
 
         workbook.SheetNames.forEach((sheetName) => {
           const worksheet = workbook.Sheets[sheetName];
           const worksheetAsCsvString = XLSX.utils.sheet_to_csv(worksheet);
           workbookContents.push(worksheetAsCsvString);
+          sheetNames.push(sheetName);
         });
 
         if (workbookContents.length === 0) {
@@ -274,6 +276,7 @@ export const QuestionInput = ({
             contents: workbookContents.join(" | "),
             extension: selectedFile.type,
             size: selectedFile.size,
+            sheets: sheetNames,
           };
         }
       } else {

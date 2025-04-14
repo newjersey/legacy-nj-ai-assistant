@@ -20,6 +20,7 @@ export interface UploadedFile {
   contents: string;
   size: number;
   extension: string;
+  sheets?: string[];
 }
 
 export interface SelectedFile extends File {
