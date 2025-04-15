@@ -6,7 +6,9 @@ declare global {
 
 export function logEvent(eventName: string, extraParameters: object) {
   if (window.dataLayer != null) {
-    window.dataLayer.push({ event: eventName, ...extraParameters });
+    const finalEventName =
+      window.location.hostname === "localhost" ? `test_${eventName}` : eventName;
+    window.dataLayer.push({ event: finalEventName, ...extraParameters });
   } else {
     // eslint-disable-next-line no-console
     console.log("In production, the following event would be logged to Google Analytics:", {
