@@ -227,12 +227,7 @@ const CoachMarkPortal = (props: CoachMarkPortalProps) => {
               Done
             </button>
           </div>
-          <FloatingArrow
-            ref={arrowRef}
-            className={styles.coachMarkArrow}
-            context={context}
-            fill="#e8f5ff"
-          />
+          <FloatingArrow ref={arrowRef} className={styles.coachMarkArrow} context={context} />
         </div>
       </FloatingFocusManager>
     </FloatingOverlay>
