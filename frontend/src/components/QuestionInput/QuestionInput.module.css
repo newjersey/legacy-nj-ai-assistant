@@ -73,10 +73,6 @@ textarea.questionInputTextArea {
   width: 95%;
 }
 
-button.closeButton {
-  color: var(--base-ink);
-}
-
 /* file input styling */
 button.fileInputButton {
   outline: none;

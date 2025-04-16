@@ -1,6 +1,7 @@
 import icons from "@newjersey/njwds/dist/img/sprite.svg";
 
 import { truncateFilename } from "../../utils/fileUploadUtils";
+import { CloseButton } from "../common/Button";
 
 import styles from "./QuestionInput.module.css";
 
@@ -27,15 +28,11 @@ export const FileUploadPreview = ({ onClose, fileId, fileName }: FileUploadPrevi
         <use href={`${icons}#image`} />
       </svg>
       <p className={`margin-top-0 font-sans-3xs`}>{truncateFilename(fileName)}</p>
-      <button
-        className={`usa-button usa-button--unstyled ${styles.closeButton}`}
-        aria-label={`Remove file upload: ${fileName}`}
-        onClick={() => onClose(fileId)}
-      >
-        <svg className="usa-icon" aria-hidden="true" focusable="false" role="img">
-          <use href={`${icons}#close`} />
-        </svg>
-      </button>
+      <CloseButton
+        ariaLabel={`Remove file upload: ${fileName}`}
+        buttonClasses={`usa-button usa-button--unstyled ${styles.closeButton}`}
+        handleClick={() => onClose(fileId)}
+      />
     </div>
   );
 };
