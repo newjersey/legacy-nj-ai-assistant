@@ -28,6 +28,10 @@ import {
   useInteractions,
 } from "@floating-ui/react";
 
+import {
+  DISABLE_COACH_MARKS_FOR_TEST_STORAGE_KEY,
+  getHideCoachMarkStorageKey,
+} from "../../utils/coachMarkUtils";
 import { logEvent } from "../../utils/logEvent";
 import { CloseButton } from "../common/Button";
 
@@ -35,13 +39,6 @@ import styles from "./CoachMark.module.css";
 
 const ARROW_HEIGHT = 7;
 const GAP = 8;
-
-const HIDE_COACH_MARK_STORAGE_KEY_PREFIX = "hide_coach_mark";
-export const DISABLE_COACH_MARKS_FOR_TEST_STORAGE_KEY = "disable_coach_marks_for_tests";
-
-export const getHideCoachMarkStorageKey = (id: string) => {
-  return `${HIDE_COACH_MARK_STORAGE_KEY_PREFIX}__${id}`;
-};
 
 const setHideCoachMarkStorageItem = (id: string) => {
   localStorage.setItem(getHideCoachMarkStorageKey(id), JSON.stringify(true));
