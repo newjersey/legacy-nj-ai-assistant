@@ -6,7 +6,7 @@ param tags object = {}
 @allowed([ 'GlobalDocumentDB', 'MongoDB', 'Parse' ])
 param kind string
 
-resource cosmos 'Microsoft.DocumentDB/databaseAccounts@2022-08-15' = {
+resource cosmos 'Microsoft.DocumentDB/databaseAccounts@2024-11-15' = {
   name: name
   kind: kind
   location: location
