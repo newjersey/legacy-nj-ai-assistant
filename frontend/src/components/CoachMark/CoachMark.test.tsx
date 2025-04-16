@@ -15,7 +15,6 @@ import * as logEvent from "../../utils/logEvent";
 import * as CoachMark from "./CoachMark";
 
 const DEFAULT_EXPIRATION_DATE = "2025-01-01";
-
 const DEFAULT_COACH_MARK_OPTIONS: Omit<CoachMark.CoachMarkOptions, "referenceRef"> = {
   id: "",
   coachMarkPortal: (
@@ -25,7 +24,8 @@ const DEFAULT_COACH_MARK_OPTIONS: Omit<CoachMark.CoachMarkOptions, "referenceRef
   ),
 };
 
-const logEventSpy = jest.spyOn(logEvent, "logEvent");
+const defaultCoachMarkHeading = "Multiple file upload";
+const defaultCoachMarkDescription = "You can now upload multiple files.";
 
 interface ComponentWithCoachMarkProps {
   useCoachMarkOptions: Omit<CoachMark.CoachMarkOptions, "referenceRef">;
@@ -256,7 +256,7 @@ describe(CoachMark.Root.name, () => {
         ...DEFAULT_COACH_MARK_OPTIONS,
         coachMarkPortal: (
           <CoachMark.Portal allowedPlacements={["top"]}>
-            <CoachMark.Heading>Multiple file upload</CoachMark.Heading>
+            <></>
           </CoachMark.Portal>
         ),
       },
@@ -281,37 +281,33 @@ describe(CoachMark.Root.name, () => {
   });
 
   it("does not dismiss the coach mark when pressing outside of both the coach mark and reference elements", async () => {
-    const coachMarkHeadingText = "Multiple file upload";
-
     renderTestCoachMark({
       useCoachMarkOptions: {
         ...DEFAULT_COACH_MARK_OPTIONS,
         coachMarkPortal: (
           <CoachMark.Portal allowedPlacements={["top"]}>
-            <CoachMark.Heading>{coachMarkHeadingText}</CoachMark.Heading>
+            <CoachMark.Heading>{defaultCoachMarkHeading}</CoachMark.Heading>
           </CoachMark.Portal>
         ),
       },
       coach_mark_expiration_date_iso: DEFAULT_EXPIRATION_DATE,
     });
 
-    expect(screen.getByText(coachMarkHeadingText)).toBeInTheDocument();
+    expect(screen.getByText(defaultCoachMarkHeading)).toBeInTheDocument();
 
     const outsideElement = screen.getByText("Outside element");
     await userEvent.click(outsideElement);
 
-    expect(screen.getByText(coachMarkHeadingText)).toBeInTheDocument();
+    expect(screen.getByText(defaultCoachMarkHeading)).toBeInTheDocument();
   });
 
   it("renders an empty element with data-testid='coach-mark'", () => {
-    const coachMarkHeadingText = "Multiple file upload";
-
     renderTestCoachMark({
       useCoachMarkOptions: {
         ...DEFAULT_COACH_MARK_OPTIONS,
         coachMarkPortal: (
           <CoachMark.Portal allowedPlacements={["top"]}>
-            <CoachMark.Heading>{coachMarkHeadingText}</CoachMark.Heading>
+            <></>
           </CoachMark.Portal>
         ),
       },
@@ -325,14 +321,12 @@ describe(CoachMark.Root.name, () => {
 
 describe(CoachMark.Portal.name, () => {
   it("renders its children on load (is open by default)", () => {
-    const coachMarkHeading = "Multiple file upload";
-
     renderTestCoachMark({
       useCoachMarkOptions: {
         ...DEFAULT_COACH_MARK_OPTIONS,
         coachMarkPortal: (
           <CoachMark.Portal allowedPlacements={["top"]}>
-            <CoachMark.Heading>{coachMarkHeading}</CoachMark.Heading>
+            <CoachMark.Heading>{defaultCoachMarkHeading}</CoachMark.Heading>
             <CoachMark.Description>You can now upload multiple files.</CoachMark.Description>
           </CoachMark.Portal>
         ),
@@ -340,19 +334,17 @@ describe(CoachMark.Portal.name, () => {
       coach_mark_expiration_date_iso: DEFAULT_EXPIRATION_DATE,
     });
 
-    expect(screen.getByText(coachMarkHeading)).toBeInTheDocument();
+    expect(screen.getByText(defaultCoachMarkHeading)).toBeInTheDocument();
   });
 
   it(`renders a modal dialog whose accessible name and description are set by the ${CoachMark.Heading.name} and ${CoachMark.Description.name} components`, async () => {
-    const coachMarkHeading = "Multiple file upload";
-    const coachMarkDescription = "You can now upload multiple files.";
     renderTestCoachMark({
       useCoachMarkOptions: {
         ...DEFAULT_COACH_MARK_OPTIONS,
         coachMarkPortal: (
           <CoachMark.Portal allowedPlacements={["top"]}>
-            <CoachMark.Heading>{coachMarkHeading}</CoachMark.Heading>
-            <CoachMark.Description>{coachMarkDescription}</CoachMark.Description>
+            <CoachMark.Heading>{defaultCoachMarkHeading}</CoachMark.Heading>
+            <CoachMark.Description>{defaultCoachMarkDescription}</CoachMark.Description>
           </CoachMark.Portal>
         ),
       },
@@ -361,8 +353,8 @@ describe(CoachMark.Portal.name, () => {
 
     const coachMark = screen.getByRole("dialog");
     expect(coachMark).toHaveAttribute("aria-modal", "true");
-    expect(coachMark).toHaveAccessibleName(coachMarkHeading);
-    expect(coachMark).toHaveAccessibleDescription(coachMarkDescription);
+    expect(coachMark).toHaveAccessibleName(defaultCoachMarkHeading);
+    expect(coachMark).toHaveAccessibleDescription(defaultCoachMarkDescription);
   });
 
   it(`does not set the dialog's accessible name/description when the ${CoachMark.Heading.name} and ${CoachMark.Description.name} components are absent`, async () => {
@@ -402,14 +394,12 @@ describe(CoachMark.Portal.name, () => {
 
 describe(CoachMark.Heading.name, () => {
   it("renders its children inside a heading level 1", () => {
-    const coachMarkHeadingText = "Multiple file upload";
-
     renderTestCoachMark({
       useCoachMarkOptions: {
         ...DEFAULT_COACH_MARK_OPTIONS,
         coachMarkPortal: (
           <CoachMark.Portal allowedPlacements={["top"]}>
-            <CoachMark.Heading>{coachMarkHeadingText}</CoachMark.Heading>
+            <CoachMark.Heading>{defaultCoachMarkHeading}</CoachMark.Heading>
           </CoachMark.Portal>
         ),
       },
@@ -417,17 +407,16 @@ describe(CoachMark.Heading.name, () => {
     });
 
     const heading = screen.getByRole("heading", { level: 1 });
-    expect(within(heading).getByText(coachMarkHeadingText)).toBeInTheDocument();
+    expect(within(heading).getByText(defaultCoachMarkHeading)).toBeInTheDocument();
   });
 
   it("serves as the dialog's accessible name (via the aria-labelledby attribute)", () => {
-    const coachMarkHeadingText = "Multiple file upload";
     renderTestCoachMark({
       useCoachMarkOptions: {
         ...DEFAULT_COACH_MARK_OPTIONS,
         coachMarkPortal: (
           <CoachMark.Portal allowedPlacements={["top"]}>
-            <CoachMark.Heading>{coachMarkHeadingText}</CoachMark.Heading>
+            <CoachMark.Heading>{defaultCoachMarkHeading}</CoachMark.Heading>
           </CoachMark.Portal>
         ),
       },
@@ -437,32 +426,28 @@ describe(CoachMark.Heading.name, () => {
     const heading = screen.getByRole("heading", { level: 1 });
     const coachMark = screen.getByRole("dialog");
     expect(coachMark).toHaveAttribute("aria-labelledby", heading.id);
-    expect(coachMark).toHaveAccessibleName(coachMarkHeadingText);
+    expect(coachMark).toHaveAccessibleName(defaultCoachMarkHeading);
   });
 });
 
 describe(CoachMark.Description.name, () => {
   it("renders its children inside a paragraph by default", () => {
-    const description = "You can now upload multiple files";
-
     renderTestCoachMark({
       useCoachMarkOptions: {
         ...DEFAULT_COACH_MARK_OPTIONS,
         coachMarkPortal: (
           <CoachMark.Portal allowedPlacements={["top"]}>
-            <CoachMark.Description>{description}</CoachMark.Description>
+            <CoachMark.Description>{defaultCoachMarkDescription}</CoachMark.Description>
           </CoachMark.Portal>
         ),
       },
       coach_mark_expiration_date_iso: DEFAULT_EXPIRATION_DATE,
     });
 
-    expect(screen.getByText(description)).toHaveRole("paragraph");
+    expect(screen.getByText(defaultCoachMarkDescription)).toHaveRole("paragraph");
   });
 
   it("renders its children alone (not in a paragraph) when the asChild prop is true", () => {
-    const descriptionText = "New feature #1";
-
     renderTestCoachMark({
       useCoachMarkOptions: {
         ...DEFAULT_COACH_MARK_OPTIONS,
@@ -470,7 +455,7 @@ describe(CoachMark.Description.name, () => {
           <CoachMark.Portal allowedPlacements={["top"]}>
             <CoachMark.Description asChild={true}>
               <ol>
-                <li>{descriptionText}</li>
+                <li>{defaultCoachMarkDescription}</li>
               </ol>
             </CoachMark.Description>
           </CoachMark.Portal>
@@ -480,7 +465,7 @@ describe(CoachMark.Description.name, () => {
     });
 
     const listElement = screen.getByRole("list");
-    expect(screen.getByText(descriptionText)).toHaveRole("listitem");
+    expect(screen.getByText(defaultCoachMarkDescription)).toHaveRole("listitem");
     expect(screen.getByRole("dialog")).toHaveAttribute("aria-describedby", listElement.id);
   });
 
@@ -506,24 +491,22 @@ describe(CoachMark.Description.name, () => {
   });
 
   it("serves as the dialog's accessible description (via the aria-describedby attribute)", () => {
-    const description = "You can now upload multiple files";
-
     renderTestCoachMark({
       useCoachMarkOptions: {
         ...DEFAULT_COACH_MARK_OPTIONS,
         coachMarkPortal: (
           <CoachMark.Portal allowedPlacements={["top"]}>
-            <CoachMark.Description>{description}</CoachMark.Description>
+            <CoachMark.Description>{defaultCoachMarkDescription}</CoachMark.Description>
           </CoachMark.Portal>
         ),
       },
       coach_mark_expiration_date_iso: DEFAULT_EXPIRATION_DATE,
     });
 
-    const descriptionElement = screen.getByText(description);
+    const descriptionElement = screen.getByText(defaultCoachMarkDescription);
     const coachMark = screen.getByRole("dialog");
     expect(coachMark).toHaveAttribute("aria-describedby", descriptionElement.id);
-    expect(coachMark).toHaveAccessibleDescription(description);
+    expect(coachMark).toHaveAccessibleDescription(defaultCoachMarkDescription);
   });
 });
 
@@ -549,74 +532,69 @@ describe.each([
   ["the Escape key is pressed", pressEscapeKey],
   ["the reference element is clicked", clickReferenceElement],
 ])("dismissing the coach mark", (testCase, dismissEvent) => {
-  describe(`when ${testCase}`, () => {
-    it("closes the dialog", async () => {
-      const coachMarkHeading = "Multiple file upload";
-
-      renderTestCoachMark({
-        useCoachMarkOptions: {
-          ...DEFAULT_COACH_MARK_OPTIONS,
-          coachMarkPortal: (
-            <CoachMark.Portal allowedPlacements={["top"]}>
-              <CoachMark.Heading>{coachMarkHeading}</CoachMark.Heading>
-              <CoachMark.Description>You can now upload multiple files.</CoachMark.Description>
-            </CoachMark.Portal>
-          ),
-        },
-        coach_mark_expiration_date_iso: DEFAULT_EXPIRATION_DATE,
-      });
-
-      expect(screen.getByText(coachMarkHeading)).toBeInTheDocument();
-      await dismissEvent();
-      expect(screen.queryByText(coachMarkHeading)).not.toBeInTheDocument();
+  it(`closes the dialog when ${testCase}`, async () => {
+    renderTestCoachMark({
+      useCoachMarkOptions: {
+        ...DEFAULT_COACH_MARK_OPTIONS,
+        coachMarkPortal: (
+          <CoachMark.Portal allowedPlacements={["top"]}>
+            <CoachMark.Heading>{defaultCoachMarkHeading}</CoachMark.Heading>
+          </CoachMark.Portal>
+        ),
+      },
+      coach_mark_expiration_date_iso: DEFAULT_EXPIRATION_DATE,
     });
 
-    it("sets the hideCoachMark localStorage item and fires the 'click_close_coach_mark' GA event", async () => {
-      const coachMarkHeading = "Multiple file upload";
-      const coachMarkId = "multiple_file_upload";
-      renderTestCoachMark({
-        useCoachMarkOptions: {
-          ...DEFAULT_COACH_MARK_OPTIONS,
-          id: coachMarkId,
-          coachMarkPortal: (
-            <CoachMark.Portal allowedPlacements={["top"]}>
-              <CoachMark.Heading>{coachMarkHeading}</CoachMark.Heading>
-            </CoachMark.Portal>
-          ),
-        },
-        coach_mark_expiration_date_iso: DEFAULT_EXPIRATION_DATE,
-      });
+    expect(screen.getByText(defaultCoachMarkHeading)).toBeInTheDocument();
+    await dismissEvent();
+    expect(screen.queryByText(defaultCoachMarkHeading)).not.toBeInTheDocument();
+  });
 
-      const hideCoachMarkKey = getHideCoachMarkStorageKey(coachMarkId);
-      expect(localStorage.getItem(hideCoachMarkKey)).toBeNull();
+  it(`sets the hideCoachMark localStorage item and fires the 'click_close_coach_mark' GA event when ${testCase}`, async () => {
+    const logEventSpy = jest.spyOn(logEvent, "logEvent");
 
-      expect(screen.getByText(coachMarkHeading)).toBeInTheDocument();
-      await dismissEvent();
-      expect(screen.queryByText(coachMarkHeading)).not.toBeInTheDocument();
-
-      expect(localStorage.getItem(hideCoachMarkKey)).toBe("true");
-      expect(logEventSpy).toHaveBeenCalledWith("coach_mark_single_feat_dimiss", {
-        coach_mark_id: coachMarkId,
-      });
-      expect(logEventSpy).toHaveBeenCalledTimes(1);
+    const coachMarkId = "multiple_file_upload";
+    renderTestCoachMark({
+      useCoachMarkOptions: {
+        ...DEFAULT_COACH_MARK_OPTIONS,
+        id: coachMarkId,
+        coachMarkPortal: (
+          <CoachMark.Portal allowedPlacements={["top"]}>
+            <CoachMark.Heading>{defaultCoachMarkHeading}</CoachMark.Heading>
+          </CoachMark.Portal>
+        ),
+      },
+      coach_mark_expiration_date_iso: DEFAULT_EXPIRATION_DATE,
     });
 
-    it("removes the coachMarkActive class", async () => {
-      const coachMarkHeading = "Multiple file upload";
-      renderTestCoachMark({
-        useCoachMarkOptions: {
-          ...DEFAULT_COACH_MARK_OPTIONS,
-          coachMarkPortal: (
-            <CoachMark.Portal allowedPlacements={["top"]}>
-              <CoachMark.Heading>{coachMarkHeading}</CoachMark.Heading>
-            </CoachMark.Portal>
-          ),
-        },
-        coach_mark_expiration_date_iso: DEFAULT_EXPIRATION_DATE,
-      });
+    const hideCoachMarkKey = getHideCoachMarkStorageKey(coachMarkId);
+    expect(localStorage.getItem(hideCoachMarkKey)).toBeNull();
 
-      await dismissEvent();
-      expect(getReferenceElement()).not.toHaveClass("coachMarkActive");
+    expect(screen.getByText(defaultCoachMarkHeading)).toBeInTheDocument();
+    await dismissEvent();
+    expect(screen.queryByText(defaultCoachMarkHeading)).not.toBeInTheDocument();
+
+    expect(localStorage.getItem(hideCoachMarkKey)).toBe("true");
+    expect(logEventSpy).toHaveBeenCalledWith("coach_mark_single_feat_dimiss", {
+      coach_mark_id: coachMarkId,
     });
+    expect(logEventSpy).toHaveBeenCalledTimes(1);
+  });
+
+  it(`removes the coachMarkActive class when ${testCase}`, async () => {
+    renderTestCoachMark({
+      useCoachMarkOptions: {
+        ...DEFAULT_COACH_MARK_OPTIONS,
+        coachMarkPortal: (
+          <CoachMark.Portal allowedPlacements={["top"]}>
+            <CoachMark.Heading>{defaultCoachMarkHeading}</CoachMark.Heading>
+          </CoachMark.Portal>
+        ),
+      },
+      coach_mark_expiration_date_iso: DEFAULT_EXPIRATION_DATE,
+    });
+
+    await dismissEvent();
+    expect(getReferenceElement()).not.toHaveClass("coachMarkActive");
   });
 });
