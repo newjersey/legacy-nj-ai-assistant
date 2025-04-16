@@ -49,6 +49,7 @@ export const QuestionInput = ({
 }: Props) => {
   const [question, setQuestion] = useState<string>("");
   const fileInputRef = useRef<HTMLInputElement | null>(null);
+  const coachMarkReferenceRef = useRef(null);
 
   const [selectedFiles, setSelectedFiles] = useState<SelectedFile[]>([]);
   const [inputErrors, setInputErrors] = useState<AlertsMap>(defaultAlertsMap);
@@ -343,8 +344,6 @@ export const QuestionInput = ({
       [alertTypeToRemove]: null,
     }));
   };
-
-  const coachMarkReferenceRef = useRef(null);
 
   const coachMark = CoachMark.useCoachMark({
     id: "multiple-file-upload",
