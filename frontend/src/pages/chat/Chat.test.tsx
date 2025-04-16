@@ -156,3 +156,11 @@ describe("Test uploaded image previews", () => {
     expect(await axe(container)).toHaveNoViolations();
   });
 });
+
+describe("Test coach marks", () => {
+  it("renders one coach mark maximum", () => {
+    render(<Chat />);
+    const coachMarks = screen.queryAllByTestId("coach-mark");
+    expect(coachMarks.length).toBeLessThanOrEqual(1);
+  });
+});

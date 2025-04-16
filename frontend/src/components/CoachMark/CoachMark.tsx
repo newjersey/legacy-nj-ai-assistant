@@ -182,6 +182,7 @@ interface CoachMarkRootProps {
 const CoachMarkRoot = (props: CoachMarkRootProps) => {
   return (
     <CoachMarkContext.Provider value={props.coachMark}>
+      <div data-testid="coach-mark" />
       {props.coachMark.coachMarkPortal}
       {props.children}
     </CoachMarkContext.Provider>

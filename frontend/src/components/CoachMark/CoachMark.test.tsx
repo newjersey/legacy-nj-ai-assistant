@@ -50,13 +50,15 @@ const ComponentWithCoachMark = (props: ComponentWithCoachMarkProps) => {
 
 const renderTestCoachMark = (options: {
   useCoachMarkOptions: Omit<CoachMark.CoachMarkOptions, "referenceRef">;
-  expirationDateUiSetting?: string;
+  coach_mark_expiration_date_iso?: string;
 }) => {
   const uiSettings: FrontendSettings["ui"] = {
     title: "NJ AI Assistant",
     chat_title: "NJ AI Assistant",
     chat_description: "<p>Chat description</p>",
-    coach_mark_expiration_date_iso: options.expirationDateUiSetting,
+    ...(options.coach_mark_expiration_date_iso !== undefined && {
+      coach_mark_expiration_date_iso: options.coach_mark_expiration_date_iso,
+    }),
   };
 
   const appState: AppState = {
@@ -67,7 +69,7 @@ const renderTestCoachMark = (options: {
     },
   };
 
-  render(
+  return render(
     <AppStateContext.Provider
       value={{
         state: appState,
@@ -108,7 +110,7 @@ describe(CoachMark.useCoachMark.name, () => {
         ...DEFAULT_COACH_MARK_OPTIONS,
         id: coachMarkId,
       },
-      expirationDateUiSetting: expirationDate,
+      coach_mark_expiration_date_iso: expirationDate,
     });
     expect(localStorage.getItem(hideCoachMarkKey)).toBeNull();
   });
@@ -118,7 +120,7 @@ describe(CoachMark.useCoachMark.name, () => {
       ["a valid ISO date", "2025-02-02"],
       ["a valid ISO date with whitespace", " 2025-02-02"],
     ])(
-      "shows the coach mark if the expiration has not passed (expirationDateUiSetting is %s)",
+      "shows the coach mark if the expiration has not passed (coach_mark_expiration_date_iso is %s)",
       (_testcase, expirationDate) => {
         jest.setSystemTime(new Date("2025-01-01"));
 
@@ -133,7 +135,7 @@ describe(CoachMark.useCoachMark.name, () => {
               </CoachMark.Portal>
             ),
           },
-          expirationDateUiSetting: expirationDate,
+          coach_mark_expiration_date_iso: expirationDate,
         });
 
         expect(screen.queryByRole("dialog", { name: coachMarkHeading })).toBeInTheDocument();
@@ -155,7 +157,7 @@ describe(CoachMark.useCoachMark.name, () => {
             </CoachMark.Portal>
           ),
         },
-        expirationDateUiSetting: expirationDate,
+        coach_mark_expiration_date_iso: expirationDate,
       });
 
       expect(screen.queryByRole("dialog", { name: coachMarkHeading })).not.toBeInTheDocument();
@@ -182,7 +184,7 @@ describe(CoachMark.useCoachMark.name, () => {
             </CoachMark.Portal>
           ),
         },
-        expirationDateUiSetting: expirationDate,
+        coach_mark_expiration_date_iso: expirationDate,
       });
 
       expect(screen.queryByRole("dialog", { name: coachMarkHeading })).not.toBeInTheDocument();
@@ -191,10 +193,11 @@ describe(CoachMark.useCoachMark.name, () => {
     it.each([
       ["undefined", undefined],
       ["null", null],
+      ["an empty string", ""],
       ["incorrectly formatted", "2026--01--01"],
     ])(
-      "does not show the coach mark if the expirationDateUiSetting is %s",
-      (_testCase, expirationDateUiSetting) => {
+      "does not show the coach mark if the coach_mark_expiration_date_iso is %s",
+      (_testCase, coach_mark_expiration_date_iso) => {
         const coachMarkId = "multiple-file-upload";
 
         jest.setSystemTime(new Date("2025-01-01"));
@@ -211,7 +214,7 @@ describe(CoachMark.useCoachMark.name, () => {
               </CoachMark.Portal>
             ),
           },
-          expirationDateUiSetting: expirationDateUiSetting as unknown as string,
+          coach_mark_expiration_date_iso: coach_mark_expiration_date_iso as unknown as string,
         });
 
         expect(screen.queryByRole("dialog", { name: coachMarkHeading })).not.toBeInTheDocument();
@@ -238,7 +241,7 @@ describe(CoachMark.useCoachMark.name, () => {
             </CoachMark.Portal>
           ),
         },
-        expirationDateUiSetting: expirationDate,
+        coach_mark_expiration_date_iso: expirationDate,
       });
 
       expect(screen.queryByRole("dialog", { name: coachMarkHeading })).not.toBeInTheDocument();
@@ -257,7 +260,7 @@ describe(CoachMark.Root.name, () => {
           </CoachMark.Portal>
         ),
       },
-      expirationDateUiSetting: DEFAULT_EXPIRATION_DATE,
+      coach_mark_expiration_date_iso: DEFAULT_EXPIRATION_DATE,
     });
 
     expect(getReferenceElement()).toBeInTheDocument();
@@ -271,7 +274,7 @@ describe(CoachMark.Root.name, () => {
           ...DEFAULT_COACH_MARK_OPTIONS,
           coachMarkPortal: <p>I'm not a CoachMarkPortal</p>,
         },
-        expirationDateUiSetting: DEFAULT_EXPIRATION_DATE,
+        coach_mark_expiration_date_iso: DEFAULT_EXPIRATION_DATE,
       })
     ).toThrow();
     error.mockReset();
@@ -289,7 +292,7 @@ describe(CoachMark.Root.name, () => {
           </CoachMark.Portal>
         ),
       },
-      expirationDateUiSetting: DEFAULT_EXPIRATION_DATE,
+      coach_mark_expiration_date_iso: DEFAULT_EXPIRATION_DATE,
     });
 
     expect(screen.getByText(coachMarkHeadingText)).toBeInTheDocument();
@@ -298,6 +301,25 @@ describe(CoachMark.Root.name, () => {
     await userEvent.click(outsideElement);
 
     expect(screen.getByText(coachMarkHeadingText)).toBeInTheDocument();
+  });
+
+  it("renders an empty element with data-testid='coach-mark'", () => {
+    const coachMarkHeadingText = "Multiple file upload";
+
+    renderTestCoachMark({
+      useCoachMarkOptions: {
+        ...DEFAULT_COACH_MARK_OPTIONS,
+        coachMarkPortal: (
+          <CoachMark.Portal allowedPlacements={["top"]}>
+            <CoachMark.Heading>{coachMarkHeadingText}</CoachMark.Heading>
+          </CoachMark.Portal>
+        ),
+      },
+      coach_mark_expiration_date_iso: DEFAULT_EXPIRATION_DATE,
+    });
+
+    expect(screen.getByTestId("coach-mark")).toBeInTheDocument();
+    expect(screen.getByTestId("coach-mark")).toBeEmptyDOMElement();
   });
 });
 
@@ -315,7 +337,7 @@ describe(CoachMark.Portal.name, () => {
           </CoachMark.Portal>
         ),
       },
-      expirationDateUiSetting: DEFAULT_EXPIRATION_DATE,
+      coach_mark_expiration_date_iso: DEFAULT_EXPIRATION_DATE,
     });
 
     expect(screen.getByText(coachMarkHeading)).toBeInTheDocument();
@@ -334,7 +356,7 @@ describe(CoachMark.Portal.name, () => {
           </CoachMark.Portal>
         ),
       },
-      expirationDateUiSetting: DEFAULT_EXPIRATION_DATE,
+      coach_mark_expiration_date_iso: DEFAULT_EXPIRATION_DATE,
     });
 
     const coachMark = screen.getByRole("dialog");
@@ -353,7 +375,7 @@ describe(CoachMark.Portal.name, () => {
           </CoachMark.Portal>
         ),
       },
-      expirationDateUiSetting: DEFAULT_EXPIRATION_DATE,
+      coach_mark_expiration_date_iso: DEFAULT_EXPIRATION_DATE,
     });
     const coachMark = screen.getByRole("dialog");
     expect(coachMark).not.toHaveAccessibleName();
@@ -391,7 +413,7 @@ describe(CoachMark.Heading.name, () => {
           </CoachMark.Portal>
         ),
       },
-      expirationDateUiSetting: DEFAULT_EXPIRATION_DATE,
+      coach_mark_expiration_date_iso: DEFAULT_EXPIRATION_DATE,
     });
 
     const heading = screen.getByRole("heading", { level: 1 });
@@ -409,7 +431,7 @@ describe(CoachMark.Heading.name, () => {
           </CoachMark.Portal>
         ),
       },
-      expirationDateUiSetting: DEFAULT_EXPIRATION_DATE,
+      coach_mark_expiration_date_iso: DEFAULT_EXPIRATION_DATE,
     });
 
     const heading = screen.getByRole("heading", { level: 1 });
@@ -432,7 +454,7 @@ describe(CoachMark.Description.name, () => {
           </CoachMark.Portal>
         ),
       },
-      expirationDateUiSetting: DEFAULT_EXPIRATION_DATE,
+      coach_mark_expiration_date_iso: DEFAULT_EXPIRATION_DATE,
     });
 
     expect(screen.getByText(description)).toHaveRole("paragraph");
@@ -454,7 +476,7 @@ describe(CoachMark.Description.name, () => {
           </CoachMark.Portal>
         ),
       },
-      expirationDateUiSetting: DEFAULT_EXPIRATION_DATE,
+      coach_mark_expiration_date_iso: DEFAULT_EXPIRATION_DATE,
     });
 
     const listElement = screen.getByRole("list");
@@ -477,7 +499,7 @@ describe(CoachMark.Description.name, () => {
             </CoachMark.Portal>
           ),
         },
-        expirationDateUiSetting: DEFAULT_EXPIRATION_DATE,
+        coach_mark_expiration_date_iso: DEFAULT_EXPIRATION_DATE,
       })
     ).toThrow();
     error.mockReset();
@@ -495,7 +517,7 @@ describe(CoachMark.Description.name, () => {
           </CoachMark.Portal>
         ),
       },
-      expirationDateUiSetting: DEFAULT_EXPIRATION_DATE,
+      coach_mark_expiration_date_iso: DEFAULT_EXPIRATION_DATE,
     });
 
     const descriptionElement = screen.getByText(description);
@@ -541,7 +563,7 @@ describe.each([
             </CoachMark.Portal>
           ),
         },
-        expirationDateUiSetting: DEFAULT_EXPIRATION_DATE,
+        coach_mark_expiration_date_iso: DEFAULT_EXPIRATION_DATE,
       });
 
       expect(screen.getByText(coachMarkHeading)).toBeInTheDocument();
@@ -562,7 +584,7 @@ describe.each([
             </CoachMark.Portal>
           ),
         },
-        expirationDateUiSetting: DEFAULT_EXPIRATION_DATE,
+        coach_mark_expiration_date_iso: DEFAULT_EXPIRATION_DATE,
       });
 
       const hideCoachMarkKey = getHideCoachMarkStorageKey(coachMarkId);
@@ -590,7 +612,7 @@ describe.each([
             </CoachMark.Portal>
           ),
         },
-        expirationDateUiSetting: DEFAULT_EXPIRATION_DATE,
+        coach_mark_expiration_date_iso: DEFAULT_EXPIRATION_DATE,
       });
 
       await dismissEvent();
