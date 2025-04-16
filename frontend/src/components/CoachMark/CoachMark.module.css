@@ -1,8 +1,10 @@
+:root { 
+  --coach-mark-margin: 1rem; 
+}
+
 .dialogOverlay {
   background: rgba(0, 0, 0, 0.8);
   z-index: 1;
-
-  --coach-mark-margin: 1rem;
 }
 
 .flex-row-reverse {
