@@ -347,7 +347,6 @@ export const QuestionInput = ({
 
   const coachMark = CoachMark.useCoachMark({
     id: "multiple-file-upload",
-    expirationDateUtc: "2025-05-01",
     referenceRef: coachMarkReferenceRef,
     coachMarkPortal: (
       <CoachMark.Portal allowedPlacements={["top"]}>

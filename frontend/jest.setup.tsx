@@ -3,6 +3,7 @@ import { afterAll, beforeAll, jest } from "@jest/globals";
 
 import "@testing-library/jest-dom";
 import * as CoachMark from "./src/components/CoachMark/CoachMark"
+import { DISABLE_COACH_MARKS_FOR_TEST_STORAGE_KEY } from "./src/utils/coachMarkUtils";
 
 jest.mock("framer-motion", () => ({
   motion: {
@@ -16,7 +17,7 @@ jest.mock("framer-motion", () => ({
 }));
 
 beforeAll(async () => {
-  localStorage.setItem(CoachMark.DISABLE_COACH_MARKS_FOR_TEST_STORAGE_KEY, JSON.stringify(true))
+  localStorage.setItem(DISABLE_COACH_MARKS_FOR_TEST_STORAGE_KEY, JSON.stringify(true))
 })
 
 afterAll( () => {

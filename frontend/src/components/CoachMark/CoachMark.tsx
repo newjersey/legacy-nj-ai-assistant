@@ -28,6 +28,7 @@ import {
   useInteractions,
 } from "@floating-ui/react";
 
+import { AppStateContext } from "../../state/AppProvider";
 import {
   DISABLE_COACH_MARKS_FOR_TEST_STORAGE_KEY,
   getHideCoachMarkStorageKey,
@@ -44,18 +45,25 @@ const setHideCoachMarkStorageItem = (id: string) => {
   localStorage.setItem(getHideCoachMarkStorageKey(id), JSON.stringify(true));
 };
 
-const isCoachMarkExpired = (expirationDateUtc: string) => {
+const isCoachMarkExpired = (expirationIsoDate?: string) => {
+  if (expirationIsoDate == undefined) {
+    return true;
+  }
+  const expirationDate = new Date(expirationIsoDate);
+
+  if (Number.isNaN(expirationDate.valueOf())) {
+    return true;
+  }
+
   const today = new Date();
   today.setHours(0, 0, 0, 0);
 
-  const expiresOn = new Date(expirationDateUtc);
-  expiresOn.setHours(0, 0, 0, 0);
-  return today > expiresOn;
+  expirationDate.setHours(0, 0, 0, 0);
+  return today > expirationDate;
 };
 
 export interface CoachMarkOptions {
   id: string;
-  expirationDateUtc: string;
   referenceRef: RefObject<HTMLElement>;
   coachMarkPortal: ReactElement;
 }
@@ -64,6 +72,9 @@ export const useCoachMark = (options: CoachMarkOptions) => {
   if (options.coachMarkPortal.type !== CoachMarkPortal) {
     throw Error("useCoachMark's coachMarkPortal option must be a <CoachMark.Portal> component!");
   }
+
+  const appStateContext = useContext(AppStateContext);
+  const ui = appStateContext?.state.frontendSettings?.ui;
 
   const hideCoachMarkStorageKey = getHideCoachMarkStorageKey(options.id);
   const isDimissed = localStorage.getItem(hideCoachMarkStorageKey) != null;
@@ -74,12 +85,13 @@ export const useCoachMark = (options: CoachMarkOptions) => {
   const isDisabled =
     disableCoachMarksStorageValue != null && JSON.parse(disableCoachMarksStorageValue) !== false;
 
-  const isExpired = isCoachMarkExpired(options.expirationDateUtc);
+  const isExpired = isCoachMarkExpired(ui?.coach_mark_expiration_date_iso);
   if (isExpired) {
     localStorage.removeItem(hideCoachMarkStorageKey);
   }
 
   const [isOpen, setIsOpen] = useState(!(isExpired || isDimissed || isDisabled));
+
   const [coachMark, setCoachMark] = useState<HTMLElement | null>(null);
   const [referenceElement, setReferenceElement] = useState<HTMLElement | null>(null);
 
