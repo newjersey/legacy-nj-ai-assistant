@@ -14,7 +14,7 @@ import * as logEvent from "../../utils/logEvent";
 
 import * as CoachMark from "./CoachMark";
 
-const DEFAULT_EXPIRATION_DATE = "2025-01-01";
+const EXPIRATION_DATE_IN_FUTURE = "2025-01-01";
 const DEFAULT_COACH_MARK_OPTIONS: Omit<CoachMark.CoachMarkOptions, "referenceRef"> = {
   id: "",
   coachMarkPortal: (
@@ -87,7 +87,8 @@ const getReferenceElement = (): HTMLElement => screen.getByText("Reference eleme
 beforeEach(() => {
   jest.clearAllMocks();
   jest.useFakeTimers({ advanceTimers: true });
-  const oneDayBeforeExpiration = new Date(DEFAULT_EXPIRATION_DATE).getTime() - 24 * 60 * 60 * 1000;
+  const oneDayBeforeExpiration =
+    new Date(EXPIRATION_DATE_IN_FUTURE).getTime() - 24 * 60 * 60 * 1000;
   jest.setSystemTime(oneDayBeforeExpiration);
 });
 
@@ -97,7 +98,7 @@ afterEach(() => {
 });
 
 describe(CoachMark.useCoachMark.name, () => {
-  it("removes the hideCoachMark storage item if the coach mark is expired", () => {
+  it("removes the hideCoachMark storage item if the coach mark is expired and the expiration date is valid", () => {
     const coachMarkId = "multiple-file-upload";
     const expirationDate = "2025-01-02";
     jest.setSystemTime(new Date("2025-01-03"));
@@ -113,6 +114,46 @@ describe(CoachMark.useCoachMark.name, () => {
       coach_mark_expiration_date_iso: expirationDate,
     });
     expect(localStorage.getItem(hideCoachMarkKey)).toBeNull();
+  });
+
+  it("does NOT remove the hideCoachMark storage item if expiration date is invalid", () => {
+    const coachMarkId = "multiple-file-upload";
+    const invalidExpirationDate = undefined;
+    jest.setSystemTime(new Date("2025-01-03"));
+
+    const hideCoachMarkKey = getHideCoachMarkStorageKey(coachMarkId);
+    localStorage.setItem(hideCoachMarkKey, JSON.stringify(true));
+
+    renderTestCoachMark({
+      useCoachMarkOptions: {
+        ...DEFAULT_COACH_MARK_OPTIONS,
+        id: coachMarkId,
+      },
+      coach_mark_expiration_date_iso: invalidExpirationDate,
+    });
+    expect(localStorage.getItem(hideCoachMarkKey)).not.toBeNull();
+  });
+
+  it("removes outdated hideCoachMark storage keys for old coach marks", () => {
+    const coachMarkId = "multiple-file-upload";
+    const oldCoachMarkId1 = "old-feature-1";
+    const oldCoachMarkId2 = "old-feature-2";
+
+    localStorage.setItem(getHideCoachMarkStorageKey(coachMarkId), "true");
+    localStorage.setItem(getHideCoachMarkStorageKey(oldCoachMarkId1), "true");
+    localStorage.setItem(getHideCoachMarkStorageKey(oldCoachMarkId2), "true");
+
+    renderTestCoachMark({
+      useCoachMarkOptions: {
+        ...DEFAULT_COACH_MARK_OPTIONS,
+        id: coachMarkId,
+      },
+      coach_mark_expiration_date_iso: EXPIRATION_DATE_IN_FUTURE,
+    });
+    expect(localStorage.getItem(getHideCoachMarkStorageKey(coachMarkId))).not.toBeNull();
+
+    expect(localStorage.getItem(getHideCoachMarkStorageKey(oldCoachMarkId1))).toBeNull();
+    expect(localStorage.getItem(getHideCoachMarkStorageKey(oldCoachMarkId2))).toBeNull();
   });
 
   describe("conditional logic for showing coach mark", () => {
@@ -282,7 +323,7 @@ describe(CoachMark.useCoachMark.name, () => {
               </CoachMark.Portal>
             ),
           },
-          coach_mark_expiration_date_iso: DEFAULT_EXPIRATION_DATE,
+          coach_mark_expiration_date_iso: EXPIRATION_DATE_IN_FUTURE,
         });
 
         expect(screen.getByText(defaultCoachMarkHeading)).toBeInTheDocument();
@@ -304,7 +345,7 @@ describe(CoachMark.useCoachMark.name, () => {
               </CoachMark.Portal>
             ),
           },
-          coach_mark_expiration_date_iso: DEFAULT_EXPIRATION_DATE,
+          coach_mark_expiration_date_iso: EXPIRATION_DATE_IN_FUTURE,
         });
 
         const hideCoachMarkKey = getHideCoachMarkStorageKey(coachMarkId);
@@ -331,7 +372,7 @@ describe(CoachMark.useCoachMark.name, () => {
               </CoachMark.Portal>
             ),
           },
-          coach_mark_expiration_date_iso: DEFAULT_EXPIRATION_DATE,
+          coach_mark_expiration_date_iso: EXPIRATION_DATE_IN_FUTURE,
         });
 
         await dismissEvent();
@@ -352,7 +393,7 @@ describe(CoachMark.Root.name, () => {
           </CoachMark.Portal>
         ),
       },
-      coach_mark_expiration_date_iso: DEFAULT_EXPIRATION_DATE,
+      coach_mark_expiration_date_iso: EXPIRATION_DATE_IN_FUTURE,
     });
 
     expect(getReferenceElement()).toBeInTheDocument();
@@ -366,7 +407,7 @@ describe(CoachMark.Root.name, () => {
           ...DEFAULT_COACH_MARK_OPTIONS,
           coachMarkPortal: <p>I'm not a CoachMarkPortal</p>,
         },
-        coach_mark_expiration_date_iso: DEFAULT_EXPIRATION_DATE,
+        coach_mark_expiration_date_iso: EXPIRATION_DATE_IN_FUTURE,
       })
     ).toThrow();
     error.mockReset();
@@ -382,7 +423,7 @@ describe(CoachMark.Root.name, () => {
           </CoachMark.Portal>
         ),
       },
-      coach_mark_expiration_date_iso: DEFAULT_EXPIRATION_DATE,
+      coach_mark_expiration_date_iso: EXPIRATION_DATE_IN_FUTURE,
     });
 
     expect(screen.getByText(defaultCoachMarkHeading)).toBeInTheDocument();
@@ -403,7 +444,7 @@ describe(CoachMark.Root.name, () => {
           </CoachMark.Portal>
         ),
       },
-      coach_mark_expiration_date_iso: DEFAULT_EXPIRATION_DATE,
+      coach_mark_expiration_date_iso: EXPIRATION_DATE_IN_FUTURE,
     });
 
     expect(screen.getByTestId("coach-mark")).toBeInTheDocument();
@@ -425,7 +466,7 @@ describe(CoachMark.Portal.name, () => {
           </CoachMark.Portal>
         ),
       },
-      coach_mark_expiration_date_iso: DEFAULT_EXPIRATION_DATE,
+      coach_mark_expiration_date_iso: EXPIRATION_DATE_IN_FUTURE,
     });
 
     expect(screen.getByText(defaultCoachMarkHeading)).toBeInTheDocument();
@@ -445,7 +486,7 @@ describe(CoachMark.Portal.name, () => {
           </CoachMark.Portal>
         ),
       },
-      coach_mark_expiration_date_iso: DEFAULT_EXPIRATION_DATE,
+      coach_mark_expiration_date_iso: EXPIRATION_DATE_IN_FUTURE,
     });
 
     const coachMark = screen.getByRole("dialog");
@@ -464,7 +505,7 @@ describe(CoachMark.Portal.name, () => {
           </CoachMark.Portal>
         ),
       },
-      coach_mark_expiration_date_iso: DEFAULT_EXPIRATION_DATE,
+      coach_mark_expiration_date_iso: EXPIRATION_DATE_IN_FUTURE,
     });
     const coachMark = screen.getByRole("dialog");
     expect(coachMark).not.toHaveAccessibleName();
@@ -499,7 +540,7 @@ describe(CoachMark.Portal.name, () => {
           </CoachMark.Portal>
         ),
       },
-      coach_mark_expiration_date_iso: DEFAULT_EXPIRATION_DATE,
+      coach_mark_expiration_date_iso: EXPIRATION_DATE_IN_FUTURE,
     });
 
     const closeButton = screen.getByRole("button", { name: "Close" });
@@ -530,7 +571,7 @@ describe(CoachMark.Heading.name, () => {
           </CoachMark.Portal>
         ),
       },
-      coach_mark_expiration_date_iso: DEFAULT_EXPIRATION_DATE,
+      coach_mark_expiration_date_iso: EXPIRATION_DATE_IN_FUTURE,
     });
 
     const heading = screen.getByRole("heading", { level: 1 });
@@ -547,7 +588,7 @@ describe(CoachMark.Heading.name, () => {
           </CoachMark.Portal>
         ),
       },
-      coach_mark_expiration_date_iso: DEFAULT_EXPIRATION_DATE,
+      coach_mark_expiration_date_iso: EXPIRATION_DATE_IN_FUTURE,
     });
 
     const heading = screen.getByRole("heading", { level: 1 });
@@ -572,7 +613,7 @@ describe(CoachMark.Description.name, () => {
           </CoachMark.Portal>
         ),
       },
-      coach_mark_expiration_date_iso: DEFAULT_EXPIRATION_DATE,
+      coach_mark_expiration_date_iso: EXPIRATION_DATE_IN_FUTURE,
     });
 
     const listElement = screen.getByRole("list");
@@ -595,7 +636,7 @@ describe(CoachMark.Description.name, () => {
             </CoachMark.Portal>
           ),
         },
-        coach_mark_expiration_date_iso: DEFAULT_EXPIRATION_DATE,
+        coach_mark_expiration_date_iso: EXPIRATION_DATE_IN_FUTURE,
       })
     ).toThrow();
     error.mockReset();
@@ -613,7 +654,7 @@ describe(CoachMark.Description.name, () => {
           </CoachMark.Portal>
         ),
       },
-      coach_mark_expiration_date_iso: DEFAULT_EXPIRATION_DATE,
+      coach_mark_expiration_date_iso: EXPIRATION_DATE_IN_FUTURE,
     });
 
     const descriptionElement = screen.getByText(defaultCoachMarkDescription);
@@ -655,7 +696,7 @@ describe.each([
           </CoachMark.Portal>
         ),
       },
-      coach_mark_expiration_date_iso: DEFAULT_EXPIRATION_DATE,
+      coach_mark_expiration_date_iso: EXPIRATION_DATE_IN_FUTURE,
     });
 
     expect(screen.getByText(defaultCoachMarkHeading)).toBeInTheDocument();
@@ -677,7 +718,7 @@ describe.each([
           </CoachMark.Portal>
         ),
       },
-      coach_mark_expiration_date_iso: DEFAULT_EXPIRATION_DATE,
+      coach_mark_expiration_date_iso: EXPIRATION_DATE_IN_FUTURE,
     });
 
     const hideCoachMarkKey = getHideCoachMarkStorageKey(coachMarkId);
@@ -704,7 +745,7 @@ describe.each([
           </CoachMark.Portal>
         ),
       },
-      coach_mark_expiration_date_iso: DEFAULT_EXPIRATION_DATE,
+      coach_mark_expiration_date_iso: EXPIRATION_DATE_IN_FUTURE,
     });
 
     await dismissEvent();

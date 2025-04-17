@@ -30,6 +30,7 @@ import {
 
 import { AppStateContext } from "../../state/AppProvider";
 import {
+  clearOldHideCoachMarkStorageKeys,
   DISABLE_COACH_MARKS_FOR_TEST_STORAGE_KEY,
   getHideCoachMarkStorageKey,
 } from "../../utils/coachMarkUtils";
@@ -45,19 +46,26 @@ const setHideCoachMarkStorageItem = (id: string) => {
   localStorage.setItem(getHideCoachMarkStorageKey(id), JSON.stringify(true));
 };
 
-const isCoachMarkExpired = (expirationIsoDate?: string) => {
+const isValidExpirationDate = (expirationIsoDate?: string): expirationIsoDate is string => {
   if (expirationIsoDate == undefined) {
+    return false;
+  }
+  const expirationDateObj = new Date(expirationIsoDate);
+
+  if (Number.isNaN(expirationDateObj.valueOf())) {
+    return false;
+  }
+  return true;
+};
+
+const isPastExpirationDate = (expirationDateAsIsoString?: string) => {
+  if (!isValidExpirationDate(expirationDateAsIsoString)) {
     return true;
   }
-  const expirationDate = new Date(expirationIsoDate);
-
-  if (Number.isNaN(expirationDate.valueOf())) {
-    return true;
-  }
-
   const today = new Date();
   today.setHours(0, 0, 0, 0);
 
+  const expirationDate = new Date(expirationDateAsIsoString);
   expirationDate.setHours(0, 0, 0, 0);
   return today > expirationDate;
 };
@@ -72,6 +80,7 @@ export const useCoachMark = (options: CoachMarkOptions) => {
   if (options.coachMarkPortal.type !== CoachMarkPortal) {
     throw Error("useCoachMark's coachMarkPortal option must be a <CoachMark.Portal> component!");
   }
+  clearOldHideCoachMarkStorageKeys(options.id);
 
   const appStateContext = useContext(AppStateContext);
   const ui = appStateContext?.state.frontendSettings?.ui;
@@ -93,8 +102,9 @@ export const useCoachMark = (options: CoachMarkOptions) => {
     const isDisabled =
       disableCoachMarksStorageValue != null && JSON.parse(disableCoachMarksStorageValue) !== false;
 
-    const isExpired = isCoachMarkExpired(ui?.coach_mark_expiration_date_iso);
-    if (isExpired) {
+    const isExpired = isPastExpirationDate(ui?.coach_mark_expiration_date_iso);
+    const isExpirationDateValid = isValidExpirationDate(ui?.coach_mark_expiration_date_iso);
+    if (isExpired && isExpirationDateValid) {
       localStorage.removeItem(hideCoachMarkStorageKey);
     }
 
