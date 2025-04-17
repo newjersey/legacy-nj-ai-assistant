@@ -1,6 +1,5 @@
 /* CUSTOM CSS PROPERTIES */
 :root {
-  --base-ink: #1c1d1f;
   --primary-lightest: #e8f5ff;
   --primary-dark: #005ea2;
 }
@@ -21,7 +20,6 @@ textarea.questionInputTextArea {
 }
 
 #questionInputSendButtonContainer {
-  z-index: 2;
   height: 2.5rem;
 }
 
@@ -74,15 +72,14 @@ textarea.questionInputTextArea {
   width: 95%;
 }
 
-button.closeButton {
-  color: var(--base-ink);
-}
-
 /* file input styling */
 button.fileInputButton {
-  z-index: 1;
   outline: none;
   align-items: center;
+}
+
+button.fileInputButton:global(.coachMarkActive) {
+  background-color: white;
 }
 
 .fileInput {

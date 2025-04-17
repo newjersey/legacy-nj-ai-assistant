@@ -16,6 +16,7 @@ import {
 import type { SelectedFile, UploadedFile } from "../../utils/fileUploadUtils";
 import { ACCEPTED_FILE_TYPES, isImageFile } from "../../utils/fileUploadUtils";
 import { logEvent } from "../../utils/logEvent";
+import * as CoachMark from "../CoachMark/CoachMark";
 
 import {
   MAX_INPUT_LENGTH,
@@ -49,6 +50,7 @@ export const QuestionInput = ({
 }: Props) => {
   const [question, setQuestion] = useState<string>("");
   const fileInputRef = useRef<HTMLInputElement | null>(null);
+  const coachMarkReferenceRef = useRef(null);
 
   const [selectedFiles, setSelectedFiles] = useState<SelectedFile[]>([]);
   const [inputErrors, setInputErrors] = useState<AlertsMap>(defaultAlertsMap);
@@ -371,78 +373,103 @@ export const QuestionInput = ({
     }));
   };
 
+  const coachMark = CoachMark.useCoachMark({
+    id: "multiple-file-upload",
+    referenceRef: coachMarkReferenceRef,
+    coachMarkPortal: (
+      <CoachMark.Portal allowedPlacements={["top"]}>
+        <CoachMark.Heading>New file upload features</CoachMark.Heading>
+        <CoachMark.Description>
+          <ul className="usa-list margin-1 maxw-mobile-lg">
+            <li>Upload up to 10 files.</li>
+            <li>File size limit increased to 50MB for files, 10MB for images.</li>
+            <li>
+              Supported file types: PDF, DOCX, XLS/XLSX, CSV, and most image types (JPEG, PNG, TIFF,
+              BMP, GIF).
+            </li>
+            <li>Updated content filters to accept a wider variety of prompts.</li>
+          </ul>
+        </CoachMark.Description>
+      </CoachMark.Portal>
+    ),
+  });
+
   return (
-    <div className="width-full">
-      <ErrorAlertContainer onRemove={removeError} alerts={inputErrors} />
+    <CoachMark.Root coachMark={coachMark}>
+      <div className="width-full">
+        <ErrorAlertContainer onRemove={removeError} alerts={inputErrors} />
 
-      <div className={styles.questionInput}>
-        <textarea
-          className={`usa-textarea maxw-none border-0 padding-x-205 height-auto minh-9 ${styles.questionInputTextArea}`}
-          placeholder={placeholder}
-          value={question}
-          onChange={(e) => setQuestion(e.target.value)}
-          onKeyDown={onTextareaEnterPress}
-          aria-label="Type a question"
-        ></textarea>
+        <div className={styles.questionInput}>
+          <textarea
+            className={`usa-textarea maxw-none border-0 padding-x-205 height-auto minh-9 ${styles.questionInputTextArea}`}
+            placeholder={placeholder}
+            value={question}
+            onChange={(e) => setQuestion(e.target.value)}
+            onKeyDown={onTextareaEnterPress}
+            aria-label="Type a question"
+          ></textarea>
 
-        {selectedFiles.length > 0 && (
-          <FileUploadPreviewContainer
-            onClose={closePreview}
-            files={selectedFiles.map((file) => ({ name: file.name, fileId: file.fileId }))}
-          />
-        )}
+          {selectedFiles.length > 0 && (
+            <FileUploadPreviewContainer
+              onClose={closePreview}
+              files={selectedFiles.map((file) => ({ name: file.name, fileId: file.fileId }))}
+            />
+          )}
 
-        <div
-          className={`display-flex margin-bottom-3 width-full padding-x-2 ${styles.questionInputChatButtons}`}
-        >
-          <button
-            className={`usa-button usa-button--unstyled text-no-underline display-flex ${styles.fileInputButton}`}
-            onKeyDown={onFileUploadButtonEnterPress}
-            onClick={onFileUploadButtonClick}
-            tabIndex={0}
-            aria-label="Upload files"
-          >
-            <svg
-              className="usa-icon margin-right-05"
-              aria-hidden="true"
-              focusable="false"
-              role="img"
-            >
-              <use href={`${icons}#attach_file`} />
-            </svg>
-            Upload files
-          </button>
-          <input
-            ref={fileInputRef}
-            type="file"
-            id="file-upload"
-            data-testid="file-upload"
-            accept={(Object.values(ACCEPTED_FILE_TYPES) as string[]).join(",")}
-            onChange={onFileChange}
-            disabled={disabled}
-            tabIndex={-1}
-            className={styles.fileInput}
-            aria-hidden="true"
-            multiple
-          />
           <div
-            className="usa-button margin-right-0"
-            id={styles.questionInputSendButtonContainer}
-            role="button"
-            tabIndex={0}
-            aria-label="Ask question button"
-            onClick={sendQuestion}
-            onKeyDown={(e) => (e.key === "Enter" || e.key === " " ? sendQuestion() : null)}
+            className={`display-flex margin-bottom-3 width-full padding-x-2 ${styles.questionInputChatButtons}`}
           >
-            <svg className="usa-icon" aria-hidden="true" focusable="false" role="img">
-              <use href={`${icons}#send`} />
-            </svg>
+            <button
+              ref={coachMarkReferenceRef}
+              {...coachMark.getReferenceProps()}
+              className={`usa-button usa-button--unstyled text-no-underline display-flex ${styles.fileInputButton}`}
+              onKeyDown={onFileUploadButtonEnterPress}
+              onClick={onFileUploadButtonClick}
+              tabIndex={0}
+              aria-label="Upload files"
+            >
+              <svg
+                className="usa-icon margin-right-05"
+                aria-hidden="true"
+                focusable="false"
+                role="img"
+              >
+                <use href={`${icons}#attach_file`} />
+              </svg>
+              Upload files
+            </button>
+            <input
+              ref={fileInputRef}
+              type="file"
+              id="file-upload"
+              data-testid="file-upload"
+              accept={(Object.values(ACCEPTED_FILE_TYPES) as string[]).join(",")}
+              onChange={onFileChange}
+              disabled={disabled}
+              tabIndex={-1}
+              className={styles.fileInput}
+              aria-hidden="true"
+              multiple
+            />
+            <div
+              className="usa-button margin-right-0"
+              id={styles.questionInputSendButtonContainer}
+              role="button"
+              tabIndex={0}
+              aria-label="Ask question button"
+              onClick={sendQuestion}
+              onKeyDown={(e) => (e.key === "Enter" || e.key === " " ? sendQuestion() : null)}
+            >
+              <svg className="usa-icon" aria-hidden="true" focusable="false" role="img">
+                <use href={`${icons}#send`} />
+              </svg>
+            </div>
           </div>
+          <hr
+            className={`margin-bottom-0 width-full bottom-0 left-0 border-0 ${styles.questionInputBottomBorder}`}
+          />
         </div>
-        <hr
-          className={`margin-bottom-0 width-full bottom-0 left-0 border-0 ${styles.questionInputBottomBorder}`}
-        />
       </div>
-    </div>
+    </CoachMark.Root>
   );
 };

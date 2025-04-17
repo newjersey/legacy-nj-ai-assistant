@@ -51,6 +51,7 @@ class _UiSettings(BaseSettings):
     show_chat_history_button: bool = True
     alert_banner_message: Optional[str] = None
     alert_banner_type: str = "info"
+    coach_mark_expiration_date_iso: Optional[str] = None
 
 
 class _ChatHistorySettings(BaseSettings):

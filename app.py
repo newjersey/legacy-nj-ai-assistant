@@ -102,7 +102,8 @@ frontend_settings = {
         "show_share_button": app_settings.ui.show_share_button,
         "show_chat_history_button": app_settings.ui.show_chat_history_button,
         "alert_banner_message": app_settings.ui.alert_banner_message,
-        "alert_banner_type": app_settings.ui.alert_banner_type
+        "alert_banner_type": app_settings.ui.alert_banner_type,
+        "coach_mark_expiration_date_iso": app_settings.ui.coach_mark_expiration_date_iso
     },
     "sanitize_answer": app_settings.base_settings.sanitize_answer,
     "conversation_id_header": app_settings.base_settings.conversation_id_header,
