@@ -30,6 +30,7 @@ import {
 
 import { AppStateContext } from "../../state/AppProvider";
 import {
+  clearOldHideCoachMarkStorageKeys,
   DISABLE_COACH_MARKS_FOR_TEST_STORAGE_KEY,
   getHideCoachMarkStorageKey,
 } from "../../utils/coachMarkUtils";
@@ -79,6 +80,7 @@ export const useCoachMark = (options: CoachMarkOptions) => {
   if (options.coachMarkPortal.type !== CoachMarkPortal) {
     throw Error("useCoachMark's coachMarkPortal option must be a <CoachMark.Portal> component!");
   }
+  clearOldHideCoachMarkStorageKeys(options.id);
 
   const appStateContext = useContext(AppStateContext);
   const ui = appStateContext?.state.frontendSettings?.ui;
