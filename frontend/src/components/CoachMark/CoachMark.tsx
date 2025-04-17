@@ -75,28 +75,37 @@ export const useCoachMark = (options: CoachMarkOptions) => {
 
   const appStateContext = useContext(AppStateContext);
   const ui = appStateContext?.state.frontendSettings?.ui;
-
-  const hideCoachMarkStorageKey = getHideCoachMarkStorageKey(options.id);
-  const isDimissed = localStorage.getItem(hideCoachMarkStorageKey) != null;
-
-  const disableCoachMarksStorageValue = localStorage.getItem(
-    DISABLE_COACH_MARKS_FOR_TEST_STORAGE_KEY
-  );
-  const isDisabled =
-    disableCoachMarksStorageValue != null && JSON.parse(disableCoachMarksStorageValue) !== false;
-
-  const isExpired = isCoachMarkExpired(ui?.coach_mark_expiration_date_iso);
-  if (isExpired) {
-    localStorage.removeItem(hideCoachMarkStorageKey);
-  }
-
-  const [isOpen, setIsOpen] = useState(!(isExpired || isDimissed || isDisabled));
+  const [isOpen, setIsOpen] = useState(false);
 
   const [coachMark, setCoachMark] = useState<HTMLElement | null>(null);
   const [referenceElement, setReferenceElement] = useState<HTMLElement | null>(null);
 
   const [labelId, setLabelId] = useState<string | undefined>();
   const [descriptionId, setDescriptionId] = useState<string | undefined>();
+
+  useEffect(() => {
+    const hideCoachMarkStorageKey = getHideCoachMarkStorageKey(options.id);
+    const isDismissed = localStorage.getItem(hideCoachMarkStorageKey) != null;
+
+    const disableCoachMarksStorageValue = localStorage.getItem(
+      DISABLE_COACH_MARKS_FOR_TEST_STORAGE_KEY
+    );
+    const isDisabled =
+      disableCoachMarksStorageValue != null && JSON.parse(disableCoachMarksStorageValue) !== false;
+
+    const isExpired = isCoachMarkExpired(ui?.coach_mark_expiration_date_iso);
+    if (isExpired) {
+      localStorage.removeItem(hideCoachMarkStorageKey);
+    }
+
+    setIsOpen(!(isExpired || isDismissed || isDisabled));
+  }, [ui?.coach_mark_expiration_date_iso, options.id]);
+
+  useEffect(() => {
+    if (options.referenceRef.current != null) {
+      setReferenceElement(options.referenceRef.current);
+    }
+  }, [options.referenceRef]);
 
   const handleDismiss = useCallback(() => {
     setIsOpen(false);
@@ -106,12 +115,6 @@ export const useCoachMark = (options: CoachMarkOptions) => {
       coach_mark_id: options.id,
     });
   }, [options.id, referenceElement?.classList]);
-
-  useEffect(() => {
-    if (options.referenceRef.current !== null) {
-      setReferenceElement(options.referenceRef.current);
-    }
-  }, [options.referenceRef]);
 
   const floatingRootContext = useFloatingRootContext({
     open: isOpen,
@@ -164,7 +167,6 @@ export const useCoachMark = (options: CoachMarkOptions) => {
 type CoachMarkContextType = ReturnType<typeof useCoachMark> | null;
 
 const CoachMarkContext = createContext<CoachMarkContextType>(null);
-
 export const useCoachMarkContext = () => {
   const context = useContext(CoachMarkContext);
   if (context == null) {

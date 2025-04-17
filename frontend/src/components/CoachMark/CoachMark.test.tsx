@@ -1,6 +1,6 @@
 import { useRef } from "react";
 import { HashRouter } from "react-router-dom";
-import { render, screen, within } from "@testing-library/react";
+import { render, screen, waitFor, within } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
 
 import type { FrontendSettings } from "../../api";
@@ -394,6 +394,36 @@ describe(CoachMark.Portal.name, () => {
     );
 
     expect(getReferenceElement()).toHaveClass("coachMarkActive");
+  });
+
+  it("traps focus within dialog and has a logical focus order", async () => {
+    renderTestCoachMark({
+      useCoachMarkOptions: {
+        ...DEFAULT_COACH_MARK_OPTIONS,
+        coachMarkPortal: (
+          <CoachMark.Portal allowedPlacements={["top"]}>
+            <CoachMark.Heading>{defaultCoachMarkHeading}</CoachMark.Heading>
+            <a href="example.com">Links are focusable</a>
+          </CoachMark.Portal>
+        ),
+      },
+      coach_mark_expiration_date_iso: DEFAULT_EXPIRATION_DATE,
+    });
+
+    const closeButton = screen.getByRole("button", { name: "Close" });
+    const doneButton = screen.getByRole("button", { name: "Done" });
+    const otherFocusableElementInDialog = screen.getByRole("link");
+
+    await waitFor(() => expect(closeButton).toHaveFocus());
+
+    await userEvent.keyboard("{Tab}");
+    expect(otherFocusableElementInDialog).toHaveFocus();
+
+    await userEvent.keyboard("{Tab}");
+    expect(doneButton).toHaveFocus();
+
+    await userEvent.keyboard("{Tab}");
+    await waitFor(() => expect(closeButton).toHaveFocus());
   });
 });
 
