@@ -874,7 +874,7 @@ describe("Test sending input", () => {
     const expectedUploadedFilesArray: UploadedFile[] = [
       {
         name: uploadedFile.name,
-        contents: uploadedFileContents,
+        contents: [uploadedFileContents],
         extension: ACCEPTED_FILE_TYPES.CSV,
         size: uploadedFile.size,
       },
@@ -910,13 +910,13 @@ describe("Test sending input", () => {
     const expectedUploadedFilesArray: UploadedFile[] = [
       {
         name: uploadedFileOne.name,
-        contents: uploadedFileContents,
+        contents: [uploadedFileContents],
         extension: ACCEPTED_FILE_TYPES.CSV,
         size: uploadedFileOne.size,
       },
       {
         name: uploadedFileTwo.name,
-        contents: uploadedFileContents,
+        contents: [uploadedFileContents],
         extension: ACCEPTED_FILE_TYPES.CSV,
         size: uploadedFileTwo.size,
       },

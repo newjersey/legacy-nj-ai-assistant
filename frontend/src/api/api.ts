@@ -33,7 +33,7 @@ export const conversationApi = async (
         if (isImageFile(uploadedFile)) {
           fileContents.push({ type: "image_url", image_url: { url: uploadedFile.contents } });
         } else if (isSpreadsheetFile(uploadedFile)) {
-          const uploadedSheetContents = uploadedFile.contents.split(" | ");
+          const uploadedSheetContents = uploadedFile.contents;
           const uploadedSheetNames =
             uploadedFile.sheets ??
             Array.from({ length: uploadedSheetContents.length }, () => uploadedFile.name);
@@ -47,7 +47,7 @@ export const conversationApi = async (
 
           fileContents.push({
             type: "text",
-            text: `The following document titled ${uploadedFile.name} contains one or more tables in CSV format. Each table is separated by a pipe (|). Use the following document in your responses:\n ---BEGIN DOCUMENT---\n${uploadedSheetsPrompt}---END DOCUMENT---`,
+            text: `The following document titled ${uploadedFile.name} contains one or more tables in CSV format. Use the following document in your responses:\n ---BEGIN DOCUMENT---\n${uploadedSheetsPrompt}---END DOCUMENT---`,
           });
         } else {
           fileContents.push({

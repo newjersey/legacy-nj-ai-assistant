@@ -7,7 +7,7 @@ import { conversationApi } from "./api";
 describe("Test the conversationApi function", () => {
   const defaultUploadedFile: UploadedFile = {
     name: "default name",
-    contents: "default contents",
+    contents: ["default contents"],
     size: 100,
     extension: "default extension",
   };

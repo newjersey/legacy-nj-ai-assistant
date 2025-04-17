@@ -110,7 +110,7 @@ export const QuestionInput = ({
 
     uploadedFiles.forEach((file) => {
       if (!isImageFile(file)) {
-        totalFileContentLength += file.contents.length;
+        totalFileContentLength += file.contents.join("").length;
       }
     });
 
@@ -185,7 +185,7 @@ export const QuestionInput = ({
 
         logEvent("submit_prompt_client_error_file_length", {
           object_types: uploadedFiles.map((file) => file.extension),
-          object_lengths: uploadedFiles.map((file) => file.contents.length),
+          object_lengths: uploadedFiles.map((file) => file.contents.join("").length),
           object_sizes: uploadedFiles.map((file) => file.size),
         });
 
@@ -205,7 +205,7 @@ export const QuestionInput = ({
   };
 
   const extractDataFromFile = async (selectedFile: File): Promise<UploadedFile> => {
-    let uploadedFile: UploadedFile = { name: "", contents: "", extension: "", size: 0 };
+    let uploadedFile: UploadedFile = { name: "", contents: [], extension: "", size: 0 };
 
     try {
       if (selectedFile.type === ACCEPTED_FILE_TYPES.PDF) {
@@ -216,7 +216,7 @@ export const QuestionInput = ({
         } else {
           uploadedFile = {
             name: selectedFile.name,
-            contents: extractedText,
+            contents: [extractedText],
             extension: selectedFile.type,
             size: selectedFile.size,
           };
@@ -230,7 +230,7 @@ export const QuestionInput = ({
 
             resolve({
               name: selectedFile.name,
-              contents: result,
+              contents: [result],
               extension: selectedFile.type,
               size: selectedFile.size,
             });
@@ -247,7 +247,7 @@ export const QuestionInput = ({
         } else {
           uploadedFile = {
             name: selectedFile.name,
-            contents: extractedText,
+            contents: [extractedText],
             extension: selectedFile.type,
             size: selectedFile.size,
           };
@@ -273,7 +273,7 @@ export const QuestionInput = ({
         } else {
           uploadedFile = {
             name: selectedFile.name,
-            contents: workbookContents.join(" | "),
+            contents: workbookContents,
             extension: selectedFile.type,
             size: selectedFile.size,
             sheets: sheetNames,
@@ -287,7 +287,7 @@ export const QuestionInput = ({
             const result = reader.result as string;
             resolve({
               name: selectedFile.name,
-              contents: result,
+              contents: [result],
               extension: selectedFile.type,
               size: selectedFile.size,
             });

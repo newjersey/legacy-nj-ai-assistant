@@ -43,7 +43,7 @@ describe("Test the isSpreadsheetFile function", () => {
     (fileType: string, expectedResult: boolean) => {
       const mockUploadedFile: UploadedFile = {
         name: "mockName",
-        contents: "",
+        contents: [],
         size: 1,
         extension: fileType,
       };
@@ -69,7 +69,7 @@ describe("Test the isImageFile function", () => {
     (fileType: string, expectedResult: boolean) => {
       const mockUploadedFile: UploadedFile = {
         name: "mockName",
-        contents: "",
+        contents: [],
         size: 1,
         extension: fileType,
       };

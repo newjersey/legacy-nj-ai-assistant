@@ -287,7 +287,7 @@ export const Chat = () => {
         logEvent("submit_prompt_success", {
           input_length: question.length,
           object_length:
-            uploadedFiles == null ? "" : uploadedFiles.map((file) => file.contents.length),
+            uploadedFiles == null ? "" : uploadedFiles.map((file) => file.contents.join().length),
           object_type: uploadedFiles == null ? "" : uploadedFiles.map((file) => file.extension),
           object_size: uploadedFiles == null ? "" : uploadedFiles.map((file) => file.size),
         });
@@ -316,7 +316,7 @@ export const Chat = () => {
         logEvent("submit_prompt_server_error", {
           input_length: question.length,
           object_length:
-            uploadedFiles == null ? "" : uploadedFiles.map((file) => file.contents.length),
+            uploadedFiles == null ? "" : uploadedFiles.map((file) => file.contents.join().length),
           object_type: uploadedFiles == null ? "" : uploadedFiles.map((file) => file.extension),
           object_size: uploadedFiles == null ? "" : uploadedFiles.map((file) => file.size),
           object_description: errorMessage,
@@ -943,7 +943,7 @@ export const Chat = () => {
                                     <img
                                       className={styles.previewImage}
                                       height="auto"
-                                      src={file.contents}
+                                      src={file.contents[0]}
                                       alt={file.name}
                                     ></img>
                                   </div>

@@ -17,7 +17,7 @@ export enum ACCEPTED_FILE_TYPES {
 
 export interface UploadedFile {
   name: string;
-  contents: string;
+  contents: string[];
   size: number;
   extension: string;
   sheets?: string[];
