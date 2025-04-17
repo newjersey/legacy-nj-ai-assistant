@@ -11,13 +11,16 @@ export enum ACCEPTED_FILE_TYPES {
   PDF = "application/pdf",
   CSV = "text/csv",
   DOCX = "application/vnd.openxmlformats-officedocument.wordprocessingml.document",
+  XLS = "application/vnd.ms-excel",
+  XLSX = "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",
 }
 
 export interface UploadedFile {
   name: string;
-  contents: string;
+  contents: string[];
   size: number;
   extension: string;
+  sheets?: string[];
 }
 
 export interface SelectedFile extends File {
@@ -31,6 +34,14 @@ export interface FilePreview {
 
 export const isImageFile = (file: UploadedFile): boolean => {
   return file.extension.includes("image");
+};
+
+export const isSpreadsheetFile = (file: UploadedFile): boolean => {
+  return (
+    file.extension === ACCEPTED_FILE_TYPES.XLS ||
+    file.extension === ACCEPTED_FILE_TYPES.XLSX ||
+    file.extension === ACCEPTED_FILE_TYPES.CSV
+  );
 };
 
 export const truncateFilename = (fileName: string) => {

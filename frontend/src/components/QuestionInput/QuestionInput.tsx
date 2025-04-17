@@ -3,6 +3,7 @@ import pdfToText from "react-pdftotext";
 import icons from "@newjersey/njwds/dist/img/sprite.svg";
 import { extractRawText } from "mammoth";
 import { v4 as uuidv4 } from "uuid";
+import * as XLSX from "xlsx";
 
 import type { AlertsMap } from "../../utils/alertUtils";
 import {
@@ -111,7 +112,7 @@ export const QuestionInput = ({
 
     uploadedFiles.forEach((file) => {
       if (!isImageFile(file)) {
-        totalFileContentLength += file.contents.length;
+        totalFileContentLength += file.contents.join("").length;
       }
     });
 
@@ -186,7 +187,7 @@ export const QuestionInput = ({
 
         logEvent("submit_prompt_client_error_file_length", {
           object_types: uploadedFiles.map((file) => file.extension),
-          object_lengths: uploadedFiles.map((file) => file.contents.length),
+          object_lengths: uploadedFiles.map((file) => file.contents.join("").length),
           object_sizes: uploadedFiles.map((file) => file.size),
         });
 
@@ -206,7 +207,7 @@ export const QuestionInput = ({
   };
 
   const extractDataFromFile = async (selectedFile: File): Promise<UploadedFile> => {
-    let uploadedFile: UploadedFile = { name: "", contents: "", extension: "", size: 0 };
+    let uploadedFile: UploadedFile = { name: "", contents: [], extension: "", size: 0 };
 
     try {
       if (selectedFile.type === ACCEPTED_FILE_TYPES.PDF) {
@@ -217,7 +218,7 @@ export const QuestionInput = ({
         } else {
           uploadedFile = {
             name: selectedFile.name,
-            contents: extractedText,
+            contents: [extractedText],
             extension: selectedFile.type,
             size: selectedFile.size,
           };
@@ -231,7 +232,7 @@ export const QuestionInput = ({
 
             resolve({
               name: selectedFile.name,
-              contents: result,
+              contents: [result],
               extension: selectedFile.type,
               size: selectedFile.size,
             });
@@ -248,9 +249,36 @@ export const QuestionInput = ({
         } else {
           uploadedFile = {
             name: selectedFile.name,
-            contents: extractedText,
+            contents: [extractedText],
             extension: selectedFile.type,
             size: selectedFile.size,
+          };
+        }
+      } else if (
+        selectedFile.type === ACCEPTED_FILE_TYPES.XLSX ||
+        selectedFile.type === ACCEPTED_FILE_TYPES.XLS
+      ) {
+        const arrayBuffer = await selectedFile.arrayBuffer();
+        const workbook = XLSX.read(arrayBuffer);
+        const workbookContents: string[] = [];
+        const sheetNames: string[] = [];
+
+        workbook.SheetNames.forEach((sheetName) => {
+          const worksheet = workbook.Sheets[sheetName];
+          const worksheetAsCsvString = XLSX.utils.sheet_to_csv(worksheet);
+          workbookContents.push(worksheetAsCsvString);
+          sheetNames.push(sheetName);
+        });
+
+        if (workbookContents.length === 0) {
+          throw new Error();
+        } else {
+          uploadedFile = {
+            name: selectedFile.name,
+            contents: workbookContents,
+            extension: selectedFile.type,
+            size: selectedFile.size,
+            sheets: sheetNames,
           };
         }
       } else {
@@ -261,7 +289,7 @@ export const QuestionInput = ({
             const result = reader.result as string;
             resolve({
               name: selectedFile.name,
-              contents: result,
+              contents: [result],
               extension: selectedFile.type,
               size: selectedFile.size,
             });
