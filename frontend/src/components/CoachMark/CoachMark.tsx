@@ -271,7 +271,6 @@ const CoachMarkHeading = (props: CoachMarkHeadingProps) => {
 };
 
 interface CoachMarkDescriptionProps {
-  asChild?: boolean;
   children: ReactNode;
 }
 
@@ -284,20 +283,10 @@ const CoachMarkDescription = (props: CoachMarkDescriptionProps) => {
     return () => setDescriptionId(undefined);
   }, [id, setDescriptionId]);
 
-  if (props.asChild) {
-    if (!isValidElement(props.children)) {
-      throw Error(
-        `When asChild is true, ${CoachMarkDescription.name}'s children must be a valid React element`
-      );
-    }
-    return cloneElement(props.children as ReactElement<{ id: string }>, { id });
+  if (!isValidElement(props.children)) {
+    throw Error(`${CoachMarkDescription.name}'s children must be a valid React element`);
   }
-
-  return (
-    <p id={id} className="margin-top-05 font-sans-2xs">
-      {props.children}
-    </p>
-  );
+  return cloneElement(props.children as ReactElement<{ id: string }>, { id });
 };
 
 const Root = CoachMarkRoot;

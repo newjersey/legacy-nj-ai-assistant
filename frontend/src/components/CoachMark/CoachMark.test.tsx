@@ -327,7 +327,9 @@ describe(CoachMark.Portal.name, () => {
         coachMarkPortal: (
           <CoachMark.Portal allowedPlacements={["top"]}>
             <CoachMark.Heading>{defaultCoachMarkHeading}</CoachMark.Heading>
-            <CoachMark.Description>You can now upload multiple files.</CoachMark.Description>
+            <CoachMark.Description>
+              <p>{defaultCoachMarkDescription}</p>
+            </CoachMark.Description>
           </CoachMark.Portal>
         ),
       },
@@ -335,6 +337,7 @@ describe(CoachMark.Portal.name, () => {
     });
 
     expect(screen.getByText(defaultCoachMarkHeading)).toBeInTheDocument();
+    expect(screen.getByText(defaultCoachMarkDescription)).toBeInTheDocument();
   });
 
   it(`renders a modal dialog whose accessible name and description are set by the ${CoachMark.Heading.name} and ${CoachMark.Description.name} components`, async () => {
@@ -344,7 +347,9 @@ describe(CoachMark.Portal.name, () => {
         coachMarkPortal: (
           <CoachMark.Portal allowedPlacements={["top"]}>
             <CoachMark.Heading>{defaultCoachMarkHeading}</CoachMark.Heading>
-            <CoachMark.Description>{defaultCoachMarkDescription}</CoachMark.Description>
+            <CoachMark.Description>
+              <p>{defaultCoachMarkDescription}</p>
+            </CoachMark.Description>
           </CoachMark.Portal>
         ),
       },
@@ -431,29 +436,13 @@ describe(CoachMark.Heading.name, () => {
 });
 
 describe(CoachMark.Description.name, () => {
-  it("renders its children inside a paragraph by default", () => {
+  it("renders the component's children elements", () => {
     renderTestCoachMark({
       useCoachMarkOptions: {
         ...DEFAULT_COACH_MARK_OPTIONS,
         coachMarkPortal: (
           <CoachMark.Portal allowedPlacements={["top"]}>
-            <CoachMark.Description>{defaultCoachMarkDescription}</CoachMark.Description>
-          </CoachMark.Portal>
-        ),
-      },
-      coach_mark_expiration_date_iso: DEFAULT_EXPIRATION_DATE,
-    });
-
-    expect(screen.getByText(defaultCoachMarkDescription)).toHaveRole("paragraph");
-  });
-
-  it("renders its children alone (not in a paragraph) when the asChild prop is true", () => {
-    renderTestCoachMark({
-      useCoachMarkOptions: {
-        ...DEFAULT_COACH_MARK_OPTIONS,
-        coachMarkPortal: (
-          <CoachMark.Portal allowedPlacements={["top"]}>
-            <CoachMark.Description asChild={true}>
+            <CoachMark.Description>
               <ol>
                 <li>{defaultCoachMarkDescription}</li>
               </ol>
@@ -469,7 +458,7 @@ describe(CoachMark.Description.name, () => {
     expect(screen.getByRole("dialog")).toHaveAttribute("aria-describedby", listElement.id);
   });
 
-  it("throws an error when the asChild prop is true and an invalid React element is passed a child", () => {
+  it("throws an error when an invalid React element is passed a child", () => {
     const error = jest.spyOn(console, "error").mockImplementation(() => {});
     expect(() =>
       renderTestCoachMark({
@@ -477,7 +466,7 @@ describe(CoachMark.Description.name, () => {
           ...DEFAULT_COACH_MARK_OPTIONS,
           coachMarkPortal: (
             <CoachMark.Portal allowedPlacements={["top"]}>
-              <CoachMark.Description asChild={true}>
+              <CoachMark.Description>
                 <p>Paragraph 1</p>
                 <p>Paragraph 2</p>
               </CoachMark.Description>
@@ -496,7 +485,9 @@ describe(CoachMark.Description.name, () => {
         ...DEFAULT_COACH_MARK_OPTIONS,
         coachMarkPortal: (
           <CoachMark.Portal allowedPlacements={["top"]}>
-            <CoachMark.Description>{defaultCoachMarkDescription}</CoachMark.Description>
+            <CoachMark.Description>
+              <p>{defaultCoachMarkDescription}</p>
+            </CoachMark.Description>
           </CoachMark.Portal>
         ),
       },
