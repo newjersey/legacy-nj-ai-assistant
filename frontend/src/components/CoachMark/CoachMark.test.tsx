@@ -97,7 +97,7 @@ afterEach(() => {
 });
 
 describe(CoachMark.useCoachMark.name, () => {
-  it("removes the hideCoachMark storage item if the coach mark is expired", () => {
+  it("removes the hideCoachMark storage item if the coach mark is expired and the expiration date is valid", () => {
     const coachMarkId = "multiple-file-upload";
     const expirationDate = "2025-01-02";
     jest.setSystemTime(new Date("2025-01-03"));
@@ -113,6 +113,24 @@ describe(CoachMark.useCoachMark.name, () => {
       coach_mark_expiration_date_iso: expirationDate,
     });
     expect(localStorage.getItem(hideCoachMarkKey)).toBeNull();
+  });
+
+  it("does NOT remove the hideCoachMark storage item if the coach mark is expired and the expiration date is invalid", () => {
+    const coachMarkId = "multiple-file-upload";
+    const expirationDate = undefined;
+    jest.setSystemTime(new Date("2025-01-03"));
+
+    const hideCoachMarkKey = getHideCoachMarkStorageKey(coachMarkId);
+    localStorage.setItem(hideCoachMarkKey, JSON.stringify(true));
+
+    renderTestCoachMark({
+      useCoachMarkOptions: {
+        ...DEFAULT_COACH_MARK_OPTIONS,
+        id: coachMarkId,
+      },
+      coach_mark_expiration_date_iso: expirationDate,
+    });
+    expect(localStorage.getItem(hideCoachMarkKey)).not.toBeNull();
   });
 
   describe("conditional logic for showing coach mark", () => {
