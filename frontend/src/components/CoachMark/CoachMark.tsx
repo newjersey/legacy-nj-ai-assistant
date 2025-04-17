@@ -45,21 +45,28 @@ const setHideCoachMarkStorageItem = (id: string) => {
   localStorage.setItem(getHideCoachMarkStorageKey(id), JSON.stringify(true));
 };
 
-const isCoachMarkExpired = (expirationIsoDate?: string) => {
+const isValidExpirationDate = (expirationIsoDate?: string): expirationIsoDate is string => {
   if (expirationIsoDate == undefined) {
+    return false;
+  }
+  const expirationDateObj = new Date(expirationIsoDate);
+
+  if (Number.isNaN(expirationDateObj.valueOf())) {
+    return false;
+  }
+  return true;
+};
+
+const isCoachMarkExpired = (expirationIsoDate?: string) => {
+  if (!isValidExpirationDate(expirationIsoDate)) {
     return true;
   }
-  const expirationDate = new Date(expirationIsoDate);
-
-  if (Number.isNaN(expirationDate.valueOf())) {
-    return true;
-  }
-
   const today = new Date();
   today.setHours(0, 0, 0, 0);
 
-  expirationDate.setHours(0, 0, 0, 0);
-  return today > expirationDate;
+  const expirationDateObj = new Date(expirationIsoDate);
+  expirationDateObj.setHours(0, 0, 0, 0);
+  return today > expirationDateObj;
 };
 
 export interface CoachMarkOptions {
@@ -94,7 +101,7 @@ export const useCoachMark = (options: CoachMarkOptions) => {
       disableCoachMarksStorageValue != null && JSON.parse(disableCoachMarksStorageValue) !== false;
 
     const isExpired = isCoachMarkExpired(ui?.coach_mark_expiration_date_iso);
-    if (isExpired) {
+    if (isExpired && isValidExpirationDate(ui?.coach_mark_expiration_date_iso)) {
       localStorage.removeItem(hideCoachMarkStorageKey);
     }
 
