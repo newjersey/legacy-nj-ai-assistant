@@ -7,7 +7,7 @@ import { conversationApi } from "./api";
 describe("Test the conversationApi function", () => {
   const defaultUploadedFile: UploadedFile = {
     name: "default name",
-    contents: "default contents",
+    contents: ["default contents"],
     size: 100,
     extension: "default extension",
   };
@@ -63,9 +63,11 @@ describe("Test the conversationApi function", () => {
     ["gif", ACCEPTED_FILE_TYPES.GIF, "image_url"],
     ["bmp", ACCEPTED_FILE_TYPES.BMP, "image_url"],
     ["tiff", ACCEPTED_FILE_TYPES.TIFF, "image_url"],
-    ["docx", ACCEPTED_FILE_TYPES.DOCX, "Use the following document in your responses"],
+    ["docx", ACCEPTED_FILE_TYPES.DOCX, "Use the following document titled"],
+    ["xls", ACCEPTED_FILE_TYPES.XLS, "CSV format"],
+    ["xlsx", ACCEPTED_FILE_TYPES.XLSX, "CSV format"],
     ["csv", ACCEPTED_FILE_TYPES.CSV, "CSV format"],
-    ["pdf", ACCEPTED_FILE_TYPES.PDF, "Use the following document in your responses"],
+    ["pdf", ACCEPTED_FILE_TYPES.PDF, "Use the following document titled"],
   ])(
     "formats content and calls the /conversation endpoint correctly when a file of type .%s is uploaded",
     async (extension: string, fileType: ACCEPTED_FILE_TYPES, expectedString: string) => {
@@ -92,6 +94,8 @@ describe("Test the conversationApi function", () => {
       { ...defaultUploadedFile, extension: ACCEPTED_FILE_TYPES.BMP },
       { ...defaultUploadedFile, extension: ACCEPTED_FILE_TYPES.TIFF },
       { ...defaultUploadedFile, extension: ACCEPTED_FILE_TYPES.DOCX },
+      { ...defaultUploadedFile, extension: ACCEPTED_FILE_TYPES.XLS },
+      { ...defaultUploadedFile, extension: ACCEPTED_FILE_TYPES.XLSX },
       { ...defaultUploadedFile, extension: ACCEPTED_FILE_TYPES.CSV },
       { ...defaultUploadedFile, extension: ACCEPTED_FILE_TYPES.PDF },
     ];
@@ -103,7 +107,7 @@ describe("Test the conversationApi function", () => {
     expect(fetch).toHaveBeenCalledWith("/conversation", {
       ...defaultFetchRequest,
       body: expect.stringMatching(
-        /"type":"image_url".*"type":"image_url".*"type":"image_url".*"type":"image_url".*"type":"image_url".*Use the following document in your responses.*CSV format.*Use the following document in your responses/
+        /"type":"image_url".*"type":"image_url".*"type":"image_url".*"type":"image_url".*"type":"image_url".*Use the following document titled.*CSV format.*CSV format.*CSV format.*Use the following document titled/
       ),
     });
   });
