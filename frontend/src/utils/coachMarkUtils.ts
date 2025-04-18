@@ -6,13 +6,16 @@ export const getHideCoachMarkStorageKey = (id: string) => {
 };
 
 export const clearOldHideCoachMarkStorageKeys = (coachMarkId: string) => {
+  const keysToRemove = [];
   for (let i = 0; i < localStorage.length; i++) {
     const storageKey = localStorage.key(i)!;
-    const isAHideCoachMarkKey = storageKey?.startsWith(HIDE_COACH_MARK_STORAGE_KEY_PREFIX);
-    const isAnOldCoachMarkKey = isAHideCoachMarkKey && !storageKey.includes(coachMarkId);
 
-    if (isAnOldCoachMarkKey) {
-      localStorage.removeItem(storageKey);
+    const isAHideCoachMarkKey = storageKey?.startsWith(HIDE_COACH_MARK_STORAGE_KEY_PREFIX);
+    const currentCoachMarkKey = getHideCoachMarkStorageKey(coachMarkId);
+
+    if (isAHideCoachMarkKey && storageKey !== currentCoachMarkKey) {
+      keysToRemove.push(storageKey);
     }
   }
+  keysToRemove.forEach((key) => localStorage.removeItem(key));
 };
