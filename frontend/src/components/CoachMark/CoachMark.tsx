@@ -58,7 +58,7 @@ const isValidExpirationDate = (expirationIsoDate?: string): expirationIsoDate is
   return true;
 };
 
-const isCoachMarkExpired = (expirationDateAsIsoString?: string) => {
+const isPastExpirationDate = (expirationDateAsIsoString?: string) => {
   if (!isValidExpirationDate(expirationDateAsIsoString)) {
     return true;
   }
@@ -102,7 +102,7 @@ export const useCoachMark = (options: CoachMarkOptions) => {
     const isDisabled =
       disableCoachMarksStorageValue != null && JSON.parse(disableCoachMarksStorageValue) !== false;
 
-    const isExpired = isCoachMarkExpired(ui?.coach_mark_expiration_date_iso);
+    const isExpired = isPastExpirationDate(ui?.coach_mark_expiration_date_iso);
     if (isExpired && isValidExpirationDate(ui?.coach_mark_expiration_date_iso)) {
       localStorage.removeItem(hideCoachMarkStorageKey);
     }
