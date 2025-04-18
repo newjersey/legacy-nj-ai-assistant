@@ -63,9 +63,6 @@ describe(clearOldHideCoachMarkStorageKeys.name, () => {
     setHideCoachMarkKeyToLocalStorage(coachMarkId);
     localStorage.setItem(unrelatedKey2, "");
 
-    expect(localStorage.getItem(unrelatedKey1)).toBeNull();
-    expect(localStorage.getItem(unrelatedKey2)).toBeNull();
-
     clearOldHideCoachMarkStorageKeys(coachMarkId);
 
     expect(localStorage.getItem(unrelatedKey1)).not.toBeNull();
