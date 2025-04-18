@@ -1,4 +1,8 @@
-import { clearOldHideCoachMarkStorageKeys, getHideCoachMarkStorageKey } from "./coachMarkUtils";
+import {
+  clearOldHideCoachMarkStorageKeys,
+  getHideCoachMarkStorageKey,
+  HIDE_COACH_MARK_STORAGE_KEY_PREFIX,
+} from "./coachMarkUtils";
 
 describe(clearOldHideCoachMarkStorageKeys.name, () => {
   beforeEach(() => localStorage.clear());
@@ -21,6 +25,9 @@ describe(clearOldHideCoachMarkStorageKeys.name, () => {
     setHideCoachMarkKeyToLocalStorage(oldCoachMarkId2);
     setHideCoachMarkKeyToLocalStorage(coachMarkId);
 
+    expect(getHideCoachMarkKeyFromLocalStorage(oldCoachMarkId1)).not.toBeNull();
+    expect(getHideCoachMarkKeyFromLocalStorage(oldCoachMarkId2)).not.toBeNull();
+
     clearOldHideCoachMarkStorageKeys(coachMarkId);
 
     expect(getHideCoachMarkKeyFromLocalStorage(oldCoachMarkId1)).toBeNull();
@@ -33,6 +40,10 @@ describe(clearOldHideCoachMarkStorageKeys.name, () => {
     const currentId = "coach-mark";
 
     setHideCoachMarkKeyToLocalStorage(oldIdThatIncludesCurrentId);
+    setHideCoachMarkKeyToLocalStorage(currentId);
+
+    expect(getHideCoachMarkKeyFromLocalStorage(oldIdThatIncludesCurrentId)).not.toBeNull();
+
     clearOldHideCoachMarkStorageKeys(currentId);
 
     expect(localStorage.getItem(oldIdThatIncludesCurrentId)).toBeNull();
@@ -52,9 +63,25 @@ describe(clearOldHideCoachMarkStorageKeys.name, () => {
     setHideCoachMarkKeyToLocalStorage(coachMarkId);
     localStorage.setItem(unrelatedKey2, "");
 
+    expect(localStorage.getItem(unrelatedKey1)).toBeNull();
+    expect(localStorage.getItem(unrelatedKey2)).toBeNull();
+
     clearOldHideCoachMarkStorageKeys(coachMarkId);
 
     expect(localStorage.getItem(unrelatedKey1)).not.toBeNull();
     expect(localStorage.getItem(unrelatedKey2)).not.toBeNull();
+  });
+
+  it(`does not remove unrelated keys, even if they contain (but do not start with) ${HIDE_COACH_MARK_STORAGE_KEY_PREFIX}`, () => {
+    const coachMarkId = "coach-mark";
+
+    const unrelatedKeyContainingPrefix = `unrelated-key-${HIDE_COACH_MARK_STORAGE_KEY_PREFIX}`;
+
+    setHideCoachMarkKeyToLocalStorage(coachMarkId);
+    localStorage.setItem(unrelatedKeyContainingPrefix, "");
+
+    clearOldHideCoachMarkStorageKeys(coachMarkId);
+
+    expect(localStorage.getItem(unrelatedKeyContainingPrefix)).not.toBeNull();
   });
 });
