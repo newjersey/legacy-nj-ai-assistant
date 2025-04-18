@@ -58,16 +58,16 @@ const isValidExpirationDate = (expirationIsoDate?: string): expirationIsoDate is
   return true;
 };
 
-const isCoachMarkExpired = (expirationIsoDate?: string) => {
-  if (!isValidExpirationDate(expirationIsoDate)) {
+const isCoachMarkExpired = (expirationDateAsIsoString?: string) => {
+  if (!isValidExpirationDate(expirationDateAsIsoString)) {
     return true;
   }
   const today = new Date();
   today.setHours(0, 0, 0, 0);
 
-  const expirationDateObj = new Date(expirationIsoDate);
-  expirationDateObj.setHours(0, 0, 0, 0);
-  return today > expirationDateObj;
+  const expirationDate = new Date(expirationDateAsIsoString);
+  expirationDate.setHours(0, 0, 0, 0);
+  return today > expirationDate;
 };
 
 export interface CoachMarkOptions {
