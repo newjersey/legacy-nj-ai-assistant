@@ -103,7 +103,8 @@ export const useCoachMark = (options: CoachMarkOptions) => {
       disableCoachMarksStorageValue != null && JSON.parse(disableCoachMarksStorageValue) !== false;
 
     const isExpired = isPastExpirationDate(ui?.coach_mark_expiration_date_iso);
-    if (isExpired && isValidExpirationDate(ui?.coach_mark_expiration_date_iso)) {
+    const isExpirationDateValid = isValidExpirationDate(ui?.coach_mark_expiration_date_iso);
+    if (isExpired && isExpirationDateValid) {
       localStorage.removeItem(hideCoachMarkStorageKey);
     }
 
