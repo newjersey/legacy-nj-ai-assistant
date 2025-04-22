@@ -122,7 +122,7 @@ export const useCoachMark = (options: CoachMarkOptions) => {
     setHideCoachMarkStorageItem(options.id);
     referenceElement?.classList.remove("coachMarkActive");
     logEvent("coach_mark_single_feat_dimiss", {
-      coach_mark_id: options.id,
+      object_id: options.id,
     });
   }, [options.id, referenceElement?.classList]);
 

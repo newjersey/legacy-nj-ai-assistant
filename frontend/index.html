@@ -8,7 +8,8 @@
     <!-- Google Tag Manager to be place in HEAD -->
     <script>
       ;(function (w, d, s, l, i) {
-        if (d.location.hostname === 'ai-assistant.nj.gov') {
+        console.log(d.location.hostname)
+        if (d.location.hostname === 'ai-assistant.nj.gov' || d.location.hostname === '127.0.0.1') {
           w[l] = w[l] || []
           w[l].push({ 'gtm.start': new Date().getTime(), event: 'gtm.js' })
           var f = d.getElementsByTagName(s)[0],

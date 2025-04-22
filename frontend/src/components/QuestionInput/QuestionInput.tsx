@@ -342,7 +342,7 @@ export const QuestionInput = ({
         }));
 
         logEvent("upload_files_error_file_count", {
-          file_count: selectedFilesToSet.length,
+          object_count: selectedFilesToSet.length,
         });
       } else {
         setSelectedFiles([...selectedFiles, ...filesWithIds]);

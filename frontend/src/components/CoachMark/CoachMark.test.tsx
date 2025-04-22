@@ -331,7 +331,7 @@ describe(CoachMark.useCoachMark.name, () => {
         expect(screen.queryByText(defaultCoachMarkHeading)).not.toBeInTheDocument();
       });
 
-      it(`sets the hideCoachMark localStorage item and fires the 'click_close_coach_mark' GA event when ${testCase}`, async () => {
+      it(`sets the hideCoachMark localStorage item and fires the 'coach_mark_single_feat_dimiss' GA event when ${testCase}`, async () => {
         const logEventSpy = jest.spyOn(logEvent, "logEvent");
 
         const coachMarkId = "multiple_file_upload";
@@ -357,7 +357,7 @@ describe(CoachMark.useCoachMark.name, () => {
 
         expect(localStorage.getItem(hideCoachMarkKey)).toBe("true");
         expect(logEventSpy).toHaveBeenCalledWith("coach_mark_single_feat_dimiss", {
-          coach_mark_id: coachMarkId,
+          object_id: coachMarkId,
         });
         expect(logEventSpy).toHaveBeenCalledTimes(1);
       });
@@ -661,94 +661,5 @@ describe(CoachMark.Description.name, () => {
     const coachMark = screen.getByRole("dialog");
     expect(coachMark).toHaveAttribute("aria-describedby", descriptionElement.id);
     expect(coachMark).toHaveAccessibleDescription(defaultCoachMarkDescription);
-  });
-});
-
-const clickDoneButton = async () => {
-  const button = screen.getByRole("button", { name: "Done" });
-  await userEvent.click(button);
-};
-
-const clickCloseButton = async () => {
-  const button = screen.getByRole("button", { name: "Close" });
-  await userEvent.click(button);
-};
-
-const pressEscapeKey = async () => await userEvent.keyboard("{Escape}");
-
-const clickReferenceElement = async () => {
-  await userEvent.click(getReferenceElement());
-};
-
-describe.each([
-  ["the done button is clicked", clickDoneButton],
-  ["the close button is clicked", clickCloseButton],
-  ["the Escape key is pressed", pressEscapeKey],
-  ["the reference element is clicked", clickReferenceElement],
-])("dismissing the coach mark", (testCase, dismissEvent) => {
-  it(`closes the dialog when ${testCase}`, async () => {
-    renderTestCoachMark({
-      useCoachMarkOptions: {
-        ...DEFAULT_COACH_MARK_OPTIONS,
-        coachMarkPortal: (
-          <CoachMark.Portal allowedPlacements={["top"]}>
-            <CoachMark.Heading>{defaultCoachMarkHeading}</CoachMark.Heading>
-          </CoachMark.Portal>
-        ),
-      },
-      coach_mark_expiration_date_iso: EXPIRATION_DATE_IN_FUTURE,
-    });
-
-    expect(screen.getByText(defaultCoachMarkHeading)).toBeInTheDocument();
-    await dismissEvent();
-    expect(screen.queryByText(defaultCoachMarkHeading)).not.toBeInTheDocument();
-  });
-
-  it(`sets the hideCoachMark localStorage item and fires the 'click_close_coach_mark' GA event when ${testCase}`, async () => {
-    const logEventSpy = jest.spyOn(logEvent, "logEvent");
-
-    const coachMarkId = "multiple_file_upload";
-    renderTestCoachMark({
-      useCoachMarkOptions: {
-        ...DEFAULT_COACH_MARK_OPTIONS,
-        id: coachMarkId,
-        coachMarkPortal: (
-          <CoachMark.Portal allowedPlacements={["top"]}>
-            <CoachMark.Heading>{defaultCoachMarkHeading}</CoachMark.Heading>
-          </CoachMark.Portal>
-        ),
-      },
-      coach_mark_expiration_date_iso: EXPIRATION_DATE_IN_FUTURE,
-    });
-
-    const hideCoachMarkKey = getHideCoachMarkStorageKey(coachMarkId);
-    expect(localStorage.getItem(hideCoachMarkKey)).toBeNull();
-
-    expect(screen.getByText(defaultCoachMarkHeading)).toBeInTheDocument();
-    await dismissEvent();
-    expect(screen.queryByText(defaultCoachMarkHeading)).not.toBeInTheDocument();
-
-    expect(localStorage.getItem(hideCoachMarkKey)).toBe("true");
-    expect(logEventSpy).toHaveBeenCalledWith("coach_mark_single_feat_dimiss", {
-      coach_mark_id: coachMarkId,
-    });
-    expect(logEventSpy).toHaveBeenCalledTimes(1);
-  });
-
-  it(`removes the coachMarkActive class when ${testCase}`, async () => {
-    renderTestCoachMark({
-      useCoachMarkOptions: {
-        ...DEFAULT_COACH_MARK_OPTIONS,
-        coachMarkPortal: (
-          <CoachMark.Portal allowedPlacements={["top"]}>
-            <CoachMark.Heading>{defaultCoachMarkHeading}</CoachMark.Heading>
-          </CoachMark.Portal>
-        ),
-      },
-      coach_mark_expiration_date_iso: EXPIRATION_DATE_IN_FUTURE,
-    });
-
-    await dismissEvent();
-    expect(getReferenceElement()).not.toHaveClass("coachMarkActive");
   });
 });
