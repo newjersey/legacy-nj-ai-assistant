@@ -331,7 +331,7 @@ describe(CoachMark.useCoachMark.name, () => {
         expect(screen.queryByText(defaultCoachMarkHeading)).not.toBeInTheDocument();
       });
 
-      it(`sets the hideCoachMark localStorage item and fires the 'coach_mark_single_feat_dimiss' GA event when ${testCase}`, async () => {
+      it(`sets the hideCoachMark localStorage item and fires the 'coach_mark_single_feat_dismiss' GA event when ${testCase}`, async () => {
         const logEventSpy = jest.spyOn(logEvent, "logEvent");
 
         const coachMarkId = "multiple_file_upload";
@@ -356,7 +356,7 @@ describe(CoachMark.useCoachMark.name, () => {
         expect(screen.queryByText(defaultCoachMarkHeading)).not.toBeInTheDocument();
 
         expect(localStorage.getItem(hideCoachMarkKey)).toBe("true");
-        expect(logEventSpy).toHaveBeenCalledWith("coach_mark_single_feat_dimiss", {
+        expect(logEventSpy).toHaveBeenCalledWith("coach_mark_single_feat_dismiss", {
           object_id: coachMarkId,
         });
         expect(logEventSpy).toHaveBeenCalledTimes(1);
