@@ -1,6 +1,5 @@
-import icons from "@newjersey/njwds/dist/img/sprite.svg";
-
 import type { ErrorAlertType } from "../../utils/alertUtils";
+import { CloseButton } from "../common/Button";
 
 import styles from "./QuestionInput.module.css";
 
@@ -23,17 +22,13 @@ export const ErrorAlert = ({ onRemove, message, alertType }: ErrorAlertProps) =>
           {message}
         </p>
       </div>
-      <button
-        className={`usa-button usa-button--unstyled height-auto margin-right-1 ${styles.closeButton}`}
-        aria-label={`Close error alert: ${formattedAlertType}`}
-        onClick={() => {
+      <CloseButton
+        buttonClasses={`usa-button usa-button--unstyled height-auto margin-right-1 ${styles.closeButton}`}
+        ariaLabel={`Close error alert: ${formattedAlertType}`}
+        handleClick={() => {
           onRemove(alertType as keyof typeof ErrorAlertType);
         }}
-      >
-        <svg className="usa-icon" aria-hidden="true" focusable="false" role="img">
-          <use href={`${icons}#close`} />
-        </svg>
-      </button>
+      />
     </div>
   );
 };

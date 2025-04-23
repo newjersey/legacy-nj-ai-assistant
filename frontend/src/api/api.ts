@@ -1,6 +1,6 @@
 import { chatHistorySampleData } from "../constants/chatHistory";
 import type { UploadedFile } from "../utils/fileUploadUtils";
-import { ACCEPTED_FILE_TYPES, isImageFile } from "../utils/fileUploadUtils";
+import { isImageFile, isSpreadsheetFile } from "../utils/fileUploadUtils";
 
 import type {
   ChatMessage,
@@ -32,18 +32,27 @@ export const conversationApi = async (
 
         if (isImageFile(uploadedFile)) {
           fileContents.push({ type: "image_url", image_url: { url: uploadedFile.contents } });
-        } else if (
-          uploadedFile.extension === ACCEPTED_FILE_TYPES.PDF ||
-          uploadedFile.extension === ACCEPTED_FILE_TYPES.DOCX
-        ) {
+        } else if (isSpreadsheetFile(uploadedFile)) {
+          const uploadedSheetContents = uploadedFile.contents;
+          const uploadedSheetNames =
+            uploadedFile.sheets ??
+            Array.from({ length: uploadedSheetContents.length }, () => uploadedFile.name);
+          let uploadedSheetsPrompt = "";
+
+          for (let i = 0; i < uploadedSheetContents.length; i++) {
+            uploadedSheetsPrompt += `---BEGIN SHEET ${uploadedSheetNames[i]}---`;
+            uploadedSheetsPrompt += `${uploadedSheetContents[i]}`;
+            uploadedSheetsPrompt += `---END SHEET---`;
+          }
+
           fileContents.push({
             type: "text",
-            text: `Use the following document in your responses:\n ---BEGIN DOCUMENT---${uploadedFile.contents}---END DOCUMENT---`,
+            text: `The following document titled ${uploadedFile.name} contains one or more tables in CSV format. Use the following document in your responses:\n ---BEGIN DOCUMENT---\n${uploadedSheetsPrompt}---END DOCUMENT---`,
           });
-        } else if (uploadedFile.extension === ACCEPTED_FILE_TYPES.CSV) {
+        } else {
           fileContents.push({
             type: "text",
-            text: `The following document is in CSV format. Use the following document in your responses:\n ---BEGIN DOCUMENT---${uploadedFile.contents}---END DOCUMENT---`,
+            text: `Use the following document titled ${uploadedFile.name} in your responses:\n ---BEGIN DOCUMENT---${uploadedFile.contents}---END DOCUMENT---`,
           });
         }
       });

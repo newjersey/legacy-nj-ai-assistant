@@ -15,10 +15,10 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683 # v4
 
       - name: Set up Python version
-        uses: actions/setup-python@v1
+        uses: actions/setup-python@8d9ed9ac5c53483de85588cdf95a591a75ab9f55 # v5
         with:
           python-version: '3.13'
 
@@ -36,7 +36,7 @@ jobs:
         run: zip release.zip ./* -r
 
       - name: Upload artifact for deployment jobs
-        uses: actions/upload-artifact@v3
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02 # v4
         with:
           name: python-app
           path: |
@@ -54,7 +54,7 @@ jobs:
 
     steps:
       - name: Download artifact from build job
-        uses: actions/download-artifact@v3
+        uses: actions/download-artifact@95815c38cf2ff2164869cbab79da8d1f422bc89e # v4
         with:
           name: python-app
 
@@ -63,14 +63,14 @@ jobs:
 
       
       - name: Login to Azure
-        uses: azure/login@v1
+        uses: azure/login@a457da9ea143d694b1b9c7c869ebb04ebe844ef5 # v2
         with:
           client-id: ${{ secrets.AZUREAPPSERVICE_CLIENTID_70EAEB01E7344A70ADC936904D8668C0 }}
           tenant-id: ${{ secrets.AZUREAPPSERVICE_TENANTID_DE1C873329344453B852433BF700723B }}
           subscription-id: ${{ secrets.AZUREAPPSERVICE_SUBSCRIPTIONID_07FF4A7ACD624D90ADE700FA7786CF46 }}
 
       - name: 'Deploy to Azure Web App'
-        uses: azure/webapps-deploy@v2
+        uses: azure/webapps-deploy@2fdd5c3ebb4e540834e86ecc1f6fdcd5539023ee # v3
         id: deploy-to-webapp
         with:
           app-name: 'sample-app-github-cd'

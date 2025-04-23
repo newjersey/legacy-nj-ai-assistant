@@ -3,6 +3,7 @@ import pdfToText from "react-pdftotext";
 import icons from "@newjersey/njwds/dist/img/sprite.svg";
 import { extractRawText } from "mammoth";
 import { v4 as uuidv4 } from "uuid";
+import * as XLSX from "xlsx";
 
 import type { AlertsMap } from "../../utils/alertUtils";
 import {
@@ -15,6 +16,7 @@ import {
 import type { SelectedFile, UploadedFile } from "../../utils/fileUploadUtils";
 import { ACCEPTED_FILE_TYPES, isImageFile } from "../../utils/fileUploadUtils";
 import { logEvent } from "../../utils/logEvent";
+import * as CoachMark from "../CoachMark/CoachMark";
 
 import {
   MAX_INPUT_LENGTH,
@@ -48,6 +50,7 @@ export const QuestionInput = ({
 }: Props) => {
   const [question, setQuestion] = useState<string>("");
   const fileInputRef = useRef<HTMLInputElement | null>(null);
+  const coachMarkReferenceRef = useRef(null);
 
   const [selectedFiles, setSelectedFiles] = useState<SelectedFile[]>([]);
   const [inputErrors, setInputErrors] = useState<AlertsMap>(defaultAlertsMap);
@@ -109,7 +112,7 @@ export const QuestionInput = ({
 
     uploadedFiles.forEach((file) => {
       if (!isImageFile(file)) {
-        totalFileContentLength += file.contents.length;
+        totalFileContentLength += file.contents.join("").length;
       }
     });
 
@@ -184,7 +187,7 @@ export const QuestionInput = ({
 
         logEvent("submit_prompt_client_error_file_length", {
           object_types: uploadedFiles.map((file) => file.extension),
-          object_lengths: uploadedFiles.map((file) => file.contents.length),
+          object_lengths: uploadedFiles.map((file) => file.contents.join("").length),
           object_sizes: uploadedFiles.map((file) => file.size),
         });
 
@@ -204,7 +207,7 @@ export const QuestionInput = ({
   };
 
   const extractDataFromFile = async (selectedFile: File): Promise<UploadedFile> => {
-    let uploadedFile: UploadedFile = { name: "", contents: "", extension: "", size: 0 };
+    let uploadedFile: UploadedFile = { name: "", contents: [], extension: "", size: 0 };
 
     try {
       if (selectedFile.type === ACCEPTED_FILE_TYPES.PDF) {
@@ -215,7 +218,7 @@ export const QuestionInput = ({
         } else {
           uploadedFile = {
             name: selectedFile.name,
-            contents: extractedText,
+            contents: [extractedText],
             extension: selectedFile.type,
             size: selectedFile.size,
           };
@@ -229,7 +232,7 @@ export const QuestionInput = ({
 
             resolve({
               name: selectedFile.name,
-              contents: result,
+              contents: [result],
               extension: selectedFile.type,
               size: selectedFile.size,
             });
@@ -246,9 +249,36 @@ export const QuestionInput = ({
         } else {
           uploadedFile = {
             name: selectedFile.name,
-            contents: extractedText,
+            contents: [extractedText],
             extension: selectedFile.type,
             size: selectedFile.size,
+          };
+        }
+      } else if (
+        selectedFile.type === ACCEPTED_FILE_TYPES.XLSX ||
+        selectedFile.type === ACCEPTED_FILE_TYPES.XLS
+      ) {
+        const arrayBuffer = await selectedFile.arrayBuffer();
+        const workbook = XLSX.read(arrayBuffer);
+        const workbookContents: string[] = [];
+        const sheetNames: string[] = [];
+
+        workbook.SheetNames.forEach((sheetName) => {
+          const worksheet = workbook.Sheets[sheetName];
+          const worksheetAsCsvString = XLSX.utils.sheet_to_csv(worksheet);
+          workbookContents.push(worksheetAsCsvString);
+          sheetNames.push(sheetName);
+        });
+
+        if (workbookContents.length === 0) {
+          throw new Error();
+        } else {
+          uploadedFile = {
+            name: selectedFile.name,
+            contents: workbookContents,
+            extension: selectedFile.type,
+            size: selectedFile.size,
+            sheets: sheetNames,
           };
         }
       } else {
@@ -259,7 +289,7 @@ export const QuestionInput = ({
             const result = reader.result as string;
             resolve({
               name: selectedFile.name,
-              contents: result,
+              contents: [result],
               extension: selectedFile.type,
               size: selectedFile.size,
             });
@@ -312,7 +342,7 @@ export const QuestionInput = ({
         }));
 
         logEvent("upload_files_error_file_count", {
-          file_count: selectedFilesToSet.length,
+          object_count: selectedFilesToSet.length,
         });
       } else {
         setSelectedFiles([...selectedFiles, ...filesWithIds]);
@@ -343,78 +373,103 @@ export const QuestionInput = ({
     }));
   };
 
+  const coachMark = CoachMark.useCoachMark({
+    id: "multiple-file-upload",
+    referenceRef: coachMarkReferenceRef,
+    coachMarkPortal: (
+      <CoachMark.Portal allowedPlacements={["top"]}>
+        <CoachMark.Heading>New file upload features</CoachMark.Heading>
+        <CoachMark.Description>
+          <ul className="usa-list margin-1 maxw-mobile-lg">
+            <li>Upload up to 10 files.</li>
+            <li>File size limit increased to 50MB for files, 10MB for images.</li>
+            <li>
+              Supported file types: PDF, DOCX, XLS/XLSX, CSV, and most image types (JPEG, PNG, TIFF,
+              BMP, GIF).
+            </li>
+            <li>Updated content filters to accept a wider variety of prompts.</li>
+          </ul>
+        </CoachMark.Description>
+      </CoachMark.Portal>
+    ),
+  });
+
   return (
-    <div className="width-full">
-      <ErrorAlertContainer onRemove={removeError} alerts={inputErrors} />
+    <CoachMark.Root coachMark={coachMark}>
+      <div className="width-full">
+        <ErrorAlertContainer onRemove={removeError} alerts={inputErrors} />
 
-      <div className={styles.questionInput}>
-        <textarea
-          className={`usa-textarea maxw-none border-0 padding-x-205 height-auto minh-9 ${styles.questionInputTextArea}`}
-          placeholder={placeholder}
-          value={question}
-          onChange={(e) => setQuestion(e.target.value)}
-          onKeyDown={onTextareaEnterPress}
-          aria-label="Type a question"
-        ></textarea>
+        <div className={styles.questionInput}>
+          <textarea
+            className={`usa-textarea maxw-none border-0 padding-x-205 height-auto minh-9 ${styles.questionInputTextArea}`}
+            placeholder={placeholder}
+            value={question}
+            onChange={(e) => setQuestion(e.target.value)}
+            onKeyDown={onTextareaEnterPress}
+            aria-label="Type a question"
+          ></textarea>
 
-        {selectedFiles.length > 0 && (
-          <FileUploadPreviewContainer
-            onClose={closePreview}
-            files={selectedFiles.map((file) => ({ name: file.name, fileId: file.fileId }))}
-          />
-        )}
+          {selectedFiles.length > 0 && (
+            <FileUploadPreviewContainer
+              onClose={closePreview}
+              files={selectedFiles.map((file) => ({ name: file.name, fileId: file.fileId }))}
+            />
+          )}
 
-        <div
-          className={`display-flex margin-bottom-3 width-full padding-x-2 ${styles.questionInputChatButtons}`}
-        >
-          <button
-            className={`usa-button usa-button--unstyled text-no-underline display-flex ${styles.fileInputButton}`}
-            onKeyDown={onFileUploadButtonEnterPress}
-            onClick={onFileUploadButtonClick}
-            tabIndex={0}
-            aria-label="Upload files"
-          >
-            <svg
-              className="usa-icon margin-right-05"
-              aria-hidden="true"
-              focusable="false"
-              role="img"
-            >
-              <use href={`${icons}#attach_file`} />
-            </svg>
-            Upload files
-          </button>
-          <input
-            ref={fileInputRef}
-            type="file"
-            id="file-upload"
-            data-testid="file-upload"
-            accept={(Object.values(ACCEPTED_FILE_TYPES) as string[]).join(",")}
-            onChange={onFileChange}
-            disabled={disabled}
-            tabIndex={-1}
-            className={styles.fileInput}
-            aria-hidden="true"
-            multiple
-          />
           <div
-            className="usa-button margin-right-0"
-            id={styles.questionInputSendButtonContainer}
-            role="button"
-            tabIndex={0}
-            aria-label="Ask question button"
-            onClick={sendQuestion}
-            onKeyDown={(e) => (e.key === "Enter" || e.key === " " ? sendQuestion() : null)}
+            className={`display-flex margin-bottom-3 width-full padding-x-2 ${styles.questionInputChatButtons}`}
           >
-            <svg className="usa-icon" aria-hidden="true" focusable="false" role="img">
-              <use href={`${icons}#send`} />
-            </svg>
+            <button
+              ref={coachMarkReferenceRef}
+              {...coachMark.getReferenceProps()}
+              className={`usa-button usa-button--unstyled text-no-underline display-flex ${styles.fileInputButton}`}
+              onKeyDown={onFileUploadButtonEnterPress}
+              onClick={onFileUploadButtonClick}
+              tabIndex={0}
+              aria-label="Upload files"
+            >
+              <svg
+                className="usa-icon margin-right-05"
+                aria-hidden="true"
+                focusable="false"
+                role="img"
+              >
+                <use href={`${icons}#attach_file`} />
+              </svg>
+              Upload files
+            </button>
+            <input
+              ref={fileInputRef}
+              type="file"
+              id="file-upload"
+              data-testid="file-upload"
+              accept={(Object.values(ACCEPTED_FILE_TYPES) as string[]).join(",")}
+              onChange={onFileChange}
+              disabled={disabled}
+              tabIndex={-1}
+              className={styles.fileInput}
+              aria-hidden="true"
+              multiple
+            />
+            <div
+              className="usa-button margin-right-0"
+              id={styles.questionInputSendButtonContainer}
+              role="button"
+              tabIndex={0}
+              aria-label="Ask question button"
+              onClick={sendQuestion}
+              onKeyDown={(e) => (e.key === "Enter" || e.key === " " ? sendQuestion() : null)}
+            >
+              <svg className="usa-icon" aria-hidden="true" focusable="false" role="img">
+                <use href={`${icons}#send`} />
+              </svg>
+            </div>
           </div>
+          <hr
+            className={`margin-bottom-0 width-full bottom-0 left-0 border-0 ${styles.questionInputBottomBorder}`}
+          />
         </div>
-        <hr
-          className={`margin-bottom-0 width-full bottom-0 left-0 border-0 ${styles.questionInputBottomBorder}`}
-        />
       </div>
-    </div>
+    </CoachMark.Root>
   );
 };

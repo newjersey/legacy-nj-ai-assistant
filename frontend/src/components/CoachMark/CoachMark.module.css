@@ -1,0 +1,27 @@
+:root {
+  --coach-mark-margin: 1rem;
+  --primary-lightest: #e8f5ff;
+}
+
+.dialogOverlay {
+  background: rgba(0, 0, 0, 0.8);
+  z-index: 1;
+}
+
+.flex-row-reverse {
+  flex-direction: row-reverse;
+}
+
+:global(.coachMarkActive) {
+  z-index: 1;
+}
+
+.coachMarkDialog {
+  margin: 0 var(--coach-mark-margin);
+}
+
+.coachMarkArrow {
+  /* negative margin to center arrow back on reference element */
+  margin: 0 calc(var(--coach-mark-margin) * -1);
+  fill: var(--primary-lightest);
+}
