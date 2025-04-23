@@ -10,7 +10,7 @@ param sku object = {
   name: 'S0'
 }
 
-resource account 'Microsoft.CognitiveServices/accounts@2023-05-01' = {
+resource account 'Microsoft.CognitiveServices/accounts@2024-10-01' = {
   name: name
   location: location
   tags: tags
