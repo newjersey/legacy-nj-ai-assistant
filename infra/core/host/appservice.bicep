@@ -124,7 +124,7 @@ resource appService 'Microsoft.Web/sites@2022-03-01' = {
   }
 }
 
-resource keyVault 'Microsoft.KeyVault/vaults@2022-07-01' existing = if (!(empty(keyVaultName))) {
+resource keyVault 'Microsoft.KeyVault/vaults@2024-11-01' existing = if (!(empty(keyVaultName))) {
   name: keyVaultName
 }
 
