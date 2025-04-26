@@ -13,11 +13,11 @@ param formRecognizerSkuName string = 'S0'
 
 var abbrs = loadJsonContent('abbreviations.json')
 
-resource resourceGroup 'Microsoft.Resources/resourceGroups@2021-04-01' existing = {
+resource resourceGroup 'Microsoft.Resources/resourceGroups@2024-11-01' existing = {
   name: resourceGroupName
 }
 
-resource formRecognizerResourceGroup 'Microsoft.Resources/resourceGroups@2021-04-01' existing = if (!empty(formRecognizerResourceGroupName)) {
+resource formRecognizerResourceGroup 'Microsoft.Resources/resourceGroups@2024-11-01' existing = if (!empty(formRecognizerResourceGroupName)) {
   name: !empty(formRecognizerResourceGroupName) ? formRecognizerResourceGroupName : resourceGroup.name
 }
 
