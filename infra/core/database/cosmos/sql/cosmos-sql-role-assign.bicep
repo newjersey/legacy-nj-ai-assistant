@@ -14,6 +14,6 @@ resource role 'Microsoft.DocumentDB/databaseAccounts/sqlRoleAssignments@2022-05-
   }
 }
 
-resource cosmos 'Microsoft.DocumentDB/databaseAccounts@2024-11-15' existing = {
+resource cosmos 'Microsoft.DocumentDB/databaseAccounts@2025-04-15' existing = {
   name: accountName
 }
