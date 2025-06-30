@@ -26,12 +26,12 @@ export const conversationApi = async (
       const fileContents: any[] = [];
 
       uploadedFiles.forEach((uploadedFile) => {
-        if (uploadedFile.contents == null) {
+        if (uploadedFile.contents == null || uploadedFile.contents.length !== 1) {
           return;
         }
 
         if (isImageFile(uploadedFile)) {
-          fileContents.push({ type: "image_url", image_url: { url: uploadedFile.contents } });
+          fileContents.push({ type: "image_url", image_url: { url: uploadedFile.contents[0] } });
         } else if (isSpreadsheetFile(uploadedFile)) {
           const uploadedSheetContents = uploadedFile.contents;
           const uploadedSheetNames =
