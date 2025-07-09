@@ -9,4 +9,4 @@ quart==0.20.0
 uvicorn==0.34.3
 aiohttp==3.12.13
 gunicorn==23.0.0
-pydantic-settings==2.10.0
+pydantic-settings==2.10.1
