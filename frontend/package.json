@@ -27,7 +27,7 @@
     "jest-axe": "^9.0.0",
     "lodash": "^4.17.21",
     "lodash-es": "^4.17.21",
-    "mammoth": "^1.8.0",
+    "mammoth": "^1.11.0",
     "plotly.js": "^2.32.0",
     "react": "18.3.1",
     "react-dom": "18.3.1",
