@@ -20,12 +20,14 @@ Models can be configured by going to the [Azure AI Foundry portal](https://ai.az
 
 ### OpenAI Service resources
 
+For both our prod and dev environments, we have a default OpenAI resources deployed in the `eastus` region as well as identical fallback resources deployed in the `northcentralus` region. Both the default and fallback resources can be found in the Azure AI portal.
+
 #### Prod OpenAI Service
 
 - Resource: [`nj-innovation-ai`](https://ai.azure.com/resource/overview?wsid=/subscriptions/5aec259d-5905-48ef-964e-57f1a47c91e9/resourceGroups/NJ-Office-of-Innovation/providers/Microsoft.CognitiveServices/accounts/nj-innovation-ai&tid=5076c3d1-3802-4b9f-b36a-e0a41bd642a7)
-- Model deployment name: `gpt-4o-strict-filter`
+- Model deployment name: `gpt-4o-prod`
   - Model name: `gpt-4o`
-  - Content filter: `all-strict`
+  - Content filter: `input-low-allowed`
   - Version update policy: `Once the current version expires`
 
 #### Dev OpenAI Service
@@ -33,7 +35,7 @@ Models can be configured by going to the [Azure AI Foundry portal](https://ai.az
 - Resource: [`nj-innovation-ai-dev` ](https://ai.azure.com/resource/overview?wsid=/subscriptions/52561230-e762-421d-80ea-a69d6dee9f6c/resourceGroups/sh-innov-ai-dev-rg/providers/Microsoft.CognitiveServices/accounts/nj-innovation-ai-dev&tid=5076c3d1-3802-4b9f-b36a-e0a41bd642a7)
 - Model deployment name: `gpt-4o-dev`
   - Model name: `gpt-4o`
-  - Content filter: `DefaultV2`
+  - Content filter: `input-low-allowed-dev`
   - Version update policy: `Once a new default version is available`
 
 #### Using and configuring models
