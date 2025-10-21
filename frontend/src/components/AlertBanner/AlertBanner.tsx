@@ -1,5 +1,6 @@
 import { useState, useEffect } from "react";
 import styles from "./AlertBanner.module.css";
+import { CloseButton } from "../common/Button";
 
 export const AlertType = {
   INFO: "info",
@@ -56,14 +57,11 @@ export const AlertBanner = (props: Props) => {
           className={`${styles.alertBannerText} usa-alert__text`}
           dangerouslySetInnerHTML={{ __html: props.message }}
         />
-        <button
-          className={styles.closeButton}
-          onClick={handleClose}
-          aria-label="Close alert banner"
-          type="button"
-        >
-          <span aria-hidden="true" className={styles.closeX}></span>
-        </button>
+        <CloseButton
+          ariaLabel="Close alert banner"
+          buttonClasses={styles.closeButton}
+          handleClick={handleClose}
+        />
       </div>
     </div>
   );
