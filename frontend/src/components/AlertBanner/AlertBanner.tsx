@@ -22,7 +22,10 @@ export const AlertBanner = (props: Props) => {
       className={`usa-alert usa-alert--${props.alertType} usa-alert--slim usa-alert--no-icon`}
     >
       <div className="usa-alert__body">
-        <p className={`${styles.alertBannerText} usa-alert__text`}>{props.message}</p>
+        <p 
+          className={`${styles.alertBannerText} usa-alert__text`}
+          dangerouslySetInnerHTML={{ __html: props.message }}
+        />
       </div>
     </div>
   );

@@ -2,3 +2,18 @@
   min-width: 100%;
   font-size: 14px;
 }
+
+/* Styles for HTML content in banner */
+.alertBannerText a {
+  color: inherit;
+  text-decoration: underline;
+}
+
+.alertBannerText a:hover {
+  text-decoration: none;
+}
+
+.alertBannerText strong,
+.alertBannerText b {
+  font-weight: bold;
+}
