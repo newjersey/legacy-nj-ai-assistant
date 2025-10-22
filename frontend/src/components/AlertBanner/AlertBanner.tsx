@@ -48,8 +48,7 @@ export const AlertBanner = (props: Props) => {
     return null;
   }
 
-  // Use the prop instead of environment variable
-  const canDismissBanner = props.dismissible !== false; // default to true if undefined
+  const canDismissBanner = props.dismissible === true;
 
   return (
     <div
