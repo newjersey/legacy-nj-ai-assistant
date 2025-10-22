@@ -15,6 +15,7 @@ export type AlertType = (typeof AlertType)[keyof typeof AlertType];
 interface Props {
   message: string;
   alertType: AlertType;
+  dismissible?: boolean; // Fix typo in property name (was "dissmissible")
   id?: string; // Unique identifier for this alert type
 }
 
@@ -47,6 +48,9 @@ export const AlertBanner = (props: Props) => {
     return null;
   }
 
+  // Use the prop instead of environment variable
+  const canDismissBanner = props.dismissible !== false; // default to true if undefined
+
   return (
     <div
       data-testid="alert-banner"
@@ -57,11 +61,13 @@ export const AlertBanner = (props: Props) => {
           className={`${styles.alertBannerText} usa-alert__text`}
           dangerouslySetInnerHTML={{ __html: props.message }}
         />
-        <CloseButton
-          ariaLabel="Close alert banner"
-          buttonClasses={styles.closeButton}
-          handleClick={handleClose}
-        />
+        {canDismissBanner && (
+          <CloseButton
+            ariaLabel="Close alert banner"
+            buttonClasses={styles.closeButton}
+            handleClick={handleClose}
+          />
+        )}
       </div>
     </div>
   );
