@@ -95,7 +95,7 @@ const Layout = () => {
             message={ui.alert_banner_message}
             alertType={alertType}
             dismissible={ui.alert_banner_dismissible}
-            id="main-alert-banner"
+            id={ui.alert_banner_id || "alert"}
           />
         )}
         <Stack horizontal verticalAlign="center" horizontalAlign="space-between">

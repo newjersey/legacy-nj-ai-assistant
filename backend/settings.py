@@ -52,6 +52,7 @@ class _UiSettings(BaseSettings):
     alert_banner_message: Optional[str] = None
     alert_banner_type: str = "info"
     alert_banner_dismissible: bool = False
+    alert_banner_id: Optional[str] = None
     coach_mark_expiration_date_iso: Optional[str] = None
 
 

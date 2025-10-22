@@ -15,13 +15,13 @@ export type AlertType = (typeof AlertType)[keyof typeof AlertType];
 interface Props {
   message: string;
   alertType: AlertType;
-  dismissible?: boolean; // Fix typo in property name (was "dissmissible")
-  id?: string; // Unique identifier for this alert type
+  dismissible?: boolean; 
+  id: string; 
 }
 
 export const AlertBanner = (props: Props) => {
   const alertId = props.id || `alert-${props.alertType}`;
-  const storageKey = `dismissed-alert-${alertId}`;
+  const storageKey = `dismissed-alert-banner-${alertId}`;
 
   // Check localStorage on initial render
   const [isVisible, setIsVisible] = useState(() => {
@@ -39,7 +39,7 @@ export const AlertBanner = (props: Props) => {
       localStorage.setItem(storageKey, "true");
     } catch (e) {
       // Handle localStorage errors silently
-      console.error("Failed to save alert preference:", e);
+      return true;
     }
     setIsVisible(false);
   };

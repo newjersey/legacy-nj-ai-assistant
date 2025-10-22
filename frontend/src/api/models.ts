@@ -144,6 +144,7 @@ export type UI = {
   alert_banner_message?: string;
   alert_banner_type?: string;
   alert_banner_dismissible?: boolean;
+  alert_banner_id?: string;
   coach_mark_expiration_date_iso?: string;
 };
 
