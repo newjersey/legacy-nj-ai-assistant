@@ -80,7 +80,7 @@ describe("<AlertBanner>", () => {
       const closeButton = screen.getByRole('button', { name: /close alert banner/i });
       fireEvent.click(closeButton);
       
-      expect(localStorage.setItem).toHaveBeenCalledWith('dismissed-alert-test-alert', 'true');
+      expect(localStorage.setItem).toHaveBeenCalledWith('dismissed-alert-banner-test-alert', 'true');
     });
 
     it("doesn't show banner if previously dismissed in localStorage", () => {
@@ -90,7 +90,7 @@ describe("<AlertBanner>", () => {
       render(<AlertBanner message="Test Alert" alertType={AlertType.INFO} dismissible={true} id="test-alert" />);
       
       expect(screen.queryByTestId("alert-banner")).not.toBeInTheDocument();
-      expect(localStorage.getItem).toHaveBeenCalledWith('dismissed-alert-test-alert');
+      expect(localStorage.getItem).toHaveBeenCalledWith('dismissed-alert-banner-test-alert');
     });
   });
 });
