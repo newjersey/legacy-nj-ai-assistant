@@ -4,10 +4,45 @@ import "@testing-library/jest-dom";
 
 import { AlertBanner, AlertType } from "./AlertBanner";
 
+// Test constants
+const DEFAULT_ALERT_MESSAGE = "This is an alert!";
+const DEFAULT_ALERT_ID = "test-alert";
+
+// Helper functions
+const renderAlertBanner = (props: Partial<React.ComponentProps<typeof AlertBanner>> = {}) => {
+  const defaultProps = {
+    message: DEFAULT_ALERT_MESSAGE,
+    alertType: AlertType.INFO,
+    id: DEFAULT_ALERT_ID,
+  };
+  
+  return render(<AlertBanner {...defaultProps} {...props} />);
+};
+
+const getAlertBanner = () => screen.getByTestId("alert-banner");
+const queryAlertBanner = () => screen.queryByTestId("alert-banner");
+const getCloseButton = () => screen.getByRole('button', { name: /close alert banner/i });
+const queryCloseButton = () => screen.queryByRole('button', { name: /close alert banner/i });
+
 describe("<AlertBanner>", () => {
+  beforeEach(() => {
+    jest.clearAllMocks();
+    // Mock localStorage
+    const localStorageMock = {
+      getItem: jest.fn(() => null),
+      setItem: jest.fn(),
+      clear: jest.fn(),
+    };
+    Object.defineProperty(window, 'localStorage', { value: localStorageMock });
+  });
+
+  afterEach(() => {
+    localStorage.clear();
+  });
+
   it("renders the 'messageHtml' prop in a paragraph element with the 'usa-alert__text' class", () => {
     const alertMessage = "This is an alert!";
-    render(<AlertBanner message={alertMessage} alertType={AlertType.INFO} id="test-alert-1" />);
+    renderAlertBanner({ message: alertMessage, alertType: AlertType.INFO, id: "test-alert-1" });
     const alertTextElement = screen.getByText(alertMessage);
     expect(alertTextElement).toBeInTheDocument();
     expect(alertTextElement).toHaveRole("paragraph");
@@ -16,7 +51,7 @@ describe("<AlertBanner>", () => {
 
   it("is styled to be a USWDS alert (slim, no icon)", () => {
     const expectedClasses = ["usa-alert", "usa-alert--slim", "usa-alert--no-icon"];
-    render(<AlertBanner message="" alertType={AlertType.INFO} id="test-alert-2" />);
+    renderAlertBanner({ message: "", alertType: AlertType.INFO, id: "test-alert-2" });
     const alertBanner = screen.getByTestId("alert-banner");
     for (const expectedClass of expectedClasses) {
       expect(alertBanner).toHaveClass(expectedClass);
@@ -25,72 +60,73 @@ describe("<AlertBanner>", () => {
 
   describe("sets the USWDS alert type based on the 'alertType' prop", () => {
     it.each(Object.values(AlertType))("alert type: %s", (alertType) => {
-      render(<AlertBanner message="" alertType={alertType} id={`test-alert-${alertType}`} />);
+      renderAlertBanner({ message: "", alertType, id: `test-alert-${alertType}` });
       expect(screen.getByTestId("alert-banner")).toHaveClass(`usa-alert--${alertType}`);
     });
   });
 
-  describe("CloseButton functionality", () => {
-    beforeEach(() => {
-      // Mock localStorage
-      const localStorageMock = {
-        getItem: jest.fn(() => null),
-        setItem: jest.fn(),
-        clear: jest.fn(),
-      };
-      Object.defineProperty(window, 'localStorage', { value: localStorageMock });
-    });
-
+  describe("dismissible functionality", () => {
     it("shows the CloseButton when dismissible prop is true", () => {
-      render(<AlertBanner message="Test Alert" alertType={AlertType.INFO} dismissible={true} id="test-alert" />);
-      
-      const closeButton = screen.getByRole('button', { name: /close alert banner/i });
-      expect(closeButton).toBeInTheDocument();
+      renderAlertBanner({ dismissible: true });
+      expect(getCloseButton()).toBeInTheDocument();
     });
 
     it("does not show the CloseButton when dismissible prop is false", () => {
-      render(<AlertBanner message="Test Alert" alertType={AlertType.INFO} dismissible={false} id="test-alert" />);
-      
-      const closeButton = screen.queryByRole('button', { name: /close alert banner/i });
-      expect(closeButton).not.toBeInTheDocument();
+      renderAlertBanner({ dismissible: false });
+      expect(queryCloseButton()).not.toBeInTheDocument();
     });
 
     it("does not show the CloseButton when dismissible prop is undefined", () => {
-      render(<AlertBanner message="Test Alert" alertType={AlertType.INFO} id="test-alert" />);
-      
-      const closeButton = screen.queryByRole('button', { name: /close alert banner/i });
-      expect(closeButton).not.toBeInTheDocument();
+      renderAlertBanner();
+      expect(queryCloseButton()).not.toBeInTheDocument();
     });
+  });
 
+  describe("dismissal behavior", () => {
     it("hides the banner when CloseButton is clicked", () => {
-      render(<AlertBanner message="Test Alert" alertType={AlertType.INFO} dismissible={true} id="test-alert" />);
+      renderAlertBanner({ dismissible: true });
       
-      const banner = screen.getByTestId("alert-banner");
-      expect(banner).toBeInTheDocument();
+      expect(getAlertBanner()).toBeInTheDocument();
       
-      const closeButton = screen.getByRole('button', { name: /close alert banner/i });
-      fireEvent.click(closeButton);
+      fireEvent.click(getCloseButton());
       
-      expect(screen.queryByTestId("alert-banner")).not.toBeInTheDocument();
+      expect(queryAlertBanner()).not.toBeInTheDocument();
     });
 
     it("saves dismissal state to localStorage when closed", () => {
-      render(<AlertBanner message="Test Alert" alertType={AlertType.INFO} dismissible={true} id="test-alert" />);
+      renderAlertBanner({ dismissible: true, id: DEFAULT_ALERT_ID });
       
-      const closeButton = screen.getByRole('button', { name: /close alert banner/i });
-      fireEvent.click(closeButton);
+      fireEvent.click(getCloseButton());
       
-      expect(localStorage.setItem).toHaveBeenCalledWith('dismissed-alert-banner-test-alert', 'true');
+      expect(localStorage.setItem).toHaveBeenCalledWith(`dismissed-alert-banner-${DEFAULT_ALERT_ID}`, 'true');
     });
 
-    it("doesn't show banner if previously dismissed in localStorage", () => {
+    it("does not show banner if previously dismissed in localStorage", () => {
       // Setup localStorage mock to simulate previously dismissed alert
       localStorage.getItem = jest.fn(() => 'true');
       
-      render(<AlertBanner message="Test Alert" alertType={AlertType.INFO} dismissible={true} id="test-alert" />);
+      renderAlertBanner({ dismissible: true, id: DEFAULT_ALERT_ID });
       
-      expect(screen.queryByTestId("alert-banner")).not.toBeInTheDocument();
-      expect(localStorage.getItem).toHaveBeenCalledWith('dismissed-alert-banner-test-alert');
+      expect(queryAlertBanner()).not.toBeInTheDocument();
+      expect(localStorage.getItem).toHaveBeenCalledWith(`dismissed-alert-banner-${DEFAULT_ALERT_ID}`);
+    });
+
+    it("renders a new banner with different id even if another banner was previously dismissed", () => {
+      const dismissedBannerId = "dismissed-banner";
+      const newBannerId = "new-banner";
+      
+      // Setup localStorage to simulate a previously dismissed banner with different ID
+      localStorage.getItem = jest.fn((key) => {
+        if (key === `dismissed-alert-banner-${dismissedBannerId}`) {
+          return 'true';
+        }
+        return null;
+      });
+      
+      renderAlertBanner({ dismissible: true, id: newBannerId });
+      
+      expect(getAlertBanner()).toBeInTheDocument();
+      expect(localStorage.getItem).toHaveBeenCalledWith(`dismissed-alert-banner-${newBannerId}`);
     });
   });
 });
