@@ -1,3 +1,10 @@
+.alertBanner {
+  width: 99%;
+  margin: 0 auto;
+  box-sizing: border-box;
+  margin-top: 8px !important;
+}
+
 .alertBannerContent {
   display: flex;
   justify-content: space-between;
@@ -15,7 +22,6 @@
   align-self: center;
 }
 
-/* Styles for HTML content in banner */
 .alertBannerText a {
   color: inherit;
   text-decoration: underline;

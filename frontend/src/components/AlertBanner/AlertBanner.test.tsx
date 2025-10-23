@@ -4,11 +4,9 @@ import "@testing-library/jest-dom";
 
 import { AlertBanner, AlertType } from "./AlertBanner";
 
-// Test constants
 const DEFAULT_ALERT_MESSAGE = "This is an alert!";
 const DEFAULT_ALERT_ID = "test-alert";
 
-// Helper functions
 const renderAlertBanner = (props: Partial<React.ComponentProps<typeof AlertBanner>> = {}) => {
   const defaultProps = {
     message: DEFAULT_ALERT_MESSAGE,
@@ -27,7 +25,6 @@ const queryCloseButton = () => screen.queryByRole('button', { name: /close alert
 describe("<AlertBanner>", () => {
   beforeEach(() => {
     jest.clearAllMocks();
-    // Mock localStorage
     const localStorageMock = {
       getItem: jest.fn(() => null),
       setItem: jest.fn(),
@@ -102,7 +99,6 @@ describe("<AlertBanner>", () => {
     });
 
     it("does not show banner if previously dismissed in localStorage", () => {
-      // Setup localStorage mock to simulate previously dismissed alert
       localStorage.getItem = jest.fn(() => 'true');
       
       renderAlertBanner({ dismissible: true, id: DEFAULT_ALERT_ID });
@@ -115,7 +111,6 @@ describe("<AlertBanner>", () => {
       const dismissedBannerId = "dismissed-banner";
       const newBannerId = "new-banner";
       
-      // Setup localStorage to simulate a previously dismissed banner with different ID
       localStorage.getItem = jest.fn((key) => {
         if (key === `dismissed-alert-banner-${dismissedBannerId}`) {
           return 'true';

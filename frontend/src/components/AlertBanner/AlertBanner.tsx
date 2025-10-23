@@ -23,22 +23,18 @@ export const AlertBanner = (props: Props) => {
   const alertId = props.id || `alert-${props.alertType}`;
   const storageKey = `dismissed-alert-banner-${alertId}`;
 
-  // Check localStorage on initial render
   const [isVisible, setIsVisible] = useState(() => {
     try {
       return localStorage.getItem(storageKey) !== "true";
     } catch (e) {
-      // In case localStorage is not available
       return true;
     }
   });
 
   const handleClose = () => {
     try {
-      // Store the dismissal in localStorage
       localStorage.setItem(storageKey, "true");
     } catch (e) {
-      // Handle localStorage errors silently
       return true;
     }
     setIsVisible(false);
@@ -53,7 +49,7 @@ export const AlertBanner = (props: Props) => {
   return (
     <div
       data-testid="alert-banner"
-      className={`usa-alert usa-alert--${props.alertType} usa-alert--slim usa-alert--no-icon`}
+      className={`usa-alert usa-alert--${props.alertType} usa-alert--slim usa-alert--no-icon ${styles.alertBanner}`}
     >
       <div className={styles.alertBannerContent}>
         <p
