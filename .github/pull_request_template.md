@@ -1,25 +1,23 @@
-### Motivation and Context
+<!-- Please complete the following sections as necessary. -->
 
-<!-- Thank you for your contribution to this repo!
-Please help reviewers and future users, providing the following information:
-  1. Why is this change required? 
-  2. What problem does it solve?
-  3. What scenario does it contribute to?
-  4. If it fixes an open issue, please link to the issue here.
-  5. Does this solve an issue or add a feature that *all* users of this sample app can benefit from? Contributions will only be accepted that apply across all users of this app.
--->
+## Description
 
-### Description
+[Ticket link here](https://github.com/newjersey/innovation-platform-pm/issues)
 
-<!-- Describe your changes, the overall approach, the underlying design.
-     These notes will help understanding how your code works. Thanks! -->
+<!-- Summary of the changes, related issue, relevant motivation, and context -->
 
+<!-- Changed dependencies, e.g. requires an install/update/migration, etc. -->
 
-### Contribution Checklist
+<!-- Additional information, key learnings, and future development considerations. -->
 
-<!-- Before submitting this PR, please make sure: -->
+<!-- Screenshots/screen recordings for visual changes-->
 
-- [ ] I have built and tested the code locally and in a deployed app
-- [ ] For frontend changes, I have pulled the latest code from main, built the frontend, and committed all static files.
-- [ ] This is a change for all users of this app. No code or asset is specific to my use case or my organization.
-- [ ] I didn't break any existing functionality :smile:
+## Accessibility
+- [ ] I have added unit tests for the front-end that use [appropriate Testing Library queries](https://testing-library.com/docs/queries/about#priority) and (jest-axe)[https://www.npmjs.com/package/jest-axe] where applicable
+- [ ] I have tested changes with a screenreader (Note screenreader & browser, e.g. VoiceOver/Safari)
+- [ ] I have both manually verified and written unit tests to ensure that all interactive elements are [keyboard navigable](https://webaim.org/techniques/keyboard/) and there are no [focus traps](https://www.w3.org/TR/UNDERSTANDING-WCAG20/keyboard-operation-trapping.html).
+- [ ] I have check that text can be zoomed up to 200% without losing functionality ([1.4.4]([url](https://aaardvarkaccessibility.com/wcag-plain-english/1-4-4-resize-text/))).
+- [ ] I have checked this with the [WAVE extension](https://wave.webaim.org/extension/).
+
+## How should a reviewer test?
+<!-- Describe the testing approach taken to verify the changes, including unit/integration/manual tests and test data used-->
