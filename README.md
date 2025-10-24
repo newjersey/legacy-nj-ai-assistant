@@ -67,7 +67,7 @@ See the docs on [Managing models in Azure OpenAI services](docs/azure/AZURE_MODE
 
 The site title and copy that appear in the background of the NJ AI assistant are stored in the environment variables.
 
-The site title is stored as `UI_CHAT_TITLE` while the site copy is stored as `UI_CHAT_DESCRIPTION`.
+The site title is stored as `UI_CHAT_TITLE` while the site copy is in `Chat.tsx`.
 
 **To update the title or copy when running locally,** please update the variables in your `.env` file. Make sure to save the updated changes to the `.env` file stored in Bitwarden as well.
 
