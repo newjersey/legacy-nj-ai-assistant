@@ -15,9 +15,20 @@ EOF
     fi
 fi
 
+# Use uv if it's available
+if command -v uv &> /dev/null; then
+    echo 'Ensuring Python 3.11 is installed...'
+    uv python install 3.11
 
-echo 'Creating Python virtual environment ".venv" in root'
-python3.11 -m venv .venv
+    echo 'Creating Python virtual environment ".venv" in root...'
+    uv venv --clear
 
-echo 'Installing dependencies from "requirements.txt" into virtual environment'
-./.venv/bin/python -m pip install -r requirements-dev.txt
+    echo 'Installing dependencies from "requirements-dev.txt" into virtual environment...'
+    uv pip install -r requirements-dev.txt
+else
+    echo 'Creating Python virtual environment ".venv" in root'
+    python3.11 -m venv .venv
+
+    echo 'Installing dependencies from "requirements-dev.txt" into virtual environment'
+    ./.venv/bin/python -m pip install -r requirements-dev.txt
+fi
