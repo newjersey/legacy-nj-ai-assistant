@@ -49,7 +49,7 @@ export const AlertBanner = (props: Props) => {
   return (
     <div
       data-testid="alert-banner"
-      className={`usa-alert usa-alert--${props.alertType} usa-alert--slim usa-alert--no-icon ${styles.alertBanner}`}
+      className={`usa-alert usa-alert--${props.alertType} usa-alert--slim usa-alert--no-icon padding-1 margin-105`}
     >
       <div className={styles.alertBannerContent}>
         <p
