@@ -1,4 +1,5 @@
 :root {
+  --coach-mark-background: white;
   --coach-mark-margin: 1rem;
   --primary-lightest: #e8f5ff;
 }
@@ -14,6 +15,8 @@
 
 :global(.coachMarkActive) {
   z-index: 1;
+  position: relative;
+  background-color: var(--coach-mark-background);
 }
 
 .coachMarkDialog {

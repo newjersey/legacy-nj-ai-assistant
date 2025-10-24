@@ -44,6 +44,7 @@ import { isImageFile, truncateFilename } from "../../utils/fileUploadUtils";
 import { logEvent } from "../../utils/logEvent";
 
 import styles from "./Chat.module.css";
+import * as CoachMark from "../../components/CoachMark/CoachMark";
 
 const enum messageStatus {
   NotRunning = "Not Running",
@@ -863,6 +864,22 @@ export const Chat = () => {
     return "";
   };
 
+  const coachMarkReferenceRef = useRef(null);
+  const coachMark = CoachMark.useCoachMark({
+    id: "new-pii-policy",
+    referenceRef: coachMarkReferenceRef,
+    coachMarkPortal: (
+      <CoachMark.Portal allowedPlacements={["bottom"]}>
+        <CoachMark.Heading>Updated PII usage</CoachMark.Heading>
+        <CoachMark.Description>
+          <p>
+            You can now enter personally identifiable information (PII) into the NJ AI Assistant.
+          </p>
+        </CoachMark.Description>
+      </CoachMark.Portal>
+    ),
+  });
+
   return (
     <div className={styles.container} role="main">
       {showAuthMessage ? (
@@ -943,14 +960,19 @@ export const Chat = () => {
                     </a>
                     .
                   </p>
-                  <p>
-                    <strong>Sensitive Information:</strong> In order to ensure responsible, safe AI
-                    use, please follow these{" "}
-                    <a href="https://innovation.nj.gov/skills/ai/" target="_blank">
-                      guidelines
-                    </a>
-                    .
-                  </p>
+                  <CoachMark.Root coachMark={coachMark}>
+                    <p>
+                      <strong ref={coachMarkReferenceRef} {...coachMark.getReferenceProps()}>
+                        New AI Policy & PII:
+                      </strong>{" "}
+                      You can now safely enter personally identifiable information (PII) and other
+                      sensitive information into the NJ AI Assistant, (
+                      <a href="https://innovation.nj.gov/ai-faq-state-employees/" target="_blank">
+                        as shared in the state's new AI guidelines
+                      </a>
+                      ).
+                    </p>
+                  </CoachMark.Root>
                   <p>
                     <strong>Newsletter:</strong>{" "}
                     <a
