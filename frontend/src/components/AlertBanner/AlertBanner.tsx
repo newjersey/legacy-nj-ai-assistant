@@ -1,6 +1,8 @@
-import { useState, useEffect } from "react";
-import styles from "./AlertBanner.module.css";
+import { useState } from "react";
+
 import { CloseButton } from "../common/Button";
+
+import styles from "./AlertBanner.module.css";
 
 export const AlertType = {
   INFO: "info",
@@ -15,8 +17,8 @@ export type AlertType = (typeof AlertType)[keyof typeof AlertType];
 interface Props {
   message: string;
   alertType: AlertType;
-  dismissible?: boolean; 
-  id: string; 
+  dismissible?: boolean;
+  id: string;
 }
 
 export const AlertBanner = (props: Props) => {
