@@ -1,4 +1,30 @@
+.alertBannerContent {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  width: 100%;
+}
+
 .alertBannerText {
-  min-width: 100%;
-  font-size: 14px;
+  min-width: 90%;
+  font-size: 0.875rem;
+  margin-left: 4px;
+}
+
+.closeButton {
+  align-self: center;
+}
+
+.alertBannerText a {
+  color: inherit;
+  text-decoration: underline;
+}
+
+.alertBannerText a:hover {
+  text-decoration: none;
+}
+
+.alertBannerText strong,
+.alertBannerText b {
+  font-weight: bold;
 }

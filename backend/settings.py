@@ -45,12 +45,13 @@ class _UiSettings(BaseSettings):
     logo: Optional[str] = None
     chat_logo: Optional[str] = None
     chat_title: str = "Start chatting"
-    chat_description: str = "This chatbot is configured to answer your questions"
     favicon: str = "/favicon.ico"
     show_share_button: bool = True
     show_chat_history_button: bool = True
     alert_banner_message: Optional[str] = None
     alert_banner_type: str = "info"
+    alert_banner_dismissible: bool = False
+    alert_banner_id: Optional[str] = None
     coach_mark_expiration_date_iso: Optional[str] = None
 
 

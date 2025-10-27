@@ -1,5 +1,13 @@
 #!/bin/bash
 
+# Use nvm to install npm if it's available
+if [ -s "$HOME/.nvm/nvm.sh" ]; then
+    echo "Using nvm to ensure we have correct npm installed"
+    source ~/.nvm/nvm.sh
+    nvm use
+    nvm install
+fi
+
 export NODE_OPTIONS=--max_old_space_size=8192
 
 echo ""

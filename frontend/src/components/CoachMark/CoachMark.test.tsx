@@ -55,7 +55,6 @@ const renderTestCoachMark = (options: {
   const uiSettings: FrontendSettings["ui"] = {
     title: "NJ AI Assistant",
     chat_title: "NJ AI Assistant",
-    chat_description: "<p>Chat description</p>",
     ...(options.coach_mark_expiration_date_iso !== undefined && {
       coach_mark_expiration_date_iso: options.coach_mark_expiration_date_iso,
     }),

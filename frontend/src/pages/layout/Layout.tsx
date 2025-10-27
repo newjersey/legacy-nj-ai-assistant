@@ -91,7 +91,12 @@ const Layout = () => {
     <div className={styles.layout}>
       <header className={styles.header} role={"banner"}>
         {ui?.alert_banner_message != null && ui.alert_banner_message.trim().length > 0 && (
-          <AlertBanner message={ui.alert_banner_message} alertType={alertType} />
+          <AlertBanner
+            message={ui.alert_banner_message}
+            alertType={alertType}
+            dismissible={ui.alert_banner_dismissible}
+            id={ui.alert_banner_id || "alert"}
+          />
         )}
         <Stack horizontal verticalAlign="center" horizontalAlign="space-between">
           <Stack horizontal verticalAlign="center">

@@ -98,11 +98,12 @@ frontend_settings = {
         "logo": app_settings.ui.logo,
         "chat_logo": app_settings.ui.chat_logo or app_settings.ui.logo,
         "chat_title": app_settings.ui.chat_title,
-        "chat_description": app_settings.ui.chat_description,
         "show_share_button": app_settings.ui.show_share_button,
         "show_chat_history_button": app_settings.ui.show_chat_history_button,
         "alert_banner_message": app_settings.ui.alert_banner_message,
         "alert_banner_type": app_settings.ui.alert_banner_type,
+        "alert_banner_dismissible": app_settings.ui.alert_banner_dismissible,
+        "alert_banner_id": app_settings.ui.alert_banner_id,
         "coach_mark_expiration_date_iso": app_settings.ui.coach_mark_expiration_date_iso
     },
     "sanitize_answer": app_settings.base_settings.sanitize_answer,

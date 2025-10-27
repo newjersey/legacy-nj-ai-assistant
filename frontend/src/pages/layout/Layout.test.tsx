@@ -13,7 +13,6 @@ describe("<Layout>", () => {
     const DEFAULT_UI: FrontendSettings["ui"] = {
       title: "NJ AI Assistant",
       chat_title: "NJ AI Assistant",
-      chat_description: "<p>Chat description</p>",
     };
 
     const renderLayoutComponentWithUISettings = (uiSettings: UI) => {

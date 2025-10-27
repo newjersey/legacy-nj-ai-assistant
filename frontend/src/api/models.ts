@@ -136,13 +136,14 @@ export type ErrorMessage = {
 export type UI = {
   title: string;
   chat_title: string;
-  chat_description: string;
   logo?: string;
   chat_logo?: string;
   show_share_button?: boolean;
   show_chat_history_button?: boolean;
   alert_banner_message?: string;
   alert_banner_type?: string;
+  alert_banner_dismissible?: boolean;
+  alert_banner_id?: string;
   coach_mark_expiration_date_iso?: string;
 };
 
