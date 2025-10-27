@@ -36,7 +36,7 @@ import NjLogo from "../../assets/nj-logo.svg";
 import { Answer } from "../../components/Answer";
 import { ChatHistoryPanel } from "../../components/ChatHistory/ChatHistoryPanel";
 import { QuestionInput } from "../../components/QuestionInput";
-import { DEFAULT_CHAT_DESCRIPTION, DEFAULT_CHAT_TITLE } from "../../constants/defaultAppState";
+import { DEFAULT_CHAT_TITLE } from "../../constants/defaultAppState";
 import { XSSAllowTags } from "../../constants/sanatizeAllowables";
 import { AppStateContext } from "../../state/AppProvider";
 import type { UploadedFile } from "../../utils/fileUploadUtils";
@@ -915,12 +915,54 @@ export const Chat = () => {
                     {ui?.chat_title ?? DEFAULT_CHAT_TITLE}
                   </h1>
                 </div>
-                <h2
-                  className={styles.chatEmptyStateSubtitle}
-                  dangerouslySetInnerHTML={{
-                    __html: ui?.chat_description ?? DEFAULT_CHAT_DESCRIPTION,
-                  }}
-                ></h2>
+                <h2 className={styles.chatEmptyStateSubtitle}>
+                  <p>
+                    This is an internal generative artificial intelligence chatbot for use by NJ
+                    state employees and authorized parties, using the GPT-4o model.
+                  </p>
+                  <p>
+                    <strong>Training Requirements:</strong> Before using the NJ AI Assistant, please
+                    begin the Responsible AI for Public Professionals training course. Access this
+                    course{" "}
+                    <a
+                      href="https://stateofnewjersey.sabacloud.com/Saba/Web_spf/NA9P2PRD001/common/ledetail/CLIP.RAIPP.WBT/latestversion"
+                      target="_blank"
+                    >
+                      as a State Learner
+                    </a>{" "}
+                    or{" "}
+                    <a
+                      href="https://stateofnewjersey-external.sabacloud.com/Saba/Web_spf/NA9P2PRD001/common/ledetail/CLIP.RAIPP.WBT/latestversion"
+                      target="_blank"
+                    >
+                      as an External Learner
+                    </a>
+                    . If you have trouble accessing the course, please email{" "}
+                    <a href="mailto:clipelearning.support@csc.nj.gov">
+                      clipelearning.support@csc.nj.gov
+                    </a>
+                    .
+                  </p>
+                  <p>
+                    <strong>Sensitive Information:</strong> In order to ensure responsible, safe AI
+                    use, please follow these{" "}
+                    <a href="https://innovation.nj.gov/skills/ai/" target="_blank">
+                      guidelines
+                    </a>
+                    .
+                  </p>
+                  <p>
+                    <strong>Newsletter:</strong>{" "}
+                    <a
+                      href="https://public.govdelivery.com/accounts/NJGOV/signup/45878"
+                      target="_blank"
+                    >
+                      Sign up
+                    </a>{" "}
+                    for the AI assistant newsletter to stay informed about upcoming and new
+                    features.
+                  </p>
+                </h2>
               </div>
             ) : (
               <div className={styles.chatMessageStream} role="log">
