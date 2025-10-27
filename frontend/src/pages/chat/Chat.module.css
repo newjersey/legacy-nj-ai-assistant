@@ -379,3 +379,7 @@ img.previewImage {
   margin-top: 10px;
   text-align: right;
 }
+
+.chatCopy {
+  flex-direction: row !important;
+}
