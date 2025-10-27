@@ -16,7 +16,6 @@ import {
 import type { SelectedFile, UploadedFile } from "../../utils/fileUploadUtils";
 import { ACCEPTED_FILE_TYPES, isImageFile } from "../../utils/fileUploadUtils";
 import { logEvent } from "../../utils/logEvent";
-import * as CoachMark from "../CoachMark/CoachMark";
 
 import {
   MAX_INPUT_LENGTH,
@@ -50,7 +49,6 @@ export const QuestionInput = ({
 }: Props) => {
   const [question, setQuestion] = useState<string>("");
   const fileInputRef = useRef<HTMLInputElement | null>(null);
-  const coachMarkReferenceRef = useRef(null);
 
   const [selectedFiles, setSelectedFiles] = useState<SelectedFile[]>([]);
   const [inputErrors, setInputErrors] = useState<AlertsMap>(defaultAlertsMap);
@@ -373,29 +371,7 @@ export const QuestionInput = ({
     }));
   };
 
-  const coachMark = CoachMark.useCoachMark({
-    id: "multiple-file-upload",
-    referenceRef: coachMarkReferenceRef,
-    coachMarkPortal: (
-      <CoachMark.Portal allowedPlacements={["top"]}>
-        <CoachMark.Heading>New file upload features</CoachMark.Heading>
-        <CoachMark.Description>
-          <ul className="usa-list margin-1 maxw-mobile-lg">
-            <li>Upload up to 10 files.</li>
-            <li>File size limit increased to 50MB for files, 10MB for images.</li>
-            <li>
-              Supported file types: PDF, DOCX, XLS/XLSX, CSV, and most image types (JPEG, PNG, TIFF,
-              BMP, GIF).
-            </li>
-            <li>Updated content filters to accept a wider variety of prompts.</li>
-          </ul>
-        </CoachMark.Description>
-      </CoachMark.Portal>
-    ),
-  });
-
   return (
-    <CoachMark.Root coachMark={coachMark}>
       <div className="width-full">
         <ErrorAlertContainer onRemove={removeError} alerts={inputErrors} />
 
@@ -420,8 +396,6 @@ export const QuestionInput = ({
             className={`display-flex margin-bottom-3 width-full padding-x-2 ${styles.questionInputChatButtons}`}
           >
             <button
-              ref={coachMarkReferenceRef}
-              {...coachMark.getReferenceProps()}
               className={`usa-button usa-button--unstyled text-no-underline display-flex ${styles.fileInputButton}`}
               onKeyDown={onFileUploadButtonEnterPress}
               onClick={onFileUploadButtonClick}
@@ -470,6 +444,5 @@ export const QuestionInput = ({
           />
         </div>
       </div>
-    </CoachMark.Root>
   );
 };
