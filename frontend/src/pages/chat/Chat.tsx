@@ -35,6 +35,7 @@ import {
 import NjLogo from "../../assets/nj-logo.svg";
 import { Answer } from "../../components/Answer";
 import { ChatHistoryPanel } from "../../components/ChatHistory/ChatHistoryPanel";
+import * as CoachMark from "../../components/CoachMark/CoachMark";
 import { QuestionInput } from "../../components/QuestionInput";
 import { DEFAULT_CHAT_TITLE } from "../../constants/defaultAppState";
 import { XSSAllowTags } from "../../constants/sanatizeAllowables";
@@ -44,7 +45,6 @@ import { isImageFile, truncateFilename } from "../../utils/fileUploadUtils";
 import { logEvent } from "../../utils/logEvent";
 
 import styles from "./Chat.module.css";
-import * as CoachMark from "../../components/CoachMark/CoachMark";
 
 const enum messageStatus {
   NotRunning = "Not Running",
