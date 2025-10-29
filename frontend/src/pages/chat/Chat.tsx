@@ -7,6 +7,7 @@ import { useBoolean } from "@fluentui/react-hooks";
 import { ErrorCircleRegular, ShieldLockRegular, SquareRegular } from "@fluentui/react-icons";
 import icons from "@newjersey/njwds/dist/img/sprite.svg";
 import DOMPurify from "dompurify";
+import { motion } from "framer-motion";
 import { isEmpty } from "lodash";
 import rehypeRaw from "rehype-raw";
 import remarkGfm from "remark-gfm";
@@ -36,6 +37,7 @@ import NjLogo from "../../assets/nj-logo.svg";
 import { Answer } from "../../components/Answer";
 import { ChatHistoryPanel } from "../../components/ChatHistory/ChatHistoryPanel";
 import * as CoachMark from "../../components/CoachMark/CoachMark";
+import { CloseButton } from "../../components/common/Button";
 import { QuestionInput } from "../../components/QuestionInput";
 import { DEFAULT_CHAT_TITLE } from "../../constants/defaultAppState";
 import { XSSAllowTags } from "../../constants/sanatizeAllowables";
@@ -70,6 +72,8 @@ export const Chat = () => {
   const [clearingChat, setClearingChat] = useState<boolean>(false);
   const [hideErrorDialog, { toggle: toggleErrorDialog }] = useBoolean(true);
   const [errorMsg, setErrorMsg] = useState<ErrorMessage | null>();
+  const [copyText, setCopyText] = useState<string>("");
+  const [copyAlert, setCopyAlert] = useState<boolean>(false);
 
   const errorDialogContentProps = {
     type: DialogType.close,
@@ -782,6 +786,17 @@ export const Chat = () => {
     setIsIntentsPanelOpen(true);
   };
 
+  const onCopy = (text: string, isPrompt: boolean) => {
+    // Hide the copy alert temporarily before flashing a new one (to make it obvious to users
+    // that the new text was copied, & refire aria live region as well).
+    setCopyAlert(false);
+
+    navigator.clipboard.writeText(text).then(() => {
+      setCopyText(`${isPrompt ? "Prompt" : "Response"} copied to clipboard.`);
+      setCopyAlert(true);
+    });
+  };
+
   const onViewSource = (citation: Citation) => {
     if (citation.url && !citation.url.includes("blob.core")) {
       window.open(citation.url, "_blank");
@@ -1017,6 +1032,26 @@ export const Chat = () => {
                           <div className="display-flex flex-row flex-align-end flex-justify-end">
                             {answer.content}
                           </div>
+                          <div className="display-flex flex-row flex-align-end flex-justify-end margin-top-1">
+                            <button
+                              data-testid="prompt-copy-button"
+                              className={`usa-button usa-button--unstyled text-no-underline display-flex font-sans-xs`}
+                              aria-label={`Copy prompt to clipboard that begins with "${answer.content.split(" ").slice(0, 3).join(" ")}…"`}
+                              onClick={() => {
+                                onCopy(answer.content, true);
+                              }}
+                            >
+                              Copy
+                              <svg
+                                className="usa-icon usa-icon--size-2"
+                                aria-hidden="true"
+                                focusable="false"
+                                role="img"
+                              >
+                                <use href={`${icons}#content_copy`} />
+                              </svg>
+                            </button>
+                          </div>
                           {answer.uploaded_files != null && answer.uploaded_files.length > 0 && (
                             <div className={`${styles.userAttachmentDisclaimer}`}>
                               {getUserAttachmentDisclaimerText(answer.uploaded_files)}
@@ -1037,6 +1072,7 @@ export const Chat = () => {
                           }}
                           onCitationClicked={(c) => onShowCitation(c)}
                           onExectResultClicked={() => onShowExecResult()}
+                          onCopyClicked={(text) => onCopy(text, false)}
                         />
                       </div>
                     ) : answer.role === ERROR ? (
@@ -1064,6 +1100,7 @@ export const Chat = () => {
                         }}
                         onCitationClicked={() => null}
                         onExectResultClicked={() => null}
+                        onCopyClicked={() => null}
                       />
                     </div>
                   </>
@@ -1088,6 +1125,24 @@ export const Chat = () => {
                   </span>
                 </Stack>
               )}
+              <div role="status" className="display-flex width-full margin-left-15 margin-right-15">
+                {copyAlert && (
+                  <motion.div
+                    className="usa-alert usa-alert--success usa-alert--slim width-full margin-left-8"
+                    initial={{ y: 44, opacity: 0 }}
+                    animate={{ y: 0, opacity: 1 }}
+                  >
+                    <div className={`usa-alert__body ${styles.chatCopy}`}>
+                      <p className="usa-alert__text flex-fill flex-justify-start">{copyText}</p>
+                      <CloseButton
+                        ariaLabel="Close copy alert"
+                        buttonClasses="flex-1 flex-justify-end"
+                        handleClick={() => setCopyAlert(false)}
+                      />
+                    </div>
+                  </motion.div>
+                )}
+              </div>
               <div className="display-flex width-full">
                 <Stack className="flex-justify-end margin-bottom-5">
                   {isCosmosDbConfigured() && (
