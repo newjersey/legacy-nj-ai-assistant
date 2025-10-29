@@ -46,6 +46,7 @@ import { isImageFile, truncateFilename } from "../../utils/fileUploadUtils";
 import { logEvent } from "../../utils/logEvent";
 
 import styles from "./Chat.module.css";
+import { motion } from "framer-motion";
 
 const enum messageStatus {
   NotRunning = "Not Running",
@@ -1122,7 +1123,11 @@ export const Chat = () => {
               )}
               <div role="status" className="display-flex width-full margin-left-15 margin-right-15">
                 {copyAlert && (
-                  <div className="usa-alert usa-alert--success usa-alert--slim width-full margin-left-8">
+                  <motion.div
+                    className="usa-alert usa-alert--success usa-alert--slim width-full margin-left-8"
+                    initial={{ y: 44, opacity: 0 }}
+                    animate={{ y: 0, opacity: 1 }}
+                  >
                     <div className={`usa-alert__body ${styles.chatCopy}`}>
                       <p className="usa-alert__text flex-fill flex-justify-start">{copyText}</p>
                       <CloseButton
@@ -1131,7 +1136,7 @@ export const Chat = () => {
                         handleClick={() => setCopyAlert(false)}
                       />
                     </div>
-                  </div>
+                  </motion.div>
                 )}
               </div>
               <div className="display-flex width-full">
