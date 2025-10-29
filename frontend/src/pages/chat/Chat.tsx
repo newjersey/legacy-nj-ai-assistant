@@ -7,6 +7,7 @@ import { useBoolean } from "@fluentui/react-hooks";
 import { ErrorCircleRegular, ShieldLockRegular, SquareRegular } from "@fluentui/react-icons";
 import icons from "@newjersey/njwds/dist/img/sprite.svg";
 import DOMPurify from "dompurify";
+import { motion } from "framer-motion";
 import { isEmpty } from "lodash";
 import rehypeRaw from "rehype-raw";
 import remarkGfm from "remark-gfm";
@@ -46,7 +47,6 @@ import { isImageFile, truncateFilename } from "../../utils/fileUploadUtils";
 import { logEvent } from "../../utils/logEvent";
 
 import styles from "./Chat.module.css";
-import { motion } from "framer-motion";
 
 const enum messageStatus {
   NotRunning = "Not Running",
@@ -787,6 +787,10 @@ export const Chat = () => {
   };
 
   const onCopy = (text: string, isPrompt: boolean) => {
+    // Hide the copy alert temporarily before flashing a new one (to make it obvious to users
+    // that the new text was copied, & refire aria live region as well).
+    setCopyAlert(false);
+
     navigator.clipboard.writeText(text).then(() => {
       setCopyText(`${isPrompt ? "Prompt" : "Response"} copied to clipboard.`);
       setCopyAlert(true);
