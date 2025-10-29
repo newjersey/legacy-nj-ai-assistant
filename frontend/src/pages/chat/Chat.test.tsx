@@ -7,6 +7,7 @@ import "@testing-library/jest-dom";
 import * as api from "../../api";
 import { createMockFile } from "../../test/factories";
 import { ACCEPTED_FILE_TYPES } from "../../utils/fileUploadUtils";
+import * as logEvent from "../../utils/logEvent";
 
 import { Chat } from "./Chat";
 jest.mock("../../api");
@@ -175,6 +176,8 @@ describe("Test copy prompt/response", () => {
   it("renders prompt copy text", async () => {
     const { container } = render(<Chat />);
 
+    const logEventSpy = jest.spyOn(logEvent, "logEvent");
+
     // Submit a query, make sure the prompt appears
     await inputChatMessage();
     clickSubmitButton();
@@ -185,6 +188,9 @@ describe("Test copy prompt/response", () => {
     const copyPromptButton = screen.getByTestId("prompt-copy-button");
     await userEvent.click(copyPromptButton);
     expect(await screen.findByText("Prompt copied to clipboard.")).toBeInTheDocument();
+
+    expect(logEventSpy).toHaveBeenCalledWith("copy_prompt_text", {});
+    expect(logEventSpy).toHaveBeenCalledTimes(1);
 
     // Close the alert
     const closeButton = screen.getByTestId("close-button");
