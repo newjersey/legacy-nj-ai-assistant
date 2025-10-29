@@ -1,4 +1,4 @@
-import { fireEvent, render, screen, waitFor } from "@testing-library/react";
+import { render, screen, waitFor } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
 import { axe, toHaveNoViolations } from "jest-axe";
 
@@ -178,21 +178,17 @@ describe("Test copy prompt/response", () => {
     // Submit a query, make sure the prompt appears
     await inputChatMessage();
     clickSubmitButton();
-    await waitFor(() => {
-      expect(screen.queryByText("Copy")).toBeInTheDocument();
-    });
+    expect(await screen.findByText("Copy")).toBeInTheDocument();
 
     // Copy the prompt, check that the correct alert shows up
     userEvent.setup(); // Enable clipboard to work
     const copyPromptButton = screen.getByTestId("prompt-copy-button");
-    fireEvent.click(copyPromptButton);
-    await waitFor(() => {
-      expect(screen.queryByText("Prompt copied to clipboard.")).toBeInTheDocument();
-    });
+    await userEvent.click(copyPromptButton);
+    expect(await screen.findByText("Prompt copied to clipboard.")).toBeInTheDocument();
 
     // Close the alert
     const closeButton = screen.getByTestId("close-button");
-    fireEvent.click(closeButton);
+    await userEvent.click(closeButton);
     await waitFor(() => {
       expect(screen.queryByText("Prompt copied to clipboard.")).not.toBeInTheDocument();
     });
