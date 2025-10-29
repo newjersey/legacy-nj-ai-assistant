@@ -375,12 +375,17 @@ export const Answer = ({
             <Stack.Item className={"margin-left-2"}>
               <button
                 data-testid="answer-copy-button"
-                className={`usa-button usa-button--unstyled text-no-underline display-flex`}
-                aria-label={`Copy answer to clipboard that begins with "${answer.answer.split(" ").slice(0, 3)}…"`}
+                className={`usa-button usa-button--unstyled text-no-underline display-flex font-sans-xs`}
+                aria-label={`Copy response to clipboard that begins with "${answer.answer.split(" ").slice(0, 3).join(" ")}…"`}
                 onClick={() => onCopyClicked(answer.answer)}
               >
                 Copy
-                <svg className="usa-icon" aria-hidden="true" focusable="false" role="img">
+                <svg
+                  className="usa-icon usa-icon--size-2"
+                  aria-hidden="true"
+                  focusable="false"
+                  role="img"
+                >
                   <use href={`${icons}#content_copy`} />
                 </svg>
               </button>

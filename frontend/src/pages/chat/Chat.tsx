@@ -1035,15 +1035,15 @@ export const Chat = () => {
                           <div className="display-flex flex-row flex-align-end flex-justify-end margin-top-1">
                             <button
                               data-testid="prompt-copy-button"
-                              className={`usa-button usa-button--unstyled text-no-underline display-flex`}
-                              aria-label={`Copy prompt to clipboard that begins with "${answer.content.split(" ").slice(0, 3)}…"`}
+                              className={`usa-button usa-button--unstyled text-no-underline display-flex font-sans-xs`}
+                              aria-label={`Copy prompt to clipboard that begins with "${answer.content.split(" ").slice(0, 3).join(" ")}…"`}
                               onClick={() => {
                                 onCopy(answer.content, true);
                               }}
                             >
                               Copy
                               <svg
-                                className="usa-icon"
+                                className="usa-icon usa-icon--size-2"
                                 aria-hidden="true"
                                 focusable="false"
                                 role="img"
