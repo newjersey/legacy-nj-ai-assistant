@@ -39,6 +39,7 @@ interface CloseButtonProps {
 export const CloseButton = (props: CloseButtonProps) => {
   return (
     <button
+      data-testid="close-button"
       className={`usa-button usa-button--unstyled ${props.buttonClasses ?? ""}`}
       onClick={props.handleClick}
       aria-label={props.ariaLabel}

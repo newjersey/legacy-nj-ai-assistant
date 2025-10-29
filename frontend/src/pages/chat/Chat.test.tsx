@@ -1,4 +1,4 @@
-import { render, screen, waitFor } from "@testing-library/react";
+import { fireEvent, render, screen, waitFor } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
 import { axe, toHaveNoViolations } from "jest-axe";
 
@@ -151,6 +151,50 @@ describe("Test uploaded image previews", () => {
       expect(screen.queryByAltText(`${uploadedFileOne.name}`)).toBeInTheDocument();
       expect(screen.queryByAltText(`${uploadedFileTwo.name}`)).not.toBeInTheDocument();
       expect(screen.queryByAltText(`${uploadedFileThree.name}`)).toBeInTheDocument();
+    });
+
+    expect(await axe(container)).toHaveNoViolations();
+  });
+});
+
+describe("Test copy prompt/response", () => {
+  beforeEach(() => {
+    const defaultMockResponse = {
+      status: 200,
+    } as unknown as Response;
+
+    jest
+      .spyOn(api, "conversationApi")
+      .mockImplementation(() => Promise.resolve(defaultMockResponse));
+
+    window.HTMLElement.prototype.scrollIntoView = jest.fn();
+  });
+
+  afterEach(jest.clearAllMocks);
+
+  it("renders prompt copy text", async () => {
+    const { container } = render(<Chat />);
+
+    // Submit a query, make sure the prompt appears
+    await inputChatMessage();
+    clickSubmitButton();
+    await waitFor(() => {
+      expect(screen.queryByText("Copy")).toBeInTheDocument();
+    });
+
+    // Copy the prompt, check that the correct alert shows up
+    userEvent.setup(); // Enable clipboard to work
+    const copyPromptButton = screen.getByTestId("prompt-copy-button");
+    fireEvent.click(copyPromptButton);
+    await waitFor(() => {
+      expect(screen.queryByText("Prompt copied to clipboard.")).toBeInTheDocument();
+    });
+
+    // Close the alert
+    const closeButton = screen.getByTestId("close-button");
+    fireEvent.click(closeButton);
+    await waitFor(() => {
+      expect(screen.queryByText("Prompt copied to clipboard.")).not.toBeInTheDocument();
     });
 
     expect(await axe(container)).toHaveNoViolations();
