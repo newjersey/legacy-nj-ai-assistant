@@ -1030,7 +1030,7 @@ export const Chat = () => {
                           <div className="display-flex flex-row flex-align-end flex-justify-end margin-top-1">
                             <button
                               className={`usa-button usa-button--unstyled text-no-underline display-flex`}
-                              aria-label="Copy Prompt to Clipboard"
+                              aria-label={`Copy prompt to clipboard that begins with "${answer.content.split(" ").slice(0, 3)}…"`}
                               onClick={() => {
                                 onCopy(answer.content, true);
                               }}

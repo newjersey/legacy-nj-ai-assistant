@@ -375,7 +375,7 @@ export const Answer = ({
             <Stack.Item className={"margin-left-2"}>
               <button
                 className={`usa-button usa-button--unstyled text-no-underline display-flex`}
-                aria-label="Copy Answer to Clipboard"
+                aria-label={`Copy answer to clipboard that begins with "${answer.answer.split(" ").slice(0, 3)}…"`}
                 onClick={() => onCopyClicked(answer.answer)}
               >
                 Copy
