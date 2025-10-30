@@ -794,6 +794,8 @@ export const Chat = () => {
     navigator.clipboard.writeText(text).then(() => {
       setCopyText(`${isPrompt ? "Prompt" : "Response"} copied to clipboard.`);
       setCopyAlert(true);
+
+      logEvent(isPrompt ? "copy_prompt_text" : "copy_response_text", {});
     });
   };
 
