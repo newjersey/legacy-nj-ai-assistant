@@ -7,6 +7,7 @@ import "@testing-library/jest-dom";
 import * as api from "../../api";
 import { createMockFile } from "../../test/factories";
 import { ACCEPTED_FILE_TYPES } from "../../utils/fileUploadUtils";
+import * as logEvent from "../../utils/logEvent";
 
 import { Chat } from "./Chat";
 jest.mock("../../api");
@@ -151,6 +152,51 @@ describe("Test uploaded image previews", () => {
       expect(screen.queryByAltText(`${uploadedFileOne.name}`)).toBeInTheDocument();
       expect(screen.queryByAltText(`${uploadedFileTwo.name}`)).not.toBeInTheDocument();
       expect(screen.queryByAltText(`${uploadedFileThree.name}`)).toBeInTheDocument();
+    });
+
+    expect(await axe(container)).toHaveNoViolations();
+  });
+});
+
+describe("Test copy prompt/response", () => {
+  beforeEach(() => {
+    const defaultMockResponse = {
+      status: 200,
+    } as unknown as Response;
+
+    jest
+      .spyOn(api, "conversationApi")
+      .mockImplementation(() => Promise.resolve(defaultMockResponse));
+
+    window.HTMLElement.prototype.scrollIntoView = jest.fn();
+  });
+
+  afterEach(jest.clearAllMocks);
+
+  it("renders prompt copy text", async () => {
+    const { container } = render(<Chat />);
+
+    const logEventSpy = jest.spyOn(logEvent, "logEvent");
+
+    // Submit a query, make sure the prompt appears
+    await inputChatMessage();
+    clickSubmitButton();
+    expect(await screen.findByText("Copy")).toBeInTheDocument();
+
+    // Copy the prompt, check that the correct alert shows up
+    userEvent.setup(); // Enable clipboard to work
+    const copyPromptButton = screen.getByTestId("prompt-copy-button");
+    await userEvent.click(copyPromptButton);
+    expect(await screen.findByText("Prompt copied to clipboard.")).toBeInTheDocument();
+
+    expect(logEventSpy).toHaveBeenCalledWith("copy_prompt_text", {});
+    expect(logEventSpy).toHaveBeenCalledTimes(1);
+
+    // Close the alert
+    const closeButton = screen.getByTestId("close-button");
+    await userEvent.click(closeButton);
+    await waitFor(() => {
+      expect(screen.queryByText("Prompt copied to clipboard.")).not.toBeInTheDocument();
     });
 
     expect(await axe(container)).toHaveNoViolations();

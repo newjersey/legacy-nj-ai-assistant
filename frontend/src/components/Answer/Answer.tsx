@@ -7,6 +7,7 @@ import { nord } from "react-syntax-highlighter/dist/cjs/styles/prism";
 import { Checkbox, DefaultButton, Dialog, FontIcon, Stack, Text } from "@fluentui/react";
 import { useBoolean } from "@fluentui/react-hooks";
 import { ThumbDislike20Filled, ThumbLike20Filled } from "@fluentui/react-icons";
+import icons from "@newjersey/njwds/dist/img/sprite.svg";
 import DOMPurify from "dompurify";
 import remarkGfm from "remark-gfm";
 import supersub from "remark-supersub";
@@ -24,9 +25,15 @@ interface Props {
   answer: AskResponse;
   onCitationClicked: (citedDocument: Citation) => void;
   onExectResultClicked: () => void;
+  onCopyClicked: (text: string) => void;
 }
 
-export const Answer = ({ answer, onCitationClicked, onExectResultClicked }: Props) => {
+export const Answer = ({
+  answer,
+  onCitationClicked,
+  onExectResultClicked,
+  onCopyClicked,
+}: Props) => {
   const initializeAnswerFeedback = (answer: AskResponse) => {
     if (answer.message_id == undefined) return undefined;
     if (answer.feedback == undefined) return undefined;
@@ -364,6 +371,26 @@ export const Answer = ({ answer, onCitationClicked, onExectResultClicked }: Prop
           <Stack.Item className={styles.answerDisclaimerContainer}>
             <span className={styles.answerDisclaimer}>AI-generated content may be incorrect</span>
           </Stack.Item>
+          {answer.message_id !== undefined && (
+            <Stack.Item className={"margin-left-2"}>
+              <button
+                data-testid="answer-copy-button"
+                className={`usa-button usa-button--unstyled text-no-underline display-flex font-sans-xs`}
+                aria-label={`Copy response to clipboard that begins with "${answer.answer.split(" ").slice(0, 3).join(" ")}…"`}
+                onClick={() => onCopyClicked(answer.answer)}
+              >
+                Copy
+                <svg
+                  className="usa-icon usa-icon--size-2"
+                  aria-hidden="true"
+                  focusable="false"
+                  role="img"
+                >
+                  <use href={`${icons}#content_copy`} />
+                </svg>
+              </button>
+            </Stack.Item>
+          )}
           {!!answer.exec_results?.length && (
             <Stack.Item
               onKeyDown={(e) =>
