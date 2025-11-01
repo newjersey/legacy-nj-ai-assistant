@@ -6,7 +6,7 @@
             "version": "16",
             "nodeGypDependencies": false
         },
-        "ghcr.io/devcontainers/features/azure-cli:1.2.7": {},
+        "ghcr.io/devcontainers/features/azure-cli:1.2.9": {},
         "ghcr.io/azure/azure-dev/azd:latest": {}
     },
     "customizations": {
