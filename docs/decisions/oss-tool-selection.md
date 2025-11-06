@@ -48,9 +48,10 @@ Cons:
 
 #### Option 3: [Licensed Open WebUI](https://openwebui.com/)
 
-
 #### Option 4: Roll our Own
 
+#### Option 5: AnythingLLM
+Upon review of AnythingLLM's codebase, we found multiple examples of poor coding practices. The project looks vibe-coded, and was rejected for this reason.
 
 
 ## Consequences
