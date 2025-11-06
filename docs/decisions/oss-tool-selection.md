@@ -6,11 +6,7 @@
 
 We need to select and deploy an enterprise-level AI interface to service NJ state employees. There are many extant tools in this space, but few with a high level of quality with the intent to serve multiple users. The main two options are LibreChat and Open WebUI, which implement largely the same feature set with different implementations.
 
-### Problem Statement
-
-
-
-Our criteria for selecting the authentication framework include:
+### Selection Criteria
 
 - Will we remain within a living OSS community?
 - Does the tool reflect our tech stack?
@@ -58,6 +54,7 @@ Next Steps if we choose this:
 - Build out RBAC and admin panel to manage users and permissions
 - fork and install NJWDS styling
 
+
 ### Open WebUI (with two sub-options)
 OpenWebUI has most of the same features as LibreChat, but written in Svelte + Javascript with a Python backend. It lacks native Anthropic compatibility, we'd need to build this ourselves.
 
@@ -68,13 +65,13 @@ Pros:
 - Friendly license
 - potential support from DPV
 - Admin panel and RBAC (anemic, but a starting point)
-- 
 
 Cons:
 - Python, which team is unfamiliar with
 - Svelte instead of React, which is non-great
 - No Anthropic integration OOTB
 - Lose upstream updates, break with OSS community
+
 
 #### Option 3: [Licensed Open WebUI](https://openwebui.com/)
 Pros:
@@ -86,6 +83,7 @@ Cons:
 - reddit says this is super expensive and bad
 - No Anthropic integration OOTB
 
+
 #### Option 4: Roll our Own
 Highest LOE, longest time-to-implement. This would turn us into a development project with a long tail.
 
@@ -93,7 +91,6 @@ Pros:
 - It'd be fun!
 - Use most familiar tech
 - understand it in and out, full visibility
-- 
 
 Cons:
 - This will take a looooooong time
@@ -102,10 +99,11 @@ Cons:
 
 Additional Considerations:
 - could build off of 1.0, but this has baggage
-- 
+
 
 #### Option 5: AnythingLLM
 Upon review of AnythingLLM's codebase, we found multiple examples of poor coding practices. The project looks vibe-coded, and was rejected for this reason.
+
 
 #### Option 6: Open WebUI with maintaining their branding
 We'd be unable to put any NJ logos on the site, which is unacceptable, therefore this is not an option.
