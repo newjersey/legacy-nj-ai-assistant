@@ -1,4 +1,4 @@
-# Select authentication framework for ProfileNJ
+# Select open source base for AI Assistant 2.0
 
 ## Context
 
