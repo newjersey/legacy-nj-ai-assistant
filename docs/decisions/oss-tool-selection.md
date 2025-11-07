@@ -62,7 +62,7 @@ Next Steps if we choose this:
 ### Open WebUI (with two sub-options)
 OpenWebUI has most of the same features as LibreChat, but written in Svelte + Javascript with a Python backend. It lacks native Anthropic compatibility, we'd need to build this ourselves.
 
-The DPV flavor of this tool was forked before the license update. It is many commits behind the main repo, but would allow us to do our own branding.
+The DPV (Digital Public Ventures) flavor of this tool was forked before the license update. It is many commits behind the main repo, but would allow us to do our own branding.
 
 #### Option 2: [DPV Open WebUI](https://github.com/digital-public-ventures/ai-platform)
 Pros:
