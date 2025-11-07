@@ -20,16 +20,20 @@ We need to select and deploy an enterprise-level AI interface to service NJ stat
 
 ### Options
 
-| Option           | OSS Community | In-House Tech Stack |         License         |                  Time to Implement                  | Notes                                                                       |
-| ---------------- | :-----------: | :-----------------: | :---------------------: | :-------------------------------------------------: | :-------------------------------------------------------------------------- |
-| 1: LibreChat     |       ✅       |          ✅          |           MIT           |                     1-2 months                      | Uses MongoDB, needs better RBAC                                             |
-| 2: DPV OWUI      |       ❌       |          ❌          |      BSD-3 Clause       |                     1-2 months                      | Uses Svelte and Javascript, needs Anthropic adapter                         |
-| 3: Licensed OWUI |       ✅       |          ❌          | Enterprise paid license | Short, but unknown. Requires purchase conversation. | Requires purchasing                                                         |
-| 4: Roll our own  |       ❌       |          ✅          |       Our choice        |                        Long                         | Need to define a reduced feature list in order to release in timely fashion |
+| Option                 | OSS Community |    Web Framework    |     Backend     |          Database           |                                RBAC                                |         License         |                  Time to Implement                  | Notes                                                                       |
+| ---------------------- | :-----------: | :-----------------: | :-------------: | :-------------------------: | :----------------------------------------------------------------: | :---------------------: | :-------------------------------------------------: | :-------------------------------------------------------------------------- |
+| 1: LibreChat           |       ✅       | React + Typescript  | Javascript/Node | MongoDB, not our preference |                 minimal, need to build admin panel                 |           MIT           |                     1-2 months                      | Recently acquired by ClickHouse                                             |
+| 2: DPV Open WebUI      |       ❌       | Svelte + Javascript |     Python      |         PostgresQL          | Has admin panel and permissions, but will need further development |      BSD-3 Clause       |                     1-2 months                      | needs Anthropic adapter                                                     |
+| 3: Licensed Open WebUI |       ✅       | Svelte + Javascript |     Python      |         PostgresQL          |            Has admin panel and permissions, but anemic             | Enterprise paid license | Short, but unknown. Requires purchase conversation. | Requires purchasing                                                         |
+| 4: Roll our own        |       ❌       |       Custom        |     Custom      |           Custom            |                               Custom                               |       Our choice        |                        Long                         | Need to define a reduced feature list in order to release in timely fashion |
 
 #### Option 1: [Librechat](https://www.librechat.ai/)
 
 Librechat is developed in React and Typescript with a Node backend. It uses MongoDB exclusively as a database, and does not have a robust RBAC implementation.
+
+During this decision process, LibreChat was acquired by ClickHouse, a start-up based San Francisco and incorporated as a company in Delaware. ClickHouse raised a $350M Series C in May 2025, and has been acquiring open-source software companies, including LibreChat.
+
+ClickHouse was started as an experimental project in 2009 by Yandez, a Russian search engine company. It launched its first product in 2012 (a product to generate analytical reports in real-time from non-aggregated data which also grows in real-time), and spun into its own company in 2021.
 
 Pros:
 - It's in React + Typescript which is inhouse
@@ -58,9 +62,9 @@ Next Steps if we choose this:
 ### Open WebUI (with two sub-options)
 OpenWebUI has most of the same features as LibreChat, but written in Svelte + Javascript with a Python backend. It lacks native Anthropic compatibility, we'd need to build this ourselves.
 
-#### Option 2: [DPV Open WebUI](https://github.com/digital-public-ventures/ai-platform)
-This is a fork of Open WebUI before the license update.
+The DPV flavor of this tool was forked before the license update. It is many commits behind the main repo, but would allow us to do our own branding.
 
+#### Option 2: [DPV Open WebUI](https://github.com/digital-public-ventures/ai-platform)
 Pros:
 - Friendly license
 - potential support from DPV
@@ -83,7 +87,7 @@ Cons:
 - reddit says this is super expensive and bad
 - No Anthropic integration OOTB
 
-
+Due to the expense and availability of better options, this is likely not our choice. 
 #### Option 4: Roll our Own
 Highest LOE, longest time-to-implement. This would turn us into a development project with a long tail.
 
@@ -93,7 +97,7 @@ Pros:
 - understand it in and out, full visibility
 
 Cons:
-- This will take a looooooong time
+- This will take a long time
 - stripped down feature list
 - very iterative
 
