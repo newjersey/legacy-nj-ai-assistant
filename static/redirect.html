@@ -124,27 +124,6 @@
             }
         }
     </style>
-    <script>
-        let timeLeft = 60;
-
-        function updateCountdown() {
-            const countdownEl = document.getElementById('countdown');
-            if (countdownEl) {
-                countdownEl.textContent = timeLeft;
-            }
-
-            if (timeLeft <= 0) {
-                window.location.href = 'https://ai-assistant.nj.gov';
-            } else {
-                timeLeft--;
-                setTimeout(updateCountdown, 1000);
-            }
-        }
-
-        window.onload = function() {
-            updateCountdown();
-        };
-    </script>
 </head>
 <body>
     <header class="redirect-header">
@@ -159,7 +138,6 @@
             You can access the NJ AI Assistant here: <a href="https://ai-assistant.nj.gov/">https://ai-assistant.nj.gov/</a>. This updated version brings a redesigned interface and expanded capabilities based on feedback from users like you. Thank you for your important work in serving NJ residents and business owners!
         </p>
         <a href="https://ai-assistant.nj.gov" class="usa-button">NJ AI Assistant</a>
-        <p class="auto-redirect-note">You will be redirected automatically in&nbsp;<span id="countdown">60</span>&nbsp;seconds.</p>
     </div>
 </body>
 </html>
