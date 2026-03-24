@@ -34,6 +34,10 @@
             color: #242424;
             margin-left: 14px;
         }
+        .div-logo {
+            height: 64px;
+            width: auto;
+        }
         
         .redirect-container {
             max-width: 800px;
@@ -48,6 +52,7 @@
         .redirect-icon {
             font-size: 64px;
             margin-bottom: 24px;
+            text-align: center;
         }
         
         .redirect-heading {
@@ -55,13 +60,18 @@
             font-weight: 600;
             color: #1b1b1b;
             margin-bottom: 16px;
+            text-align: center;
         }
-        
+
         .redirect-message {
             font-size: 18px;
             line-height: 28px;
             color: #71767a;
             margin-bottom: 32px;
+            text-align: center;
+            max-width: 600px;
+            margin-left: auto;
+            margin-right: auto;
         }
         
         .usa-button {
@@ -87,8 +97,16 @@
         
         .auto-redirect-note {
             margin-top: 32px;
+            margin-left: auto;
+            margin-right: auto;
             font-size: 14px;
             color: #71767a;
+            text-align: center;
+        }
+
+        #countdown {
+            display: inline;
+            white-space: nowrap;
         }
         
         @media (max-width: 768px) {
@@ -107,10 +125,25 @@
         }
     </style>
     <script>
-        // Auto-redirect after 10 seconds (optional - uncomment to enable)
-        // setTimeout(function() {
-        //     window.location.href = 'https://your-new-site.com';
-        // }, 10000);
+        let timeLeft = 60;
+
+        function updateCountdown() {
+            const countdownEl = document.getElementById('countdown');
+            if (countdownEl) {
+                countdownEl.textContent = timeLeft;
+            }
+
+            if (timeLeft <= 0) {
+                window.location.href = 'https://ai-assistant.nj.gov';
+            } else {
+                timeLeft--;
+                setTimeout(updateCountdown, 1000);
+            }
+        }
+
+        window.onload = function() {
+            updateCountdown();
+        };
     </script>
 </head>
 <body>
@@ -120,13 +153,13 @@
     </header>
     
     <div class="redirect-container">
-        <div class="redirect-icon">🚀</div>
-        <h2 class="redirect-heading">This Site Has Moved</h2>
+        <div class="redirect-icon"><img src="/assets/nj-logo-862fdc97.svg" class="div-logo" alt="New Jersey State Logo"></div>
+        <h2 class="redirect-heading">Looking for the NJ AI Assistant?</h2>
         <p class="redirect-message">
-            The New Jersey AI Assistant has moved! Please access the new experience at the link below. We look forward to continuing to provide you with valuable AI resources and support on our new platform.
+            You can access the NJ AI Assistant here: https://ai-assistant.nj.gov/. This updated version brings a redesigned interface and expanded capabilities based on feedback from users like you. Thank you for your work for state government and its residents. We will continue to support you in your work!
         </p>
-        <a href="https://ai-assistant.nj.gov" class="usa-button">NJ AI Assistant 2.0</a>
-        <!-- <p class="auto-redirect-note">You will be redirected automatically in 10 seconds...</p> -->
+        <a href="https://ai-assistant.nj.gov" class="usa-button">NJ AI Assistant</a>
+        <p class="auto-redirect-note">You will be redirected automatically in&nbsp;<span id="countdown">60</span>&nbsp;seconds.</p>
     </div>
 </body>
 </html>
