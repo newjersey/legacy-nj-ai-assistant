@@ -7,7 +7,7 @@
     "node",
     "@types/node"
   ],
-  "baseBranches": [
+  "baseBranchPatterns": [
     "nj-stable-dev"
   ],
   "packageRules": [
