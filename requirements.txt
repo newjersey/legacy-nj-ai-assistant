@@ -3,7 +3,7 @@ Flask[async]==3.1.2
 openai==1.95.1
 azure-search-documents==11.5.3
 azure-storage-blob==12.25.1
-python-dotenv==1.1.1
+python-dotenv==1.2.2
 azure-cosmos==4.9.0
 quart==0.20.0
 uvicorn==0.35.0
