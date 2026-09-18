@@ -10,7 +10,7 @@ COPY --chown=node:node ./static/ ./static
 WORKDIR /home/node/app/frontend
 RUN NODE_OPTIONS=--max_old_space_size=8192 npm run build
   
-FROM python:3.14-alpine@sha256:faee120f7885a06fcc9677922331391fa690d911c020abb9e8025ff3d908e510 
+FROM python:3.14-alpine@sha256:016508ba505da24f7139765bc4bb669df4e88eb2f12eeadd571bf2f88d7533df 
 RUN apk add --no-cache --virtual .build-deps \  
     build-base \  
     libffi-dev \  
